@@ -11,6 +11,28 @@ performAction: function anonymous(yytext,yyleng,yylineno,yy,yystate,$$,_$) {
 
 var $0 = $$.length - 1;
 switch (yystate) {
+case 209: this.$ = "'const'"; 
+break;
+case 210: this.$ = "'volatile'"; 
+break;
+case 243: this.$ = "'extern'"; 
+break;
+case 244: this.$ = "'typedef'"; 
+break;
+case 245: this.$ = "'static'"; 
+break;
+case 246: this.$ = "'auto'"; 
+break;
+case 247: this.$ = "'register'"; 
+break;
+case 248: this.$ = "'friend'"; 
+break;
+case 249: this.$ = "'overload'"; 
+break;
+case 250: this.$ = "'inline'"; 
+break;
+case 251: this.$ = "'virtual'"; 
+break;
 case 252:this.$ = "'int'";
 break;
 case 253:this.$ = "'char'";

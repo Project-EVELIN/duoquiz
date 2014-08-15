@@ -483,8 +483,8 @@ declaration_qualifier:
         ;
 
 type_qualifier:
-        LE_CONST
-        | LE_VOLATILE
+        LE_CONST { this.$ = "'const'"; }
+        | LE_VOLATILE { this.$ = "'volatile'"; }
         ;
 
 basic_declaration_specifier:
@@ -545,15 +545,15 @@ typedef_type_specifier:
         ;
 
 storage_class:
-        LE_EXTERN
-        | LE_TYPEDEF
-        | LE_STATIC
-        | LE_AUTO
-        | LE_REGISTER
-        | LE_FRIEND
-        | LE_OVERLOAD
-        | LE_INLINE
-        | LE_VIRTUAL
+        LE_EXTERN { this.$ = "'extern'";}
+        | LE_TYPEDEF { this.$ = "'typedef'";}
+        | LE_STATIC { this.$ = "'static'";}
+        | LE_AUTO { this.$ = "'auto'";}
+        | LE_REGISTER { this.$ = "'register'";}
+        | LE_FRIEND { this.$ = "'friend'";}
+        | LE_OVERLOAD { this.$ = "'overload'";}
+        | LE_INLINE { this.$ = "'inline'";}
+        | LE_VIRTUAL { this.$ = "'virtual'";}
         ;
 
 basic_type_name:
