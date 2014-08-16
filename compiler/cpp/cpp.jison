@@ -1,6 +1,8 @@
 %union { }
 
 /*************************************************************************/
+/* flex & bison: Text Processing Tools page 142 for more information */
+/* more about actions and how to implement them http://www.gnu.org/software/bison/manual/html_node/Actions.html */
 
 
 /* This group is used by the C/C++ language parser */
@@ -60,11 +62,11 @@
 
 /*********************** CONSTANTS *********************************/
 constant:
-        LE_INTEGERconstant
-        | LE_FLOATINGconstant
-        | LE_OCTALconstant
-        | LE_HEXconstant
-        | LE_CHARACTERconstant
+        LE_INTEGERconstant { return '"' + this.$ + '"';}
+        | LE_FLOATINGconstant { return '"' + this.$ + '"';}
+        | LE_OCTALconstant { return '"' + this.$ + '"';}
+        | LE_HEXconstant { return '"' + this.$ + '"';}
+        | LE_CHARACTERconstant { return '"' + this.$ + '"';}
         ;
 
 string_literal_list:
@@ -295,12 +297,12 @@ equality_expression:
 
 AND_expression:
         equality_expression
-        | AND_expression '&' equality_expression
+        | AND_expression '&' equality_expression {this.$ = "[" + $$[$0-2] + ", '&', " + $$[$0] +"]";}
         ;
 
 exclusive_OR_expression:
         AND_expression
-        | exclusive_OR_expression '^' AND_expression
+        | exclusive_OR_expression '^' AND_expression {this.$ = "[" + $$[$0-2] + ", '^', " + $$[$0] +"]";}
         ;
 
 inclusive_OR_expression:
@@ -326,22 +328,22 @@ conditional_expression:
         ;
 
 assignment_expression:
-        conditional_expression
-        | unary_expression assignment_operator assignment_expression
+        conditional_expression { return this.$;}
+        | unary_expression assignment_operator assignment_expression { return this.$;}
         ;
 
 assignment_operator:
-        '='
-        | LE_MULTassign
-        | LE_DIVassign
-        | LE_MODassign
-        | LE_PLUSassign
-        | LE_MINUSassign
-        | LE_LSassign
-        | LE_RSassign
-        | LE_ANDassign
-        | LE_ERassign
-        | LE_ORassign
+        '=' { return this.$;}
+        | LE_MULTassign { return this.$;}
+        | LE_DIVassign { return this.$;}
+        | LE_MODassign { return this.$;}
+        | LE_PLUSassign { return this.$;}
+        | LE_MINUSassign { return this.$;}
+        | LE_LSassign { return this.$;}
+        | LE_RSassign { return this.$;}
+        | LE_ANDassign { return this.$;}
+        | LE_ERassign { return this.$;}
+        | LE_ORassign { return this.$;}
         ;
 
 comma_expression:
@@ -483,8 +485,8 @@ declaration_qualifier:
         ;
 
 type_qualifier:
-        LE_CONST { this.$ = "'const'"; }
-        | LE_VOLATILE { this.$ = "'volatile'"; }
+        LE_CONST { this.$ = "'const'";}
+        | LE_VOLATILE { this.$ = "'volatile'";}
         ;
 
 basic_declaration_specifier:
@@ -620,9 +622,9 @@ access_specifier:
         ;
 
 aggregate_key:
-        LE_STRUCT
-        | LE_UNION
-        | LE_CLASS
+        LE_STRUCT {this.$ = "'struct'";}
+        | LE_UNION {this.$ = "'union'";}
+        | LE_CLASS {this.$ = "'class'";}
         ;
 
 member_declaration_list_opt:
