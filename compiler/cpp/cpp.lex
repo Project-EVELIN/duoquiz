@@ -295,14 +295,14 @@ auto      { return(PA_KEYWORD_RETURN(parser.symbols_.AUTO));}
 
 <PREPR>\n		{ this.begin("INITIAL");}
 <PREPR>\\		{ this.begin("WRAP_PREP");}
-<PREPR>define	{return("define");}
+<PREPR>define	{return("");}
 <WRAP_PREP>\n	{ this.begin("PREPR");}
-<WRAP_PREP>{identifier} {}
-<PREPR>{identifier} {}
-<WRAP_PREP>.	{}
-<PREPR>.			{}
+<WRAP_PREP>{identifier} {return("");}
+<PREPR>{identifier} {return("");}
+<WRAP_PREP>.	{return("");}
+<PREPR>.			{return("");}
 <CPP_COMMENT>\n 	{this.begin("INITIAL");}
-<CPP_COMMENT>.	 	{}
+<CPP_COMMENT>.	 	{return("");}
 <C_COMMENT>"*/" 	{this.begin("INITIAL");}
-<C_COMMENT>.	  	{}
+<C_COMMENT>.	  	{return("");}
 %%
