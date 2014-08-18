@@ -1,3 +1,97 @@
+%{
+	var cl_scope_lval;
+	var cl_var_lval;
+	var cl_func_lval;
+	var cl_typedef_lval;
+
+	var currentScope;
+
+	var g_symbols = {};
+	var g_macros = {};
+	var g_ignoreList = {};
+	var gs_useMacroIgnore = true;
+
+	var defineFound = false;
+
+	/* do nothing */
+	function WHITE_RETURN(x) {};
+
+	function RETURN_VAL(x) {
+		cl_scope_lval = yytext;
+		cl_var_lval = yytext;
+		cl_func_lval = yytext;
+		cl_typedef_lval = yytext;
+		return(x);
+	}
+
+	function IDENTIFIER_RETURN() {
+		if (isaTYPE(yytext)) {
+			RETURN_VAL(parser.symbols_.LE_TYPEDEFname);
+		} else if (isaMACRO(yytext)) {
+			RETURN_VAL(parser.symbols_.LE_MACRO);
+		} else if (isignoredToken(yytext)) {
+			// do nothing
+		} else {
+			RETURN_VAL(parser.symbols_.LE_IDENTIFIER);
+		}
+	}
+
+	/* standard C PArser Keyword */
+	function PA_KEYWORD_RETURN(x) {
+		return RETURN_VAL(x);
+	}
+
+	/* C++ keyword */
+	function CPP_KEYWORD_RETURN(x) {
+		return PA_KEYWORD_RETURN(x);
+	}
+
+	/* both PreProcessor and PArser keyword */
+	function PPPA_KEYWORD_RETURN(x) {
+		return RETURN_VAL(x);
+	}
+
+	function PP_KEYWORD_RETURN(x) {
+		IDENTIFIER_RETURN();
+	}
+
+	/* PreProcess and Parser operator */
+	function PPOP_RETURN(x) {
+		return RETURN_VAL(x);
+	}
+
+	function NAMED_PPOP_RETURN(x) {
+		return RETURN_VAL(x);
+	}
+
+	/* a single character operator */
+	function ASCIIOP_RETURN(x) {
+		return RETURN_VAL(x);
+	}
+
+	/* a multichar operator, with a name */
+	function NAMEDOP_RETURN(x) {
+		return RETURN_VAL(x);
+	}
+
+	/* some sort of constant */
+	function NUMERICAL_RETURN(x) {
+		return RETURN_VAL(x);
+	}
+
+	/* a string literal */
+	function LITERAL_RETURN(x) {
+		return RETURN_VAL(x);
+	}
+
+	/* C Style comment  */
+	function C_COMMENT_RETURN(x) {
+		return RETURN_VAL(x);
+	}
+%}
+
+%option yylineno
+
 NL                      [\n]
 identifier [a-zA-Z_][0-9a-zA-Z_]*
 
@@ -28,10 +122,30 @@ horizontal_white [ ]|{h_tab}
 %s typedef_mode
 %x PREPR
 %x WRAP_PREP
+%x CPP_COMMENT
+%x C_COMMENT
 
 %%
-{SLASH}{SLASH}.* { }
-{SLASH}{STAR}({SLASH}|(.|{NL})|{STAR}+(.|{NL}))*?{STAR}+{SLASH} { }
+
+"/*" {
+			this.begin("C_COMMENT");
+     }
+
+"//" {
+			this.begin("CPP_COMMENT");
+     }
+
+{horizontal_white}+     {
+			WHITE_RETURN(' ');
+			}
+
+({v_tab}|{c_return}|{form_feed})+   {
+			WHITE_RETURN(' ');
+			}
+
+({horizontal_white}|{v_tab}|{c_return}|{form_feed})*"\n"   {
+			WHITE_RETURN('\n');
+			}
 
 "auto"      { return(parser.symbols_.LE_AUTO); }
 "break"			{ return(parser.symbols_.LE_BREAK); }
@@ -164,7 +278,7 @@ horizontal_white [ ]|{h_tab}
 "^"			{ return("^"); }
 "|"			{ return('|'); }
 "?"			{ return('?'); }
-^"#"		{ this.begin("PREPR"); }
+^({horizontal_white})*"#"		{ this.begin("PREPR"); }
 
 <PREPR>\n		{ this.begin("INITIAL"); }
 <PREPR>\\		{ this.begin("WRAP_PREP"); }
@@ -174,4 +288,32 @@ horizontal_white [ ]|{h_tab}
 <PREPR>{identifier} { }
 <WRAP_PREP>.	{ }
 <PREPR>.			{ }
+<CPP_COMMENT>\n 	{this.begin("INITIAL");}
+<CPP_COMMENT>.	 	{}
+<C_COMMENT>"*/" 	{this.begin("INITIAL");}
+<C_COMMENT>.	  	{}
 %%
+
+function isaTYPE(str) {
+	return g_symbols.hasOwnProperty(str);
+}
+
+function isignoredToken(str) {
+	if(g_ignoreList.hasOwnProperty(str)) {
+		return false;
+	} else {
+		return g_ignoreList[str] === "";
+	}
+}
+
+function isaMACRO(str) {
+	if(gs_useMacroIgnore) {
+		return g_macros.hasOwnProperty(str);
+	} else {
+		return false;
+	}
+}
+
+function setUseIgnoreMacros(ignore) {
+	gs_useMacroIgnore = ignore;
+}

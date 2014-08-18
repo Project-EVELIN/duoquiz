@@ -62,11 +62,11 @@
 
 /*********************** CONSTANTS *********************************/
 constant:
-        LE_INTEGERconstant { return '"' + this.$ + '"';}
-        | LE_FLOATINGconstant { return '"' + this.$ + '"';}
-        | LE_OCTALconstant { return '"' + this.$ + '"';}
-        | LE_HEXconstant { return '"' + this.$ + '"';}
-        | LE_CHARACTERconstant { return '"' + this.$ + '"';}
+        LE_INTEGERconstant { $$ = '"' + this.$ + '"';}
+        | LE_FLOATINGconstant { $$ = '"' + this.$ + '"';}
+        | LE_OCTALconstant { $$ = '"' + this.$ + '"';}
+        | LE_HEXconstant { $$ = '"' + this.$ + '"';}
+        | LE_CHARACTERconstant { $$ = '"' + this.$ + '"';}
         ;
 
 string_literal_list:
@@ -87,7 +87,7 @@ primary_expression:
         global_opt_scope_opt_identifier
         | global_opt_scope_opt_complex_name
         | LE_THIS
-        | constant
+        | constant {$$ = $1;}
         | string_literal_list
         | '(' comma_expression ')'
         ;
@@ -116,7 +116,7 @@ operator_function_ptr_opt:
 
     /* List of operators we can overload */
 any_operator:
-        '+'
+        '+' { $$ = '"+"';}
         | '-'
         | '*'
         | '/'
@@ -297,12 +297,12 @@ equality_expression:
 
 AND_expression:
         equality_expression
-        | AND_expression '&' equality_expression {this.$ = "[" + $$[$0-2] + ", '&', " + $$[$0] +"]";}
+        | AND_expression '&' equality_expression {$$ = "[" + $$[$0-2] + ", '&', " + $$[$0] +"]";}
         ;
 
 exclusive_OR_expression:
         AND_expression
-        | exclusive_OR_expression '^' AND_expression {this.$ = "[" + $$[$0-2] + ", '^', " + $$[$0] +"]";}
+        | exclusive_OR_expression '^' AND_expression {$$ = "[" + $$[$0-2] + ", '^', " + $$[$0] +"]";}
         ;
 
 inclusive_OR_expression:
@@ -547,27 +547,27 @@ typedef_type_specifier:
         ;
 
 storage_class:
-        LE_EXTERN { this.$ = "'extern'";}
-        | LE_TYPEDEF { this.$ = "'typedef'";}
-        | LE_STATIC { this.$ = "'static'";}
-        | LE_AUTO { this.$ = "'auto'";}
-        | LE_REGISTER { this.$ = "'register'";}
-        | LE_FRIEND { this.$ = "'friend'";}
-        | LE_OVERLOAD { this.$ = "'overload'";}
-        | LE_INLINE { this.$ = "'inline'";}
-        | LE_VIRTUAL { this.$ = "'virtual'";}
+        LE_EXTERN { $$ = "'extern'";}
+        | LE_TYPEDEF { $$ = "'typedef'";}
+        | LE_STATIC { $$ = "'static'";}
+        | LE_AUTO { $$ = "'auto'";}
+        | LE_REGISTER { $$ = "'register'";}
+        | LE_FRIEND { $$ = "'friend'";}
+        | LE_OVERLOAD { $$ = "'overload'";}
+        | LE_INLINE { $$ = "'inline'";}
+        | LE_VIRTUAL { $$ = "'virtual'";}
         ;
 
 basic_type_name:
-        LE_INT {this.$ = "'int'";}
-        | LE_CHAR {this.$ = "'char'";}
-        | LE_SHORT {this.$ = "'short'";}
-        | LE_LONG {this.$ = "'long'";}
-        | LE_FLOAT {this.$ = "'float'";}
-        | LE_DOUBLE {this.$ = "'double'";}
-        | LE_SIGNED {this.$ = "'signed'";}
-        | LE_UNSIGNED {this.$ = "'unsigned'";}
-        | LE_VOID {this.$ = "'void'";}
+        LE_INT {$$ = "'int'";}
+        | LE_CHAR {$$ = "'char'";}
+        | LE_SHORT {$$ = "'short'";}
+        | LE_LONG {$$ = "'long'";}
+        | LE_FLOAT {$$ = "'float'";}
+        | LE_DOUBLE {$$ = "'double'";}
+        | LE_SIGNED {$$ = "'signed'";}
+        | LE_UNSIGNED {$$ = "'unsigned'";}
+        | LE_VOID {$$ = "'void'";}
         ;
 
 elaborated_type_name_elaboration:
@@ -855,12 +855,11 @@ non_casting_parameter_declaration:
         ;
 
 type_name:
-        type_specifier
-        | basic_type_name
-        | LE_TYPEDEFname
-        | global_or_scoped_typedefname
-        | type_qualifier_list
-
+        type_specifier {$$ = $1;}
+        | basic_type_name {$$ = $1;}
+        | LE_TYPEDEFname {$$ = $1;}
+        | global_or_scoped_typedefname {$$ = $1;}
+        | type_qualifier_list {$$ = $1;}
         | type_specifier               abstract_declarator
         | basic_type_name              abstract_declarator
         | LE_TYPEDEFname                  abstract_declarator
@@ -869,32 +868,32 @@ type_name:
         ;
 
 initializer_opt:
-        | initializer
+        | initializer {$$ = $1;}
         ;
 
 initializer:
-        '=' initializer_group
+        '=' initializer_group  {$$ = $1 + " " + $2;}
         ;
 
 initializer_group:
         '{' initializer_list '}'
         | '{' initializer_list ',' '}'
-        | assignment_expression
+        | assignment_expression {$$ = $1;}
         ;
 
 initializer_list:
-        initializer_group
-        | initializer_list ',' initializer_group
+        initializer_group {$$ = $1;}
+        | initializer_list ',' initializer_group {$$ = $1 + "," + $3;}
         ;
 
 statement:
-        labeled_statement
-        | compound_statement
-        | expression_statement
-        | selection_statement
-        | iteration_statement
-        | jump_statement
-        | declaration
+        labeled_statement {$$ = $1;}
+        | compound_statement {$$ = $1;}
+        | expression_statement {$$ = $1;}
+        | selection_statement {$$ = $1;}
+        | iteration_statement {$$ = $1;}
+        | jump_statement {$$ = $1;}
+        | declaration {$$ = $1;}
         ;
 
 labeled_statement:
@@ -908,8 +907,8 @@ compound_statement:
         ;
 
 declaration_list:
-        declaration
-        | declaration_list declaration
+        declaration  {$$ = $1;}
+        | declaration_list declaration  {$$ = $1 + " " + $2;}
         ;
 
 statement_list_opt:
@@ -938,10 +937,10 @@ iteration_statement:
         ;
 
 jump_statement:
-        LE_GOTO label                     ';'
-        | LE_CONTINUE                     ';'
-        | LE_BREAK                        ';'
-        | LE_RETURN comma_expression_opt  ';'
+        LE_GOTO label                     ';'  {$$ = $1 + " " + $2;}
+        | LE_CONTINUE                     ';'  {$$ = $1;}
+        | LE_BREAK                        ';'  {$$ = $1;}
+        | LE_RETURN comma_expression_opt  ';'  {$$ = $1 + " " + $2;}
         ;
 
 label:
@@ -950,32 +949,32 @@ label:
         ;
 
 translation_unit:
-        | translation_unit external_definition
+        | translation_unit external_definition {return $1 + " " + $2;}
         ;
 
 external_definition:
-        function_declaration
-        | function_definition
-        | declaration
-        | linkage_specifier function_declaration
-        | linkage_specifier function_definition
-        | linkage_specifier declaration
-        | linkage_specifier '{' translation_unit '}'
+        function_declaration {$$ = $1;}
+        | function_definition {$$ = $1;}
+        | declaration {$$ = $1;}
+        | linkage_specifier function_declaration {$$ = $1 + " " + $2;}
+        | linkage_specifier function_definition {$$ = $1 + " " + $2;}
+        | linkage_specifier declaration {$$ = $1 + " " + $2;}
+        | linkage_specifier '{' translation_unit '}' {$$ = $1 + "{" + $3 + "}";}
         ;
 
 linkage_specifier:
-        LE_EXTERN LE_STRINGliteral
+        LE_EXTERN LE_STRINGliteral {$$ = $1 + " " + $2;}
         ;
 
 function_declaration:
-        identifier_declarator ';'
-        | constructor_function_declaration ';'
+        identifier_declarator ';' {$$ = $1 + "" + $2;}
+        | constructor_function_declaration ';' {$$ = $1 + "" + $2;}
         ;
 
 function_definition:
-        new_function_definition
-        | old_function_definition
-        | constructor_function_definition
+        new_function_definition {$$ = $1;}
+        | old_function_definition {$$ = $1;}
+        | constructor_function_definition {$$ = $1;}
         ;
 
 new_function_definition:
@@ -1139,20 +1138,20 @@ constructor_init:
         ;
 
 declarator:
-        identifier_declarator
-        | typedef_declarator
+        identifier_declarator {$$ = $1;}
+        | typedef_declarator {$$ = $1;}
         ;
 
 typedef_declarator:
-        paren_typedef_declarator
-        | simple_paren_typedef_declarator
-        | parameter_typedef_declarator
+        paren_typedef_declarator {$$ = $1;}
+        | simple_paren_typedef_declarator {$$ = $1;}
+        | parameter_typedef_declarator {$$ = $1;}
         ;
 
 parameter_typedef_declarator:
-        LE_TYPEDEFname
-        | LE_TYPEDEFname postfixing_abstract_declarator
-        | clean_typedef_declarator
+        LE_TYPEDEFname {$$ = $1;}
+        | LE_TYPEDEFname postfixing_abstract_declarator {$$ = $1 + " " + $2;}
+        | clean_typedef_declarator {$$ = $1;}
         ;
 
 clean_typedef_declarator:
@@ -1190,14 +1189,14 @@ simple_paren_typedef_declarator:
         ;
 
 identifier_declarator:
-        unary_identifier_declarator
-        | paren_identifier_declarator
+        unary_identifier_declarator {$$ = $1;}
+        | paren_identifier_declarator {$$ = $1;}
         ;
 
 unary_identifier_declarator:
-        postfix_identifier_declarator
-        | asterisk_or_ampersand identifier_declarator
-        | unary_modifier        identifier_declarator
+        postfix_identifier_declarator {$$ = $1;}
+        | asterisk_or_ampersand identifier_declarator {$$ = $1 + "" + $2;}
+        | unary_modifier        identifier_declarator {$$ = $1 + "" + $2;}
         ;
 
 postfix_identifier_declarator:
@@ -1235,9 +1234,9 @@ postfixing_abstract_declarator:
         ;
 
 array_abstract_declarator:
-        '[' ']'
-        | '[' constant_expression ']'
-        | array_abstract_declarator '[' constant_expression ']'
+        '[' ']' {$$ = $1 + "" + $2;}
+        | '[' constant_expression ']' {$$ = $1 + $2 + $3;}
+        | array_abstract_declarator '[' constant_expression ']' {$$ = $1 + $2 + $3 + $4;}
         ;
 
 unary_abstract_declarator:
@@ -1269,22 +1268,22 @@ unary_modifier:
 /************************* NESTED SCOPE SUPPORT ******************************/
 
 scoping_name:
-        tag_name
-        | aggregate_key tag_name
+        tag_name {$$ = $1;}
+        | aggregate_key tag_name {$$ = $1 + " " + $2;}
         ;
 
 scope:
-        scoping_name LE_CLCL
-        | scope scoping_name  LE_CLCL
+        scoping_name LE_CLCL {$$ = $1 + "" + $2;}
+        | scope scoping_name  LE_CLCL {$$ = $1 + "" + $2 + $3;}
         ;
 
 tag_name:
-        LE_IDENTIFIER
-        | LE_TYPEDEFname
+        LE_IDENTIFIER {$$ = $1;}
+        | LE_TYPEDEFname {$$ = $1;}
         ;
 
 global_scope:
-        LE_CLCL
+        LE_CLCL {$$ = $1;}
         ;
 
 global_or_scope:

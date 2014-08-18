@@ -11,6 +11,8 @@ duoquiz
 Additional information about writing a parser for bison/jison can be found here:
 * http://www.gnu.org/software/bison/manual/html_node/Action-Types.html#Action-Types
 * http://books.google.de/books?id=3Sr1V5J9_qMC&pg=PA148&lpg=PA148&dq=bison+what+is+$$%5B$0-1%5D&source=bl&ots=WFEyeaiMKT&sig=QMHeuzyF1g0q0Ijg3tlIRKrpX9Y&hl=de&sa=X&ei=ziHvU-r3E9Cp7AbAh4GIBg&ved=0CCMQ6AEwAA#v=onepage&q=%24%24%5B%240-1%5D&f=false
+* http://stackoverflow.com/questions/8467150/how-to-get-abstract-syntax-tree-ast-out-of-jison-parser
+* http://tldp.org/HOWTO/Lex-YACC-HOWTO-6.html
 
 ## Testing
 1. Open ```parser.html``` locally

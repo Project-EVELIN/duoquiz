@@ -11,15 +11,17 @@ performAction: function anonymous(yytext,yyleng,yylineno,yy,yystate,$$,_$) {
 
 var $0 = $$.length - 1;
 switch (yystate) {
-case 1: return '"' + this.$ + '"';
+case 1: this.$ = '"' + this.$ + '"';
 break;
-case 2: return '"' + this.$ + '"';
+case 2: this.$ = '"' + this.$ + '"';
 break;
-case 3: return '"' + this.$ + '"';
+case 3: this.$ = '"' + this.$ + '"';
 break;
-case 4: return '"' + this.$ + '"';
+case 4: this.$ = '"' + this.$ + '"';
 break;
-case 5: return '"' + this.$ + '"';
+case 5: this.$ = '"' + this.$ + '"';
+break;
+case 8: this.$ = '"+"';
 break;
 case 121:this.$ = "[" + this.$[$$[$0-3]-2] + ", '&', " + this.$[$$[$0-3]] +"]";
 break;
@@ -96,6 +98,126 @@ break;
 case 286:this.$ = "'union'";
 break;
 case 287:this.$ = "'class'";
+break;
+case 404:this.$ = $$[$0];
+break;
+case 405:this.$ = $$[$0];
+break;
+case 406:this.$ = $$[$0];
+break;
+case 407:this.$ = $$[$0];
+break;
+case 408:this.$ = $$[$0];
+break;
+case 415:this.$ = $$[$0];
+break;
+case 416:this.$ = $$[$0-1] + " " + $$[$0];
+break;
+case 419:this.$ = $$[$0];
+break;
+case 420:this.$ = $$[$0];
+break;
+case 421:this.$ = $$[$0-2] + "," + $$[$0];
+break;
+case 422:this.$ = $$[$0];
+break;
+case 423:this.$ = $$[$0];
+break;
+case 424:this.$ = $$[$0];
+break;
+case 425:this.$ = $$[$0];
+break;
+case 426:this.$ = $$[$0];
+break;
+case 427:this.$ = $$[$0];
+break;
+case 428:this.$ = $$[$0];
+break;
+case 433:this.$ = $$[$0];
+break;
+case 434:this.$ = $$[$0-1] + " " + $$[$0];
+break;
+case 445:this.$ = $$[$0-2] + " " + $$[$0-1];
+break;
+case 446:this.$ = $$[$0-1];
+break;
+case 447:this.$ = $$[$0-1];
+break;
+case 448:this.$ = $$[$0-2] + " " + $$[$0-1];
+break;
+case 452:return $$[$0-1] + " " + $$[$0];
+break;
+case 453:this.$ = $$[$0];
+break;
+case 454:this.$ = $$[$0];
+break;
+case 455:this.$ = $$[$0];
+break;
+case 456:this.$ = $$[$0-1] + " " + $$[$0];
+break;
+case 457:this.$ = $$[$0-1] + " " + $$[$0];
+break;
+case 458:this.$ = $$[$0-1] + " " + $$[$0];
+break;
+case 459:this.$ = $$[$0-3] + "{" + $$[$0-1] + "}";
+break;
+case 460:this.$ = $$[$0-1] + " " + $$[$0];
+break;
+case 461:this.$ = $$[$0-1] + "" + $$[$0];
+break;
+case 462:this.$ = $$[$0-1] + "" + $$[$0];
+break;
+case 463:this.$ = $$[$0];
+break;
+case 464:this.$ = $$[$0];
+break;
+case 465:this.$ = $$[$0];
+break;
+case 534:this.$ = $$[$0];
+break;
+case 535:this.$ = $$[$0];
+break;
+case 536:this.$ = $$[$0];
+break;
+case 537:this.$ = $$[$0];
+break;
+case 538:this.$ = $$[$0];
+break;
+case 539:this.$ = $$[$0];
+break;
+case 540:this.$ = $$[$0-1] + " " + $$[$0];
+break;
+case 541:this.$ = $$[$0];
+break;
+case 560:this.$ = $$[$0];
+break;
+case 561:this.$ = $$[$0];
+break;
+case 562:this.$ = $$[$0];
+break;
+case 563:this.$ = $$[$0-1] + "" + $$[$0];
+break;
+case 564:this.$ = $$[$0-1] + "" + $$[$0];
+break;
+case 581:this.$ = $$[$0-1] + "" + $$[$0];
+break;
+case 582:this.$ = $$[$0-2] + $$[$0-1] + $$[$0];
+break;
+case 583:this.$ = $$[$0-3] + $$[$0-2] + $$[$0-1] + $$[$0];
+break;
+case 596:this.$ = $$[$0];
+break;
+case 597:this.$ = $$[$0-1] + " " + $$[$0];
+break;
+case 598:this.$ = $$[$0-1] + "" + $$[$0];
+break;
+case 599:this.$ = $$[$0-2] + "" + $$[$0-1] + $$[$0];
+break;
+case 600:this.$ = $$[$0];
+break;
+case 601:this.$ = $$[$0];
+break;
+case 602:this.$ = $$[$0];
 break;
 }
 },
@@ -466,282 +588,421 @@ pushState:function begin(condition) {
 lexer.options = {};
 lexer.performAction = function anonymous(yy,yy_,$avoiding_name_collisions,YY_START) {
 
+	var cl_scope_lval;
+	var cl_var_lval;
+	var cl_func_lval;
+	var cl_typedef_lval;
+
+	var currentScope;
+
+	var g_symbols = {};
+	var g_macros = {};
+	var g_ignoreList = {};
+	var gs_useMacroIgnore = true;
+
+	var defineFound = false;
+
+	/* do nothing */
+	function WHITE_RETURN(x) {};
+
+	function RETURN_VAL(x) {
+		cl_scope_lval = yy_.yytext;
+		cl_var_lval = yy_.yytext;
+		cl_func_lval = yy_.yytext;
+		cl_typedef_lval = yy_.yytext;
+		return(x);
+	}
+
+	function IDENTIFIER_RETURN() {
+		if (isaTYPE(yy_.yytext)) {
+			RETURN_VAL(parser.symbols_.LE_TYPEDEFname);
+		} else if (isaMACRO(yy_.yytext)) {
+			RETURN_VAL(parser.symbols_.LE_MACRO);
+		} else if (isignoredToken(yy_.yytext)) {
+			// do nothing
+		} else {
+			RETURN_VAL(parser.symbols_.LE_IDENTIFIER);
+		}
+	}
+
+	/* standard C PArser Keyword */
+	function PA_KEYWORD_RETURN(x) {
+		return RETURN_VAL(x);
+	}
+
+	/* C++ keyword */
+	function CPP_KEYWORD_RETURN(x) {
+		return PA_KEYWORD_RETURN(x);
+	}
+
+	/* both PreProcessor and PArser keyword */
+	function PPPA_KEYWORD_RETURN(x) {
+		return RETURN_VAL(x);
+	}
+
+	function PP_KEYWORD_RETURN(x) {
+		IDENTIFIER_RETURN();
+	}
+
+	/* PreProcess and Parser operator */
+	function PPOP_RETURN(x) {
+		return RETURN_VAL(x);
+	}
+
+	function NAMED_PPOP_RETURN(x) {
+		return RETURN_VAL(x);
+	}
+
+	/* a single character operator */
+	function ASCIIOP_RETURN(x) {
+		return RETURN_VAL(x);
+	}
+
+	/* a multichar operator, with a name */
+	function NAMEDOP_RETURN(x) {
+		return RETURN_VAL(x);
+	}
+
+	/* some sort of constant */
+	function NUMERICAL_RETURN(x) {
+		return RETURN_VAL(x);
+	}
+
+	/* a string literal */
+	function LITERAL_RETURN(x) {
+		return RETURN_VAL(x);
+	}
+
+	/* C Style comment  */
+	function C_COMMENT_RETURN(x) {
+		return RETURN_VAL(x);
+	}
+
 var YYSTATE=YY_START;
 switch($avoiding_name_collisions) {
-case 0: 
+case 0:
+			this.begin("C_COMMENT");
+     
 break;
-case 1: 
+case 1:
+			this.begin("CPP_COMMENT");
+     
 break;
-case 2: return(parser.symbols_.LE_AUTO); 
+case 2:
+			WHITE_RETURN(' ');
+			
 break;
-case 3: return(parser.symbols_.LE_BREAK); 
+case 3:
+			WHITE_RETURN(' ');
+			
 break;
-case 4: return(parser.symbols_.LE_CASE); 
+case 4:
+			WHITE_RETURN('\n');
+			
 break;
-case 5: return(parser.symbols_.LE_CHAR); 
+case 5: return(parser.symbols_.LE_AUTO); 
 break;
-case 6: return(parser.symbols_.LE_CONST); 
+case 6: return(parser.symbols_.LE_BREAK); 
 break;
-case 7: return(parser.symbols_.LE_CONTINUE); 
+case 7: return(parser.symbols_.LE_CASE); 
 break;
-case 8: return(parser.symbols_.LE_DEFAULT); 
+case 8: return(parser.symbols_.LE_CHAR); 
 break;
-case 9: return("define"); 
+case 9: return(parser.symbols_.LE_CONST); 
 break;
-case 10: return("defined"); 
+case 10: return(parser.symbols_.LE_CONTINUE); 
 break;
-case 11: return(parser.symbols_.LE_DO); 
+case 11: return(parser.symbols_.LE_DEFAULT); 
 break;
-case 12: return(parser.symbols_.LE_DOUBLE); 
+case 12: return("define"); 
 break;
-case 13: return("elif"); 
+case 13: return("defined"); 
 break;
-case 14: return(parser.symbols_.LE_ELSE); 
+case 14: return(parser.symbols_.LE_DO); 
 break;
-case 15: return("endif"); 
+case 15: return(parser.symbols_.LE_DOUBLE); 
 break;
-case 16: return(parser.symbols_.LE_ERROR); 
+case 16: return("elif"); 
 break;
-case 17: return(parser.symbols_.LE_ENUM); 
+case 17: return(parser.symbols_.LE_ELSE); 
 break;
-case 18: return(parser.symbols_.LE_EXTERN); 
+case 18: return("endif"); 
 break;
-case 19: return(parser.symbols_.LE_FLOAT); 
+case 19: return(parser.symbols_.LE_ERROR); 
 break;
-case 20: return(parser.symbols_.LE_FOR); 
+case 20: return(parser.symbols_.LE_ENUM); 
 break;
-case 21: return(parser.symbols_.LE_GOTO); 
+case 21: return(parser.symbols_.LE_EXTERN); 
 break;
-case 22: return(parser.symbols_.LE_IF); 
+case 22: return(parser.symbols_.LE_FLOAT); 
 break;
-case 23: return("ifdef"); 
+case 23: return(parser.symbols_.LE_FOR); 
 break;
-case 24: return("ifndef"); 
+case 24: return(parser.symbols_.LE_GOTO); 
 break;
-case 25: return(parser.symbols_.LE_INCLUDE); 
+case 25: return(parser.symbols_.LE_IF); 
 break;
-case 26: return(parser.symbols_.LE_INT); 
+case 26: return("ifdef"); 
 break;
-case 27: return("line"); 
+case 27: return("ifndef"); 
 break;
-case 28: return(parser.symbols_.LE_LONG); 
+case 28: return(parser.symbols_.LE_INCLUDE); 
 break;
-case 29: return(parser.symbols_.LE_BOOL); 
+case 29: return(parser.symbols_.LE_INT); 
 break;
-case 30: return("pragma"); 
+case 30: return("line"); 
 break;
-case 31: return(parser.symbols_.LE_REGISTER); 
+case 31: return(parser.symbols_.LE_LONG); 
 break;
-case 32: return(parser.symbols_.LE_RETURN); 
+case 32: return(parser.symbols_.LE_BOOL); 
 break;
-case 33: return(parser.symbols_.LE_SHORT); 
+case 33: return("pragma"); 
 break;
-case 34: return(parser.symbols_.LE_SIGNED); 
+case 34: return(parser.symbols_.LE_REGISTER); 
 break;
-case 35: return(parser.symbols_.LE_SIZEOF); 
+case 35: return(parser.symbols_.LE_RETURN); 
 break;
-case 36: return(parser.symbols_.LE_STATIC); 
+case 36: return(parser.symbols_.LE_SHORT); 
 break;
-case 37: return(parser.symbols_.LE_STRUCT); 
+case 37: return(parser.symbols_.LE_SIGNED); 
 break;
-case 38: return(parser.symbols_.LE_SWITCH); 
+case 38: return(parser.symbols_.LE_SIZEOF); 
 break;
-case 39: return(parser.symbols_.LE_TYPEDEF); 
+case 39: return(parser.symbols_.LE_STATIC); 
 break;
-case 40: return("undef"); 
+case 40: return(parser.symbols_.LE_STRUCT); 
 break;
-case 41: return(parser.symbols_.LE_UNION); 
+case 41: return(parser.symbols_.LE_SWITCH); 
 break;
-case 42: return(parser.symbols_.LE_UNSIGNED); 
+case 42: return(parser.symbols_.LE_TYPEDEF); 
 break;
-case 43: return(parser.symbols_.LE_VOID); 
+case 43: return("undef"); 
 break;
-case 44: return(parser.symbols_.LE_VOLATILE); 
+case 44: return(parser.symbols_.LE_UNION); 
 break;
-case 45: return(parser.symbols_.LE_WHILE); 
+case 45: return(parser.symbols_.LE_UNSIGNED); 
 break;
-case 46: return(parser.symbols_.LE_TIME_T); 
+case 46: return(parser.symbols_.LE_VOID); 
 break;
-case 47: return(parser.symbols_.LE_SIZE_T); 
+case 47: return(parser.symbols_.LE_VOLATILE); 
 break;
-case 48: return(parser.symbols_.LE_CLASS); 
+case 48: return(parser.symbols_.LE_WHILE); 
 break;
-case 49: return(parser.symbols_.LE_NAMESPACE); 
+case 49: return(parser.symbols_.LE_TIME_T); 
 break;
-case 50: return(parser.symbols_.LE_DELETE); 
+case 50: return(parser.symbols_.LE_SIZE_T); 
 break;
-case 51: return(parser.symbols_.LE_FRIEND); 
+case 51: return(parser.symbols_.LE_CLASS); 
 break;
-case 52: return(parser.symbols_.LE_INLINE); 
+case 52: return(parser.symbols_.LE_NAMESPACE); 
 break;
-case 53: return(parser.symbols_.LE_NEW); 
+case 53: return(parser.symbols_.LE_DELETE); 
 break;
-case 54: return(parser.symbols_.LE_OPERATOR); 
+case 54: return(parser.symbols_.LE_FRIEND); 
 break;
-case 55: return(parser.symbols_.LE_OVERLOAD); 
+case 55: return(parser.symbols_.LE_INLINE); 
 break;
-case 56: return(parser.symbols_.LE_PROTECTED); 
+case 56: return(parser.symbols_.LE_NEW); 
 break;
-case 57: return(parser.symbols_.LE_PRIVATE); 
+case 57: return(parser.symbols_.LE_OPERATOR); 
 break;
-case 58: return(parser.symbols_.LE_PUBLIC); 
+case 58: return(parser.symbols_.LE_OVERLOAD); 
 break;
-case 59: return(parser.symbols_.LE_THIS); 
+case 59: return(parser.symbols_.LE_PROTECTED); 
 break;
-case 60: return(parser.symbols_.LE_VIRTUAL); 
+case 60: return(parser.symbols_.LE_PRIVATE); 
 break;
-case 61: return(parser.symbols_.LE_TEMPLATE); 
+case 61: return(parser.symbols_.LE_PUBLIC); 
 break;
-case 62: return(parser.symbols_.LE_TYPENAME); 
+case 62: return(parser.symbols_.LE_THIS); 
 break;
-case 63: return(parser.symbols_.LE_DYNAMIC_CAST); 
+case 63: return(parser.symbols_.LE_VIRTUAL); 
 break;
-case 64: return(parser.symbols_.LE_STATIC_CAST); 
+case 64: return(parser.symbols_.LE_TEMPLATE); 
 break;
-case 65: return(parser.symbols_.LE_CONST_CAST); 
+case 65: return(parser.symbols_.LE_TYPENAME); 
 break;
-case 66: return(parser.symbols_.LE_REINTERPRET_CAST); 
+case 66: return(parser.symbols_.LE_DYNAMIC_CAST); 
 break;
-case 67: return(parser.symbols_.LE_USING); 
+case 67: return(parser.symbols_.LE_STATIC_CAST); 
 break;
-case 68: return(parser.symbols_.LE_THROW); 
+case 68: return(parser.symbols_.LE_CONST_CAST); 
 break;
-case 69: return(parser.symbols_.LE_CATCH); 
+case 69: return(parser.symbols_.LE_REINTERPRET_CAST); 
 break;
-case 70: return(parser.symbols_.LE_IDENTIFIER); 
+case 70: return(parser.symbols_.LE_USING); 
 break;
-case 71: return parser.symbols_.LE_INTEGERconstant; 
+case 71: return(parser.symbols_.LE_THROW); 
 break;
-case 72: return parser.symbols_.LE_OCTALconstant; 
+case 72: return(parser.symbols_.LE_CATCH); 
 break;
-case 73: return parser.symbols_.LE_HEXconstant; 
+case 73: return(parser.symbols_.LE_IDENTIFIER); 
 break;
-case 74: return parser.symbols_.LE_FLOATINGconstant; 
+case 74: return parser.symbols_.LE_INTEGERconstant; 
 break;
-case 75: return parser.symbols_.LE_CHARACTERconstant; 
+case 75: return parser.symbols_.LE_OCTALconstant; 
 break;
-case 76: return parser.symbols_.LE_STRINGliteral; 
+case 76: return parser.symbols_.LE_HEXconstant; 
 break;
-case 77: return(parser.symbols_.LE_ELLIPSIS); 
+case 77: return parser.symbols_.LE_FLOATINGconstant; 
 break;
-case 78: return(parser.symbols_.LE_RSassign); 
+case 78: return parser.symbols_.LE_CHARACTERconstant; 
 break;
-case 79: return(parser.symbols_.LE_LSassign); 
+case 79: return parser.symbols_.LE_STRINGliteral; 
 break;
-case 80: return(parser.symbols_.LE_PLUSassign); 
+case 80: return(parser.symbols_.LE_ELLIPSIS); 
 break;
-case 81: return(parser.symbols_.LE_MINUSassign); 
+case 81: return(parser.symbols_.LE_RSassign); 
 break;
-case 82: return(parser.symbols_.LE_MULTassign); 
+case 82: return(parser.symbols_.LE_LSassign); 
 break;
-case 83: return(parser.symbols_.LE_DIVassign); 
+case 83: return(parser.symbols_.LE_PLUSassign); 
 break;
-case 84: return(parser.symbols_.LE_MODassign); 
+case 84: return(parser.symbols_.LE_MINUSassign); 
 break;
-case 85: return(parser.symbols_.LE_ANDassign); 
+case 85: return(parser.symbols_.LE_MULTassign); 
 break;
-case 86: return(parser.symbols_.LE_ERassign); 
+case 86: return(parser.symbols_.LE_DIVassign); 
 break;
-case 87: return(parser.symbols_.LE_ORassign); 
+case 87: return(parser.symbols_.LE_MODassign); 
 break;
-case 88: return(parser.symbols_.LE_RS); 
+case 88: return(parser.symbols_.LE_ANDassign); 
 break;
-case 89: return(parser.symbols_.LE_LS); 
+case 89: return(parser.symbols_.LE_ERassign); 
 break;
-case 90: return(parser.symbols_.LE_ICR); 
+case 90: return(parser.symbols_.LE_ORassign); 
 break;
-case 91: return(parser.symbols_.LE_DECR); 
+case 91: return(parser.symbols_.LE_RS); 
 break;
-case 92: return(parser.symbols_.LE_ARROW); 
+case 92: return(parser.symbols_.LE_LS); 
 break;
-case 93: return(parser.symbols_.LE_ARROWstar); 
+case 93: return(parser.symbols_.LE_ICR); 
 break;
-case 94: return(parser.symbols_.LE_ANDAND); 
+case 94: return(parser.symbols_.LE_DECR); 
 break;
-case 95: return(parser.symbols_.LE_OROR); 
+case 95: return(parser.symbols_.LE_ARROW); 
 break;
-case 96: return(parser.symbols_.LE_LE); 
+case 96: return(parser.symbols_.LE_ARROWstar); 
 break;
-case 97: return(parser.symbols_.LE_GE); 
+case 97: return(parser.symbols_.LE_ANDAND); 
 break;
-case 98: return(parser.symbols_.LE_EQ); 
+case 98: return(parser.symbols_.LE_OROR); 
 break;
-case 99: return(parser.symbols_.LE_NE); 
+case 99: return(parser.symbols_.LE_LE); 
 break;
-case 100: return(parser.symbols_.LE_DOTstar); 
+case 100: return(parser.symbols_.LE_GE); 
 break;
-case 101: return(parser.symbols_.LE_CLCL); 
+case 101: return(parser.symbols_.LE_EQ); 
 break;
-case 102: return(';'); 
+case 102: return(parser.symbols_.LE_NE); 
 break;
-case 103: return(parser.symbols_.LE_LC); 
+case 103: return(parser.symbols_.LE_DOTstar); 
 break;
-case 104: return(parser.symbols_.LE_RC); 
+case 104: return(parser.symbols_.LE_CLCL); 
 break;
-case 105: return(','); 
+case 105: return(';'); 
 break;
-case 106: return(':'); 
+case 106: return(parser.symbols_.LE_LC); 
 break;
-case 107: return('='); 
+case 107: return(parser.symbols_.LE_RC); 
 break;
-case 108: return('('); 
+case 108: return(','); 
 break;
-case 109: return(')'); 
+case 109: return(':'); 
 break;
-case 110: return('['); 
+case 110: return('='); 
 break;
-case 111: return(']'); 
+case 111: return('('); 
 break;
-case 112: return('.'); 
+case 112: return(')'); 
 break;
-case 113: return('&'); 
+case 113: return('['); 
 break;
-case 114: return('!'); 
+case 114: return(']'); 
 break;
-case 115: return('~'); 
+case 115: return('.'); 
 break;
-case 116: return('-'); 
+case 116: return('&'); 
 break;
-case 117: return('+'); 
+case 117: return('!'); 
 break;
-case 118: return('*'); 
+case 118: return('~'); 
 break;
-case 119: return('/'); 
+case 119: return('-'); 
 break;
-case 120: return('%'); 
+case 120: return('+'); 
 break;
-case 121: return('<'); 
+case 121: return('*'); 
 break;
-case 122: return('>'); 
+case 122: return('/'); 
 break;
-case 123: return("^"); 
+case 123: return('%'); 
 break;
-case 124: return('|'); 
+case 124: return('<'); 
 break;
-case 125: return('?'); 
+case 125: return('>'); 
 break;
-case 126: this.begin("PREPR"); 
+case 126: return("^"); 
 break;
-case 127: this.begin("INITIAL"); 
+case 127: return('|'); 
 break;
-case 128: this.begin("WRAP_PREP"); 
+case 128: return('?'); 
 break;
-case 129: 
+case 129: this.begin("PREPR"); 
 break;
-case 130: this.begin("PREPR"); 
+case 130: this.begin("INITIAL"); 
 break;
-case 131: 
+case 131: this.begin("WRAP_PREP"); 
 break;
 case 132: 
 break;
-case 133: 
+case 133: this.begin("PREPR"); 
 break;
 case 134: 
 break;
+case 135: 
+break;
+case 136: 
+break;
+case 137: 
+break;
+case 138:this.begin("INITIAL");
+break;
+case 139:
+break;
+case 140:this.begin("INITIAL");
+break;
+case 141:
+break;
 }
 };
-lexer.rules = [/^(?:{SLASH}{SLASH}.*)/,/^(?:{SLASH}{STAR}({SLASH}|(.|([\n]))|{STAR}+(.|([\n])))*?{STAR}+{SLASH})/,/^(?:auto\b)/,/^(?:break\b)/,/^(?:case\b)/,/^(?:char\b)/,/^(?:const\b)/,/^(?:continue\b)/,/^(?:default\b)/,/^(?:define\b)/,/^(?:defined\b)/,/^(?:do\b)/,/^(?:double\b)/,/^(?:elif\b)/,/^(?:else\b)/,/^(?:endif\b)/,/^(?:error\b)/,/^(?:enum\b)/,/^(?:extern\b)/,/^(?:float\b)/,/^(?:for\b)/,/^(?:goto\b)/,/^(?:if\b)/,/^(?:ifdef\b)/,/^(?:ifndef\b)/,/^(?:include\b)/,/^(?:int\b)/,/^(?:line\b)/,/^(?:long\b)/,/^(?:bool\b)/,/^(?:pragma\b)/,/^(?:register\b)/,/^(?:return\b)/,/^(?:short\b)/,/^(?:signed\b)/,/^(?:sizeof\b)/,/^(?:static\b)/,/^(?:struct\b)/,/^(?:switch\b)/,/^(?:typedef\b)/,/^(?:undef\b)/,/^(?:union\b)/,/^(?:unsigned\b)/,/^(?:void\b)/,/^(?:volatile\b)/,/^(?:while\b)/,/^(?:time_t\b)/,/^(?:size_t\b)/,/^(?:class\b)/,/^(?:namespace\b)/,/^(?:delete\b)/,/^(?:friend\b)/,/^(?:inline\b)/,/^(?:new\b)/,/^(?:operator\b)/,/^(?:overload\b)/,/^(?:protected\b)/,/^(?:private\b)/,/^(?:public\b)/,/^(?:this\b)/,/^(?:virtual\b)/,/^(?:template\b)/,/^(?:typename\b)/,/^(?:dynamic_cast\b)/,/^(?:static_cast\b)/,/^(?:const_cast\b)/,/^(?:reinterpret_cast\b)/,/^(?:using\b)/,/^(?:throw\b)/,/^(?:catch\b)/,/^(?:([a-zA-Z_][0-9a-zA-Z_]*))/,/^(?:([1-9][0-9]*(([uU]?[lL]?)|([lL][uU]))))/,/^(?:(0[0-7]*(([uU]?[lL]?)|([lL][uU]))))/,/^(?:(0[xX][0-9a-fA-F]+(([uU]?[lL]?)|([lL][uU]))))/,/^(?:((((([0-9]*\.[0-9]+)|([0-9]+\.))([eE][-+]?[0-9]+)?)|([0-9]+([eE][-+]?[0-9]+)))[FfLl]?))/,/^(?:L?[']([^'\\\n]|([\\](([abfnrtv'"?\\])|([0-7]{1,3})|(x[0-9a-fA-F]+))))+['])/,/^(?:L?["]([^"\\\n]|([\\](([abfnrtv'"?\\])|([0-7]{1,3})|(x[0-9a-fA-F]+))))*["])/,/^(?:\.\.\.)/,/^(?:>>=)/,/^(?:<<=)/,/^(?:\+=)/,/^(?:-=)/,/^(?:\*=)/,/^(?:\/=)/,/^(?:%=)/,/^(?:&=)/,/^(?:\^=)/,/^(?:\|=)/,/^(?:>>)/,/^(?:<<)/,/^(?:\+\+)/,/^(?:--)/,/^(?:->)/,/^(?:->\*)/,/^(?:&&)/,/^(?:\|\|)/,/^(?:<=)/,/^(?:>=)/,/^(?:==)/,/^(?:!=)/,/^(?:\.\*)/,/^(?:::)/,/^(?:;)/,/^(?:\{)/,/^(?:\})/,/^(?:,)/,/^(?::)/,/^(?:=)/,/^(?:\()/,/^(?:\))/,/^(?:\[)/,/^(?:\])/,/^(?:\.)/,/^(?:&)/,/^(?:!)/,/^(?:~)/,/^(?:-)/,/^(?:\+)/,/^(?:\*)/,/^(?:\/)/,/^(?:%)/,/^(?:<)/,/^(?:>)/,/^(?:\^)/,/^(?:\|)/,/^(?:\?)/,/^(?:^#)/,/^(?:\n\b)/,/^(?:\\)/,/^(?:define\b)/,/^(?:\n\b)/,/^(?:([a-zA-Z_][0-9a-zA-Z_]*))/,/^(?:([a-zA-Z_][0-9a-zA-Z_]*))/,/^(?:.)/,/^(?:.)/];
-lexer.conditions = {"WRAP_PREP":{"rules":[130,131,133],"inclusive":false},"PREPR":{"rules":[127,128,129,132,134],"inclusive":false},"typedef_mode":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126],"inclusive":true},"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126],"inclusive":true}};
+lexer.rules = [/^(?:\/\*)/,/^(?:\/\/)/,/^(?:([ ]|([\011]))+)/,/^(?:(([\013])|([\015])|([\014]))+)/,/^(?:(([ ]|([\011]))|([\013])|([\015])|([\014]))*\\n\b)/,/^(?:auto\b)/,/^(?:break\b)/,/^(?:case\b)/,/^(?:char\b)/,/^(?:const\b)/,/^(?:continue\b)/,/^(?:default\b)/,/^(?:define\b)/,/^(?:defined\b)/,/^(?:do\b)/,/^(?:double\b)/,/^(?:elif\b)/,/^(?:else\b)/,/^(?:endif\b)/,/^(?:error\b)/,/^(?:enum\b)/,/^(?:extern\b)/,/^(?:float\b)/,/^(?:for\b)/,/^(?:goto\b)/,/^(?:if\b)/,/^(?:ifdef\b)/,/^(?:ifndef\b)/,/^(?:include\b)/,/^(?:int\b)/,/^(?:line\b)/,/^(?:long\b)/,/^(?:bool\b)/,/^(?:pragma\b)/,/^(?:register\b)/,/^(?:return\b)/,/^(?:short\b)/,/^(?:signed\b)/,/^(?:sizeof\b)/,/^(?:static\b)/,/^(?:struct\b)/,/^(?:switch\b)/,/^(?:typedef\b)/,/^(?:undef\b)/,/^(?:union\b)/,/^(?:unsigned\b)/,/^(?:void\b)/,/^(?:volatile\b)/,/^(?:while\b)/,/^(?:time_t\b)/,/^(?:size_t\b)/,/^(?:class\b)/,/^(?:namespace\b)/,/^(?:delete\b)/,/^(?:friend\b)/,/^(?:inline\b)/,/^(?:new\b)/,/^(?:operator\b)/,/^(?:overload\b)/,/^(?:protected\b)/,/^(?:private\b)/,/^(?:public\b)/,/^(?:this\b)/,/^(?:virtual\b)/,/^(?:template\b)/,/^(?:typename\b)/,/^(?:dynamic_cast\b)/,/^(?:static_cast\b)/,/^(?:const_cast\b)/,/^(?:reinterpret_cast\b)/,/^(?:using\b)/,/^(?:throw\b)/,/^(?:catch\b)/,/^(?:([a-zA-Z_][0-9a-zA-Z_]*))/,/^(?:([1-9][0-9]*(([uU]?[lL]?)|([lL][uU]))))/,/^(?:(0[0-7]*(([uU]?[lL]?)|([lL][uU]))))/,/^(?:(0[xX][0-9a-fA-F]+(([uU]?[lL]?)|([lL][uU]))))/,/^(?:((((([0-9]*\.[0-9]+)|([0-9]+\.))([eE][-+]?[0-9]+)?)|([0-9]+([eE][-+]?[0-9]+)))[FfLl]?))/,/^(?:L?[']([^'\\\n]|([\\](([abfnrtv'"?\\])|([0-7]{1,3})|(x[0-9a-fA-F]+))))+['])/,/^(?:L?["]([^"\\\n]|([\\](([abfnrtv'"?\\])|([0-7]{1,3})|(x[0-9a-fA-F]+))))*["])/,/^(?:\.\.\.)/,/^(?:>>=)/,/^(?:<<=)/,/^(?:\+=)/,/^(?:-=)/,/^(?:\*=)/,/^(?:\/=)/,/^(?:%=)/,/^(?:&=)/,/^(?:\^=)/,/^(?:\|=)/,/^(?:>>)/,/^(?:<<)/,/^(?:\+\+)/,/^(?:--)/,/^(?:->)/,/^(?:->\*)/,/^(?:&&)/,/^(?:\|\|)/,/^(?:<=)/,/^(?:>=)/,/^(?:==)/,/^(?:!=)/,/^(?:\.\*)/,/^(?:::)/,/^(?:;)/,/^(?:\{)/,/^(?:\})/,/^(?:,)/,/^(?::)/,/^(?:=)/,/^(?:\()/,/^(?:\))/,/^(?:\[)/,/^(?:\])/,/^(?:\.)/,/^(?:&)/,/^(?:!)/,/^(?:~)/,/^(?:-)/,/^(?:\+)/,/^(?:\*)/,/^(?:\/)/,/^(?:%)/,/^(?:<)/,/^(?:>)/,/^(?:\^)/,/^(?:\|)/,/^(?:\?)/,/^(?:^(([ ]|([\011])))*#)/,/^(?:\n\b)/,/^(?:\\)/,/^(?:define\b)/,/^(?:\n\b)/,/^(?:([a-zA-Z_][0-9a-zA-Z_]*))/,/^(?:([a-zA-Z_][0-9a-zA-Z_]*))/,/^(?:.)/,/^(?:.)/,/^(?:\n\b)/,/^(?:.)/,/^(?:\*\/)/,/^(?:.)/];
+lexer.conditions = {"C_COMMENT":{"rules":[140,141],"inclusive":false},"CPP_COMMENT":{"rules":[138,139],"inclusive":false},"WRAP_PREP":{"rules":[133,134,136],"inclusive":false},"PREPR":{"rules":[130,131,132,135,137],"inclusive":false},"typedef_mode":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129],"inclusive":true},"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129],"inclusive":true}};
+
+
+function isaTYPE(str) {
+	return g_symbols.hasOwnProperty(str);
+}
+
+function isignoredToken(str) {
+	if(g_ignoreList.hasOwnProperty(str)) {
+		return false;
+	} else {
+		return g_ignoreList[str] === "";
+	}
+}
+
+function isaMACRO(str) {
+	if(gs_useMacroIgnore) {
+		return g_macros.hasOwnProperty(str);
+	} else {
+		return false;
+	}
+}
+
+function setUseIgnoreMacros(ignore) {
+	gs_useMacroIgnore = ignore;
+};
 return lexer;})();
 parser.lexer = lexer;
 function Parser () { this.yy = {}; }Parser.prototype = parser;parser.Parser = Parser;
