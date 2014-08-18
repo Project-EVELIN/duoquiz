@@ -14,7 +14,6 @@
 %token <value> LE_CONTINUE        LE_FOR             LE_SIGNED          LE_VOID
 %token <value> LE_DEFAULT         LE_GOTO            LE_SIZEOF          LE_VOLATILE
 %token <value> LE_DO              LE_IF              LE_STATIC          LE_WHILE
-%token <value> LE_LC              LE_RC
 
 /* The following are used in C++ only.  ANSI C would call these IDENTIFIERs */
 %token <value> LE_NEW             LE_DELETE
@@ -52,30 +51,22 @@
 %token <value> LE_TEMPLATE
 %token <value> LE_TYPENAME
 
-/*************************************************************************/
-
 %start translation_unit
 
-/*************************************************************************/
-
 %%
-
-/*********************** CONSTANTS *********************************/
+/* Constants */
 constant:
-        LE_INTEGERconstant { $$ = '"' + this.$ + '"';}
-        | LE_FLOATINGconstant { $$ = '"' + this.$ + '"';}
-        | LE_OCTALconstant { $$ = '"' + this.$ + '"';}
-        | LE_HEXconstant { $$ = '"' + this.$ + '"';}
-        | LE_CHARACTERconstant { $$ = '"' + this.$ + '"';}
+        LE_INTEGERconstant {$$ = $1;}
+        | LE_FLOATINGconstant {$$ = $1;}
+        | LE_OCTALconstant {$$ = $1;}
+        | LE_HEXconstant {$$ = $1;}
+        | LE_CHARACTERconstant {$$ = $1;}
         ;
 
 string_literal_list:
-                LE_STRINGliteral
-                | string_literal_list LE_STRINGliteral
-                ;
-
-
-/************************* EXPRESSIONS ********************************/
+        LE_STRINGliteral {$$ = $1;}
+        | string_literal_list LE_STRINGliteral {$$ = $1.concat($2);}
+        ;
 
 paren_identifier_declarator:
         scope_opt_identifier
