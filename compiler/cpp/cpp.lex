@@ -127,157 +127,150 @@ horizontal_white [ ]|{h_tab}
 
 %%
 
-"/*" {
-			this.begin("C_COMMENT");
-     }
+"/*" {this.begin("C_COMMENT");}
 
-"//" {
-			this.begin("CPP_COMMENT");
-     }
+"//" {this.begin("CPP_COMMENT");}
 
-{horizontal_white}+     {
-			WHITE_RETURN(' ');
-			}
+{horizontal_white}+ {WHITE_RETURN(' ');}
 
-({v_tab}|{c_return}|{form_feed})+   {
-			WHITE_RETURN(' ');
-			}
+({v_tab}|{c_return}|{form_feed})+ {WHITE_RETURN(' ');}
 
-({horizontal_white}|{v_tab}|{c_return}|{form_feed})*"\n"   {
-			WHITE_RETURN('\n');
-			}
+({horizontal_white}|{v_tab}|{c_return}|{form_feed})*"\n" {WHITE_RETURN('\n');}
 
-"auto"      { return(parser.symbols_.LE_AUTO); }
-"break"			{ return(parser.symbols_.LE_BREAK); }
-"case"			{ return(parser.symbols_.LE_CASE); }
-"char"			{ return(parser.symbols_.LE_CHAR); }
-"const"			{ return(parser.symbols_.LE_CONST); }
-"continue"		{ return(parser.symbols_.LE_CONTINUE); }
-"default"   { return(parser.symbols_.LE_DEFAULT); }
-"define"   { return("define"); }
-"defined"		{ return("defined"); }
-"do"			{ return(parser.symbols_.LE_DO); }
-"double"    { return(parser.symbols_.LE_DOUBLE); }
-"elif"		{ return("elif"); }
-"else"      { return(parser.symbols_.LE_ELSE); }
+auto      { return(PA_KEYWORD_RETURN(parser.symbols_.LE_AUTO));}
+"break"			{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_BREAK));}
+"case"			{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_CASE));}
+"char"			{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_CHAR));}
+"const"			{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_CONST));}
+"continue"		{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_CONTINUE));}
+"default"   { return(PA_KEYWORD_RETURN(parser.symbols_.LE_DEFAULT));}
+"define"   { return("define");}
+"defined"		{ return("defined");}
+"do"			{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_DO));}
+"double"    { return(PA_KEYWORD_RETURN(parser.symbols_.LE_DOUBLE));}
+"elif"		{ return("elif");}
+"else"      { return(PPPA_KEYWORD_RETURN(parser.symbols_.LE_ELSE));}
 "endif"     { return("endif"); }
-"error"			{ return(parser.symbols_.LE_ERROR); }
-"enum"			{ return(parser.symbols_.LE_ENUM); }
-"extern"		{ return(parser.symbols_.LE_EXTERN); }
-"float"			{ return(parser.symbols_.LE_FLOAT); }
-"for"			{ return(parser.symbols_.LE_FOR); }
-"goto"			{ return(parser.symbols_.LE_GOTO); }
-"if"      { return(parser.symbols_.LE_IF); }
-"ifdef"      { return("ifdef"); }
-"ifndef"      { return("ifndef"); }
-"include"			{ return(parser.symbols_.LE_INCLUDE); }
-"int"				{ return(parser.symbols_.LE_INT); }
-"line"			{ return("line"); }
-"long"      { return(parser.symbols_.LE_LONG); }
-"bool"			{ return(parser.symbols_.LE_BOOL); }
-"pragma"    { return("pragma"); }
-"register"	{ return(parser.symbols_.LE_REGISTER); }
-"return"		{ return(parser.symbols_.LE_RETURN); }
-"short"			{ return(parser.symbols_.LE_SHORT); }
-"signed"		{ return(parser.symbols_.LE_SIGNED); }
-"sizeof"		{ return(parser.symbols_.LE_SIZEOF); }
-"static"		{ return(parser.symbols_.LE_STATIC); }
-"struct"		{ return(parser.symbols_.LE_STRUCT); }
-"switch"		{ return(parser.symbols_.LE_SWITCH); }
-"typedef"   { return(parser.symbols_.LE_TYPEDEF); }
-"undef"		  { return("undef"); }
-"union" 		{ return(parser.symbols_.LE_UNION); }
-"unsigned"		{ return(parser.symbols_.LE_UNSIGNED); }
-"void"			{ return(parser.symbols_.LE_VOID); }
-"volatile"		{ return(parser.symbols_.LE_VOLATILE); }
-"while"     { return(parser.symbols_.LE_WHILE); }
-"time_t"     { return(parser.symbols_.LE_TIME_T); }
-"size_t"			{ return(parser.symbols_.LE_SIZE_T); }
+"error"			{ return(PP_KEYWORD_RETURN(parser.symbols_.LE_ERROR));}
+"enum"			{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_ENUM));}
+"extern"		{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_EXTERN));}
+"float"			{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_FLOAT));}
+"for"			{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_FOR));}
+"goto"			{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_GOTO));}
+"if"      { return(PPPA_KEYWORD_RETURN(parser.symbols_.LE_IF));}
+"ifdef"      { return("ifdef");}
+"ifndef"      { return("ifndef");}
+"include"			{ return(PP_KEYWORD_RETURN(parser.symbols_.LE_INCLUDE));}
+"int"				{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_INT));}
+"line"			{ return("line");}
+"long"      { return(PA_KEYWORD_RETURN(parser.symbols_.LE_LONG));}
+"bool"			{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_BOOL));}
+"pragma"    { return("pragma");}
+"register"	{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_REGISTER));}
+"return"		{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_RETURN));}
+"short"			{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_SHORT));}
+"signed"		{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_SIGNED));}
+"sizeof"		{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_SIZEOF));}
+"static"		{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_STATIC));}
+"struct"		{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_STRUCT));}
+"switch"		{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_SWITCH));}
+"typedef"   { return(PA_KEYWORD_RETURN(parser.symbols_.LE_TYPEDEF));}
+"undef"		  { return("undef");}
+"union" 		{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_UNION));}
+"unsigned"		{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_UNSIGNED));}
+"void"			{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_VOID));}
+"volatile"		{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_VOLATILE));}
+"while"     { return(PA_KEYWORD_RETURN(parser.symbols_.LE_WHILE));}
+"time_t"    {PA_KEYWORD_RETURN("time_t");}
+"size_t"    {PA_KEYWORD_RETURN("size_t");}
 
-"class"      { return(parser.symbols_.LE_CLASS); }
-"namespace"  { return(parser.symbols_.LE_NAMESPACE); }
-"delete"     { return(parser.symbols_.LE_DELETE); }
-"friend"     { return(parser.symbols_.LE_FRIEND); }
-"inline"     { return(parser.symbols_.LE_INLINE); }
-"new"        { return(parser.symbols_.LE_NEW); }
-"operator"   { return(parser.symbols_.LE_OPERATOR); }
-"overload"     { return(parser.symbols_.LE_OVERLOAD); }
-"protected"     { return(parser.symbols_.LE_PROTECTED); }
-"private"     { return(parser.symbols_.LE_PRIVATE); }
-"public"     { return(parser.symbols_.LE_PUBLIC); }
-"this"     { return(parser.symbols_.LE_THIS); }
-"virtual"     { return(parser.symbols_.LE_VIRTUAL); }
-"template"     { return(parser.symbols_.LE_TEMPLATE); }
-"typename"     { return(parser.symbols_.LE_TYPENAME); }
-"dynamic_cast"     { return(parser.symbols_.LE_DYNAMIC_CAST); }
-"static_cast"     { return(parser.symbols_.LE_STATIC_CAST); }
-"const_cast"     { return(parser.symbols_.LE_CONST_CAST); }
-"reinterpret_cast"     { return(parser.symbols_.LE_REINTERPRET_CAST); }
-"using"     { return(parser.symbols_.LE_USING); }
-"throw"     { return(parser.symbols_.LE_THROW); }
-"catch"     { return(parser.symbols_.LE_CATCH); }
+"class"      { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_CLASS));}
+"namespace"  { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_NAMESPACE));}
+"delete"     { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_DELETE));}
+"friend"     { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_FRIEND));}
+"inline"     { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_INLINE));}
+"new"        { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_NEW));}
+"operator"   { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_OPERATOR));}
+"overload"     { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_OVERLOAD));}
+"protected"     { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_PROTECTED));}
+"private"     { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_PRIVATE));}
+"public"     { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_PUBLIC));}
+"this"     { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_THIS));}
+"virtual"     { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_VIRTUAL));}
+"template"     { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_TEMPLATE));}
+"typename"     { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_TYPENAME));}
+"dynamic_cast"     {return(CPP_KEYWORD_RETURN(parser.symbols_.LE_DYNAMIC_CAST));}
+"static_cast"     {return(CPP_KEYWORD_RETURN(parser.symbols_.LE_STATIC_CAST));}
+"const_cast"     {return(CPP_KEYWORD_RETURN(parser.symbols_.LE_CONST_CAST));}
+"reinterpret_cast"     {return(CPP_KEYWORD_RETURN(parser.symbols_.LE_REINTERPRET_CAST));}
+"using"     {return(CPP_KEYWORD_RETURN(parser.symbols_.LE_USING));}
+"throw"     {return(CPP_KEYWORD_RETURN(parser.symbols_.LE_THROW));}
+"catch"     {return(CPP_KEYWORD_RETURN(parser.symbols_.LE_CATCH));}
+"__declspec"     {return(CPP_KEYWORD_RETURN("__declspec"));}
+"dllimport"     {return(CPP_KEYWORD_RETURN("dllimport"));}
+"dllexport"     {return(CPP_KEYWORD_RETURN("dllexport"));}
 
-{identifier} { return(parser.symbols_.LE_IDENTIFIER); }
+{identifier} { return(IDENTIFIER_RETURN());}
 
-{decimal_constant}  { return parser.symbols_.LE_INTEGERconstant; }
-{octal_constant}    { return parser.symbols_.LE_OCTALconstant; }
-{hex_constant}      { return parser.symbols_.LE_HEXconstant; }
-{floating_constant} { return parser.symbols_.LE_FLOATINGconstant; }
+{decimal_constant}  {return parser.symbols_.LE_INTEGERconstant;}
+{octal_constant}    {return parser.symbols_.LE_OCTALconstant;}
+{hex_constant}      {return parser.symbols_.LE_HEXconstant;}
+{floating_constant} {return parser.symbols_.LE_FLOATINGconstant;}
 
-"L"?[']{c_char}+[']     { return parser.symbols_.LE_CHARACTERconstant; }
+"L"?[']{c_char}+[']     {return parser.symbols_.LE_CHARACTERconstant;}
 
 
-"L"?["]{s_char}*["]     { return parser.symbols_.LE_STRINGliteral; }
+"L"?["]{s_char}*["]     {return parser.symbols_.LE_STRINGliteral;}
 
-"..."			{ return(parser.symbols_.LE_ELLIPSIS); }
-">>="			{ return(parser.symbols_.LE_RSassign); }
-"<<="			{ return(parser.symbols_.LE_LSassign); }
-"+="			{ return(parser.symbols_.LE_PLUSassign); }
-"-="			{ return(parser.symbols_.LE_MINUSassign); }
-"*="			{ return(parser.symbols_.LE_MULTassign); }
-"/="			{ return(parser.symbols_.LE_DIVassign); }
-"%="			{ return(parser.symbols_.LE_MODassign); }
-"&="			{ return(parser.symbols_.LE_ANDassign); }
-"^="			{ return(parser.symbols_.LE_ERassign); }
-"|="			{ return(parser.symbols_.LE_ORassign); }
-">>"			{ return(parser.symbols_.LE_RS); }
-"<<"			{ return(parser.symbols_.LE_LS); }
-"++"			{ return(parser.symbols_.LE_ICR); }
-"--"			{ return(parser.symbols_.LE_DECR); }
-"->"      { return(parser.symbols_.LE_ARROW); }
-"->*"			{ return(parser.symbols_.LE_ARROWstar); }
-"&&"			{ return(parser.symbols_.LE_ANDAND); }
-"||"			{ return(parser.symbols_.LE_OROR); }
-"<="			{ return(parser.symbols_.LE_LE); }
-">="			{ return(parser.symbols_.LE_GE); }
-"=="			{ return(parser.symbols_.LE_EQ); }
-"!="			{ return(parser.symbols_.LE_NE); }
-".*"			{ return(parser.symbols_.LE_DOTstar); }
-"::"			{ return(parser.symbols_.LE_CLCL); }
-";"			{ return(';'); }
-"{"			{ return(parser.symbols_.LE_LC); }
-"}"			{ return(parser.symbols_.LE_RC); }
-","			{ return(','); }
-":"			{ return(':'); }
-"="			{ return('='); }
-"("			{ return('('); }
-")"			{ return(')'); }
-"["			{ return('['); }
-"]"			{ return(']'); }
-"."			{ return('.'); }
-"&"			{ return('&'); }
-"!"			{ return('!'); }
-"~"			{ return('~'); }
-"-"			{ return('-'); }
-"+"			{ return('+'); }
-"*"			{ return('*'); }
-"/"			{ return('/'); }
-"%"			{ return('%'); }
-"<"			{ return('<'); }
-">"			{ return('>'); }
-"^"			{ return("^"); }
-"|"			{ return('|'); }
-"?"			{ return('?'); }
+"..."			{ return(NAMEDOP_RETURN(parser.symbols_.LE_ELLIPSIS));}
+">>="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_RSassign));}
+"<<="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_LSassign));}
+"+="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_PLUSassign));}
+"-="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_MINUSassign));}
+"*="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_MULTassign));}
+"/="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_DIVassign));}
+"%="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_MODassign));}
+"&="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_ANDassign));}
+"^="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_ERassign));}
+"|="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_ORassign));}
+">>"			{ return(NAMEDOP_RETURN(parser.symbols_.LE_RS));}
+"<<"			{ return(NAMEDOP_RETURN(parser.symbols_.LE_LS));}
+"++"			{ return(NAMEDOP_RETURN(parser.symbols_.LE_ICR));}
+"--"			{ return(NAMEDOP_RETURN(parser.symbols_.LE_DECR));}
+"->"      { return(NAMEDOP_RETURN(parser.symbols_.LE_ARROW));}
+"->*"			{ return(NAMEDOP_RETURN(parser.symbols_.LE_ARROWstar));}
+"&&"			{ return(NAMEDOP_RETURN(parser.symbols_.LE_ANDAND));}
+"||"			{ return(NAMEDOP_RETURN(parser.symbols_.LE_OROR));}
+"<="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_LE));}
+">="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_GE));}
+"=="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_EQ));}
+"!="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_NE));}
+".*"			{ return(NAMEDOP_RETURN(parser.symbols_.LE_DOTstar));}
+"::"			{ return(NAMEDOP_RETURN(parser.symbols_.LE_CLCL));}
+";"			{ return(ASCIIOP_RETURN(';'));}
+"{"			{ return(ASCIIOP_RETURN(parser.symbols_.LE_LC));}
+"}"			{ return(ASCIIOP_RETURN(parser.symbols_.LE_RC));}
+","			{ return(PPOP_RETURN(','));}
+":"			{ return(ASCIIOP_RETURN(':'));}
+"="			{ return(ASCIIOP_RETURN('='));}
+"("			{ return(PPOP_RETURN('('));}
+")"			{ return(PPOP_RETURN(')'));}
+"["			{ return(ASCIIOP_RETURN('['));}
+"]"			{ return(ASCIIOP_RETURN(']'));}
+"."			{ return(ASCIIOP_RETURN('.'));}
+"&"			{ return(ASCIIOP_RETURN('&'));}
+"!"			{ return(ASCIIOP_RETURN('!'));}
+"~"			{ return(ASCIIOP_RETURN('~'));}
+"-"			{ return(ASCIIOP_RETURN('-'));}
+"+"			{ return(ASCIIOP_RETURN('+'));}
+"*"			{ return(ASCIIOP_RETURN('*'));}
+"/"			{ return(ASCIIOP_RETURN('/'));}
+"%"			{ return(ASCIIOP_RETURN('%'));}
+"<"			{ return(ASCIIOP_RETURN('<'));}
+">"			{ return(ASCIIOP_RETURN('>'));}
+"^"			{ return(ASCIIOP_RETURN("^"));}
+"|"			{ return(ASCIIOP_RETURN('|'));}
+"?"			{ return(ASCIIOP_RETURN('?'));}
 ^({horizontal_white})*"#"		{ this.begin("PREPR"); }
 
 <PREPR>\n		{ this.begin("INITIAL"); }
