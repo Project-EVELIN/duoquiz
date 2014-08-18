@@ -9,9 +9,29 @@
 	var g_symbols = {};
 	var g_macros = {};
 	var g_ignoreList = {};
-	var gs_useMacroIgnore = true;
+	var gs_useMacroIgnore = false;
 
 	var defineFound = false;
+
+	function isaTYPE(str) {
+	return g_symbols.hasOwnProperty(str);
+	}
+
+	function isignoredToken(str) {
+		if(g_ignoreList.hasOwnProperty(str)) {
+			return false;
+		} else {
+			return g_ignoreList[str] === "";
+		}
+	}
+
+	function isaMACRO(str) {
+		if(gs_useMacroIgnore) {
+			return g_macros.hasOwnProperty(str);
+		} else {
+			return false;
+		}
+	}
 
 	/* do nothing */
 	function WHITE_RETURN(x) {};
@@ -248,8 +268,8 @@ auto      { return(PA_KEYWORD_RETURN(parser.symbols_.LE_AUTO));}
 ".*"			{ return(NAMEDOP_RETURN(parser.symbols_.LE_DOTstar));}
 "::"			{ return(NAMEDOP_RETURN(parser.symbols_.LE_CLCL));}
 ";"			{ return(ASCIIOP_RETURN(';'));}
-"{"			{ return(ASCIIOP_RETURN(parser.symbols_.LE_LC));}
-"}"			{ return(ASCIIOP_RETURN(parser.symbols_.LE_RC));}
+"{"			%{ return(ASCIIOP_RETURN("{"));%}
+"}"			%{ return(ASCIIOP_RETURN("}"));%}
 ","			{ return(PPOP_RETURN(','));}
 ":"			{ return(ASCIIOP_RETURN(':'));}
 "="			{ return(ASCIIOP_RETURN('='));}
@@ -275,7 +295,7 @@ auto      { return(PA_KEYWORD_RETURN(parser.symbols_.LE_AUTO));}
 
 <PREPR>\n		{ this.begin("INITIAL");}
 <PREPR>\\		{ this.begin("WRAP_PREP");}
-<PREPR>define	{}
+<PREPR>define	{return("define");}
 <WRAP_PREP>\n	{ this.begin("PREPR");}
 <WRAP_PREP>{identifier} {}
 <PREPR>{identifier} {}
@@ -286,27 +306,3 @@ auto      { return(PA_KEYWORD_RETURN(parser.symbols_.LE_AUTO));}
 <C_COMMENT>"*/" 	{this.begin("INITIAL");}
 <C_COMMENT>.	  	{}
 %%
-
-function isaTYPE(str) {
-	return g_symbols.hasOwnProperty(str);
-}
-
-function isignoredToken(str) {
-	if(g_ignoreList.hasOwnProperty(str)) {
-		return false;
-	} else {
-		return g_ignoreList[str] === "";
-	}
-}
-
-function isaMACRO(str) {
-	if(gs_useMacroIgnore) {
-		return g_macros.hasOwnProperty(str);
-	} else {
-		return false;
-	}
-}
-
-function setUseIgnoreMacros(ignore) {
-	gs_useMacroIgnore = ignore;
-}

@@ -598,9 +598,29 @@ lexer.performAction = function anonymous(yy,yy_,$avoiding_name_collisions,YY_STA
 	var g_symbols = {};
 	var g_macros = {};
 	var g_ignoreList = {};
-	var gs_useMacroIgnore = true;
+	var gs_useMacroIgnore = false;
 
 	var defineFound = false;
+
+	function isaTYPE(str) {
+	return g_symbols.hasOwnProperty(str);
+	}
+
+	function isignoredToken(str) {
+		if(g_ignoreList.hasOwnProperty(str)) {
+			return false;
+		} else {
+			return g_ignoreList[str] === "";
+		}
+	}
+
+	function isaMACRO(str) {
+		if(gs_useMacroIgnore) {
+			return g_macros.hasOwnProperty(str);
+		} else {
+			return false;
+		}
+	}
 
 	/* do nothing */
 	function WHITE_RETURN(x) {};
@@ -898,9 +918,9 @@ case 107: return(NAMEDOP_RETURN(parser.symbols_.LE_CLCL));
 break;
 case 108: return(ASCIIOP_RETURN(';'));
 break;
-case 109: return(ASCIIOP_RETURN(parser.symbols_.LE_LC));
+case 109: return(ASCIIOP_RETURN("{"));
 break;
-case 110: return(ASCIIOP_RETURN(parser.symbols_.LE_RC));
+case 110: return(ASCIIOP_RETURN("}"));
 break;
 case 111: return(PPOP_RETURN(','));
 break;
@@ -950,7 +970,7 @@ case 133: this.begin("INITIAL");
 break;
 case 134: this.begin("WRAP_PREP");
 break;
-case 135:
+case 135:return("define");
 break;
 case 136: this.begin("PREPR");
 break;
@@ -974,31 +994,6 @@ break;
 };
 lexer.rules = [/^(?:\/\*)/,/^(?:\/\/)/,/^(?:([ ]|([\011]))+)/,/^(?:(([\013])|([\015])|([\014]))+)/,/^(?:(([ ]|([\011]))|([\013])|([\015])|([\014]))*\\n\b)/,/^(?:auto\b)/,/^(?:break\b)/,/^(?:case\b)/,/^(?:char\b)/,/^(?:const\b)/,/^(?:continue\b)/,/^(?:default\b)/,/^(?:define\b)/,/^(?:defined\b)/,/^(?:do\b)/,/^(?:double\b)/,/^(?:elif\b)/,/^(?:else\b)/,/^(?:endif\b)/,/^(?:error\b)/,/^(?:enum\b)/,/^(?:extern\b)/,/^(?:float\b)/,/^(?:for\b)/,/^(?:goto\b)/,/^(?:if\b)/,/^(?:ifdef\b)/,/^(?:ifndef\b)/,/^(?:include\b)/,/^(?:int\b)/,/^(?:line\b)/,/^(?:long\b)/,/^(?:bool\b)/,/^(?:pragma\b)/,/^(?:register\b)/,/^(?:return\b)/,/^(?:short\b)/,/^(?:signed\b)/,/^(?:sizeof\b)/,/^(?:static\b)/,/^(?:struct\b)/,/^(?:switch\b)/,/^(?:typedef\b)/,/^(?:undef\b)/,/^(?:union\b)/,/^(?:unsigned\b)/,/^(?:void\b)/,/^(?:volatile\b)/,/^(?:while\b)/,/^(?:time_t\b)/,/^(?:size_t\b)/,/^(?:class\b)/,/^(?:namespace\b)/,/^(?:delete\b)/,/^(?:friend\b)/,/^(?:inline\b)/,/^(?:new\b)/,/^(?:operator\b)/,/^(?:overload\b)/,/^(?:protected\b)/,/^(?:private\b)/,/^(?:public\b)/,/^(?:this\b)/,/^(?:virtual\b)/,/^(?:template\b)/,/^(?:typename\b)/,/^(?:dynamic_cast\b)/,/^(?:static_cast\b)/,/^(?:const_cast\b)/,/^(?:reinterpret_cast\b)/,/^(?:using\b)/,/^(?:throw\b)/,/^(?:catch\b)/,/^(?:__declspec\b)/,/^(?:dllimport\b)/,/^(?:dllexport\b)/,/^(?:([a-zA-Z_][0-9a-zA-Z_]*))/,/^(?:([1-9][0-9]*(([uU]?[lL]?)|([lL][uU]))))/,/^(?:(0[0-7]*(([uU]?[lL]?)|([lL][uU]))))/,/^(?:(0[xX][0-9a-fA-F]+(([uU]?[lL]?)|([lL][uU]))))/,/^(?:((((([0-9]*\.[0-9]+)|([0-9]+\.))([eE][-+]?[0-9]+)?)|([0-9]+([eE][-+]?[0-9]+)))[FfLl]?))/,/^(?:L?[']([^'\\\n]|([\\](([abfnrtv'"?\\])|([0-7]{1,3})|(x[0-9a-fA-F]+))))+['])/,/^(?:L?["]([^"\\\n]|([\\](([abfnrtv'"?\\])|([0-7]{1,3})|(x[0-9a-fA-F]+))))*["])/,/^(?:\.\.\.)/,/^(?:>>=)/,/^(?:<<=)/,/^(?:\+=)/,/^(?:-=)/,/^(?:\*=)/,/^(?:\/=)/,/^(?:%=)/,/^(?:&=)/,/^(?:\^=)/,/^(?:\|=)/,/^(?:>>)/,/^(?:<<)/,/^(?:\+\+)/,/^(?:--)/,/^(?:->)/,/^(?:->\*)/,/^(?:&&)/,/^(?:\|\|)/,/^(?:<=)/,/^(?:>=)/,/^(?:==)/,/^(?:!=)/,/^(?:\.\*)/,/^(?:::)/,/^(?:;)/,/^(?:\{)/,/^(?:\})/,/^(?:,)/,/^(?::)/,/^(?:=)/,/^(?:\()/,/^(?:\))/,/^(?:\[)/,/^(?:\])/,/^(?:\.)/,/^(?:&)/,/^(?:!)/,/^(?:~)/,/^(?:-)/,/^(?:\+)/,/^(?:\*)/,/^(?:\/)/,/^(?:%)/,/^(?:<)/,/^(?:>)/,/^(?:\^)/,/^(?:\|)/,/^(?:\?)/,/^(?:^(([ ]|([\011])))*#)/,/^(?:\n\b)/,/^(?:\\)/,/^(?:define\b)/,/^(?:\n\b)/,/^(?:([a-zA-Z_][0-9a-zA-Z_]*))/,/^(?:([a-zA-Z_][0-9a-zA-Z_]*))/,/^(?:.)/,/^(?:.)/,/^(?:\n\b)/,/^(?:.)/,/^(?:\*\/)/,/^(?:.)/];
 lexer.conditions = {"C_COMMENT":{"rules":[143,144],"inclusive":false},"CPP_COMMENT":{"rules":[141,142],"inclusive":false},"WRAP_PREP":{"rules":[136,137,139],"inclusive":false},"PREPR":{"rules":[133,134,135,138,140],"inclusive":false},"typedef_mode":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132],"inclusive":true},"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132],"inclusive":true}};
-
-
-function isaTYPE(str) {
-	return g_symbols.hasOwnProperty(str);
-}
-
-function isignoredToken(str) {
-	if(g_ignoreList.hasOwnProperty(str)) {
-		return false;
-	} else {
-		return g_ignoreList[str] === "";
-	}
-}
-
-function isaMACRO(str) {
-	if(gs_useMacroIgnore) {
-		return g_macros.hasOwnProperty(str);
-	} else {
-		return false;
-	}
-}
-
-function setUseIgnoreMacros(ignore) {
-	gs_useMacroIgnore = ignore;
-};
 return lexer;})();
 parser.lexer = lexer;
 function Parser () { this.yy = {}; }Parser.prototype = parser;parser.Parser = Parser;
