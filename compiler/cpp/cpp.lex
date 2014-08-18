@@ -150,7 +150,7 @@ auto      { return(PA_KEYWORD_RETURN(parser.symbols_.LE_AUTO));}
 "double"    { return(PA_KEYWORD_RETURN(parser.symbols_.LE_DOUBLE));}
 "elif"		{ return("elif");}
 "else"      { return(PPPA_KEYWORD_RETURN(parser.symbols_.LE_ELSE));}
-"endif"     { return("endif"); }
+"endif"     { return("endif");}
 "error"			{ return(PP_KEYWORD_RETURN(parser.symbols_.LE_ERROR));}
 "enum"			{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_ENUM));}
 "extern"		{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_EXTERN));}
@@ -271,16 +271,16 @@ auto      { return(PA_KEYWORD_RETURN(parser.symbols_.LE_AUTO));}
 "^"			{ return(ASCIIOP_RETURN("^"));}
 "|"			{ return(ASCIIOP_RETURN('|'));}
 "?"			{ return(ASCIIOP_RETURN('?'));}
-^({horizontal_white})*"#"		{ this.begin("PREPR"); }
+^({horizontal_white})*"#"		{ this.begin("PREPR");}
 
-<PREPR>\n		{ this.begin("INITIAL"); }
-<PREPR>\\		{ this.begin("WRAP_PREP"); }
-<PREPR>define	{ }
-<WRAP_PREP>\n	{ this.begin("PREPR"); }
-<WRAP_PREP>{identifier}  { }
-<PREPR>{identifier} { }
-<WRAP_PREP>.	{ }
-<PREPR>.			{ }
+<PREPR>\n		{ this.begin("INITIAL");}
+<PREPR>\\		{ this.begin("WRAP_PREP");}
+<PREPR>define	{}
+<WRAP_PREP>\n	{ this.begin("PREPR");}
+<WRAP_PREP>{identifier} {}
+<PREPR>{identifier} {}
+<WRAP_PREP>.	{}
+<PREPR>.			{}
 <CPP_COMMENT>\n 	{this.begin("INITIAL");}
 <CPP_COMMENT>.	 	{}
 <C_COMMENT>"*/" 	{this.begin("INITIAL");}

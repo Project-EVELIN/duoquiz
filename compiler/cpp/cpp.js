@@ -716,7 +716,7 @@ case 16: return("elif");
 break;
 case 17: return(PPPA_KEYWORD_RETURN(parser.symbols_.LE_ELSE));
 break;
-case 18: return("endif"); 
+case 18: return("endif");
 break;
 case 19: return(PP_KEYWORD_RETURN(parser.symbols_.LE_ERROR));
 break;
@@ -944,23 +944,23 @@ case 130: return(ASCIIOP_RETURN('|'));
 break;
 case 131: return(ASCIIOP_RETURN('?'));
 break;
-case 132: this.begin("PREPR"); 
+case 132: this.begin("PREPR");
 break;
-case 133: this.begin("INITIAL"); 
+case 133: this.begin("INITIAL");
 break;
-case 134: this.begin("WRAP_PREP"); 
+case 134: this.begin("WRAP_PREP");
 break;
-case 135: 
+case 135:
 break;
-case 136: this.begin("PREPR"); 
+case 136: this.begin("PREPR");
 break;
-case 137: 
+case 137:
 break;
-case 138: 
+case 138:
 break;
-case 139: 
+case 139:
 break;
-case 140: 
+case 140:
 break;
 case 141:this.begin("INITIAL");
 break;
