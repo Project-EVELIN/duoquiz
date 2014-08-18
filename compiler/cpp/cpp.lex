@@ -66,7 +66,7 @@
 		return PA_KEYWORD_RETURN(x);
 	}
 
-	/* both PreProcessor and PArser keyword */
+	/* both PreProcessor and Parser keyword */
 	function PPPA_KEYWORD_RETURN(x) {
 		return RETURN_VAL(x);
 	}
@@ -77,7 +77,7 @@
 
 	/* PreProcess and Parser operator */
 	function PPOP_RETURN(x) {
-		return RETURN_VAL(yytext);
+		return RETURN_VAL(x);
 	}
 
 	function NAMED_PPOP_RETURN(x) {
@@ -157,35 +157,35 @@ horizontal_white [ ]|{h_tab}
 
 ({horizontal_white}|{v_tab}|{c_return}|{form_feed})*"\n" {WHITE_RETURN('\n');}
 
-auto      { return(PA_KEYWORD_RETURN(parser.symbols_.AUTO));}
+auto        { return(PA_KEYWORD_RETURN(parser.symbols_.AUTO));}
 "break"			{ return(PA_KEYWORD_RETURN(parser.symbols_.BREAK));}
 "case"			{ return(PA_KEYWORD_RETURN(parser.symbols_.CASE));}
 "char"			{ return(PA_KEYWORD_RETURN(parser.symbols_.CHAR));}
 "const"			{ return(PA_KEYWORD_RETURN(parser.symbols_.CONST));}
-"continue"		{ return(PA_KEYWORD_RETURN(parser.symbols_.CONTINUE));}
+"continue"	{ return(PA_KEYWORD_RETURN(parser.symbols_.CONTINUE));}
 "default"   { return(PA_KEYWORD_RETURN(parser.symbols_.DEFAULT));}
-"define"   { return("define");}
-"defined"		{ return("defined");}
-"do"			{ return(PA_KEYWORD_RETURN(parser.symbols_.DO));}
+"define"    { return(PPOP_RETURN(parser.symbols_.PP_DEFINE));}
+"defined"		{ return(PPOP_RETURN(parser.symbols_.PP_DEFINED));}
+"do"			  { return(PA_KEYWORD_RETURN(parser.symbols_.DO));}
 "double"    { return(PA_KEYWORD_RETURN(parser.symbols_.DOUBLE));}
-"elif"		{ return("elif");}
+"elif"		  { return(PPOP_RETURN(parser.symbols_.PP_ELIF));}
 "else"      { return(PPPA_KEYWORD_RETURN(parser.symbols_.ELSE));}
-"endif"     { return("endif");}
+"endif"     { return(PPOP_RETURN(parser.symbols_.PP_ENDIF));}
 "error"			{ return(PP_KEYWORD_RETURN(parser.symbols_.ERROR));}
 "enum"			{ return(PA_KEYWORD_RETURN(parser.symbols_.ENUM));}
 "extern"		{ return(PA_KEYWORD_RETURN(parser.symbols_.EXTERN));}
 "float"			{ return(PA_KEYWORD_RETURN(parser.symbols_.FLOAT));}
-"for"			{ return(PA_KEYWORD_RETURN(parser.symbols_.FOR));}
+"for"			  { return(PA_KEYWORD_RETURN(parser.symbols_.FOR));}
 "goto"			{ return(PA_KEYWORD_RETURN(parser.symbols_.GOTO));}
-"if"      { return(PPPA_KEYWORD_RETURN(parser.symbols_.IF));}
-"ifdef"      { return("ifdef");}
-"ifndef"      { return("ifndef");}
-"include"			{ return(PP_KEYWORD_RETURN(parser.symbols_.INCLUDE));}
+"if"        { return(PPPA_KEYWORD_RETURN(parser.symbols_.IF));}
+"ifdef"     { return(PPOP_RETURN(parser.symbols_.PP_IFDEF));}
+"ifndef"    { return(PPOP_RETURN(parser.symbols_.PP_IFNDEF));}
+"include"		{ return(PPOP_RETURN(parser.symbols_.PP_INCLUDE));}
 "int"				{ return(PA_KEYWORD_RETURN(parser.symbols_.INT));}
-"line"			{ return("line");}
+"line"			{ return(PPOP_RETURN(parser.symbols_.PP_LINE));}
 "long"      { return(PA_KEYWORD_RETURN(parser.symbols_.LONG));}
 "bool"			{ return(PA_KEYWORD_RETURN(parser.symbols_.BOOL));}
-"pragma"    { return("pragma");}
+"pragma"    { return(PPOP_RETURN(parser.symbols_.PP_PRAGMA));}
 "register"	{ return(PA_KEYWORD_RETURN(parser.symbols_.REGISTER));}
 "return"		{ return(PA_KEYWORD_RETURN(parser.symbols_.RETURN));}
 "short"			{ return(PA_KEYWORD_RETURN(parser.symbols_.SHORT));}
@@ -195,11 +195,11 @@ auto      { return(PA_KEYWORD_RETURN(parser.symbols_.AUTO));}
 "struct"		{ return(PA_KEYWORD_RETURN(parser.symbols_.STRUCT));}
 "switch"		{ return(PA_KEYWORD_RETURN(parser.symbols_.SWITCH));}
 "typedef"   { return(PA_KEYWORD_RETURN(parser.symbols_.TYPEDEF));}
-"undef"		  { return("undef");}
+"undef"		  { return(PPOP_RETURN(parser.symbols_.PP_UNDEF));}
 "union" 		{ return(PA_KEYWORD_RETURN(parser.symbols_.UNION));}
-"unsigned"		{ return(PA_KEYWORD_RETURN(parser.symbols_.UNSIGNED));}
+"unsigned"	{ return(PA_KEYWORD_RETURN(parser.symbols_.UNSIGNED));}
 "void"			{ return(PA_KEYWORD_RETURN(parser.symbols_.VOID));}
-"volatile"		{ return(PA_KEYWORD_RETURN(parser.symbols_.VOLATILE));}
+"volatile"	{ return(PA_KEYWORD_RETURN(parser.symbols_.VOLATILE));}
 "while"     { return(PA_KEYWORD_RETURN(parser.symbols_.WHILE));}
 "time_t"    {PA_KEYWORD_RETURN("time_t");}
 "size_t"    {PA_KEYWORD_RETURN("size_t");}
@@ -211,24 +211,24 @@ auto      { return(PA_KEYWORD_RETURN(parser.symbols_.AUTO));}
 "inline"     { return(CPP_KEYWORD_RETURN(parser.symbols_.INLINE));}
 "new"        { return(CPP_KEYWORD_RETURN(parser.symbols_.NEW));}
 "operator"   { return(CPP_KEYWORD_RETURN(parser.symbols_.OPERATOR));}
-"overload"     { return(CPP_KEYWORD_RETURN(parser.symbols_.OVERLOAD));}
-"protected"     { return(CPP_KEYWORD_RETURN(parser.symbols_.PROTECTED));}
-"private"     { return(CPP_KEYWORD_RETURN(parser.symbols_.PRIVATE));}
+"overload"   { return(CPP_KEYWORD_RETURN(parser.symbols_.OVERLOAD));}
+"protected"  { return(CPP_KEYWORD_RETURN(parser.symbols_.PROTECTED));}
+"private"    { return(CPP_KEYWORD_RETURN(parser.symbols_.PRIVATE));}
 "public"     { return(CPP_KEYWORD_RETURN(parser.symbols_.PUBLIC));}
-"this"     { return(CPP_KEYWORD_RETURN(parser.symbols_.THIS));}
-"virtual"     { return(CPP_KEYWORD_RETURN(parser.symbols_.VIRTUAL));}
-"template"     { return(CPP_KEYWORD_RETURN(parser.symbols_.TEMPLATE));}
-"typename"     { return(CPP_KEYWORD_RETURN(parser.symbols_.TYPENAME));}
-"dynamic_cast"     {return(CPP_KEYWORD_RETURN(parser.symbols_.DYNAMIC_CAST));}
-"static_cast"     {return(CPP_KEYWORD_RETURN(parser.symbols_.STATIC_CAST));}
-"const_cast"     {return(CPP_KEYWORD_RETURN(parser.symbols_.CONST_CAST));}
+"this"     	 { return(CPP_KEYWORD_RETURN(parser.symbols_.THIS));}
+"virtual"    { return(CPP_KEYWORD_RETURN(parser.symbols_.VIRTUAL));}
+"template"   { return(CPP_KEYWORD_RETURN(parser.symbols_.TEMPLATE));}
+"typename"   { return(CPP_KEYWORD_RETURN(parser.symbols_.TYPENAME));}
+"dynamic_cast" {return(CPP_KEYWORD_RETURN(parser.symbols_.DYNAMIC_CAST));}
+"static_cast"  {return(CPP_KEYWORD_RETURN(parser.symbols_.STATIC_CAST));}
+"const_cast"   {return(CPP_KEYWORD_RETURN(parser.symbols_.CONST_CAST));}
 "reinterpret_cast"     {return(CPP_KEYWORD_RETURN(parser.symbols_.REINTERPRET_CAST));}
-"using"     {return(CPP_KEYWORD_RETURN(parser.symbols_.USING));}
-"throw"     {return(CPP_KEYWORD_RETURN(parser.symbols_.THROW));}
-"catch"     {return(CPP_KEYWORD_RETURN(parser.symbols_.CATCH));}
-"__declspec"     {return(CPP_KEYWORD_RETURN("__declspec"));}
-"dllimport"     {return(CPP_KEYWORD_RETURN("dllimport"));}
-"dllexport"     {return(CPP_KEYWORD_RETURN("dllexport"));}
+"using"      {return(CPP_KEYWORD_RETURN(parser.symbols_.USING));}
+"throw"      {return(CPP_KEYWORD_RETURN(parser.symbols_.THROW));}
+"catch"      {return(CPP_KEYWORD_RETURN(parser.symbols_.CATCH));}
+"__declspec" {return(CPP_KEYWORD_RETURN("__declspec"));}
+"dllimport"  {return(CPP_KEYWORD_RETURN("dllimport"));}
+"dllexport"  {return(CPP_KEYWORD_RETURN("dllexport"));}
 
 {identifier} { return(IDENTIFIER_RETURN());}
 
@@ -291,16 +291,18 @@ auto      { return(PA_KEYWORD_RETURN(parser.symbols_.AUTO));}
 "^"			{ return(ASCIIOP_RETURN("^"));}
 "|"			{ return(ASCIIOP_RETURN('|'));}
 "?"			{ return(ASCIIOP_RETURN('?'));}
-^({horizontal_white})*"#"		{ this.begin("PREPR");}
+^({horizontal_white})*"#"		%{ this.begin("PREPR"); return PPOP_RETURN(parser.symbols_.PP_SHARP); %}
 
-<PREPR>\n		{ this.begin("INITIAL");}
+<PREPR>\n		%{ this.begin("INITIAL"); return PPOP_RETURN(parser.symbols_.PP_NEWLINE); %}
 <PREPR>\\		{ this.begin("WRAP_PREP");}
-<PREPR>define	{return("");}
+<PREPR>({horizontal_white})*"("		{ return PPOP_RETURN(parser.symbols_.PP_LPAREN);}
+<PREPR>">"	{ return PPOP_RETURN(parser.symbols_.PP_G);}
+<PREPR>["]	{ return PPOP_RETURN(parser.symbols_.PP_QUOTE);}
+<PREPR>"include" { return(PPOP_RETURN(parser.symbols_.PP_INCLUDE));}
+<PREPR>.  	{ return PPOP_RETURN(parser.symbols_.PP_ANYCHAR);}
 <WRAP_PREP>\n	{ this.begin("PREPR");}
-<WRAP_PREP>{identifier} {return("");}
-<PREPR>{identifier} {return("");}
-<WRAP_PREP>.	{return("");}
-<PREPR>.			{return("");}
+<WRAP_PREP>{identifier} {return IDENTIFIER_RETURN()}
+<PREPR>{identifier} {return IDENTIFIER_RETURN()}
 <CPP_COMMENT>\n 	{this.begin("INITIAL");}
 <CPP_COMMENT>.	 	{return("");}
 <C_COMMENT>"*/" 	{this.begin("INITIAL");}

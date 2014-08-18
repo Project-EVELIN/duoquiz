@@ -41,9 +41,142 @@
 %token LSassign    RSassign
 %token ANDassign   ERassign     ORassign
 
+/* preprocessing */
+%token PP_IF
+%token PP_ELIF
+%token PP_ELSE
+%token PP_ENDIF
+%token PP_IFDEF
+%token PP_IFNDEF
+%token PP_INCLUDE
+%token PP_DEFINE
+%token PP_UNDEF
+%token PP_ERROR
+%token PP_PRAGMA
+%token PP_SHARP
+%token PP_LINE
+%token PP_NEWLINE
+%token PP_LPAREN
+%token PP_G
+%token PP_QUOTE
+%token PP_ANYCHAR
+
 %start translation_unit
 
 %%
+
+/* PREPROCESSING see http://www.nongnu.org/hcb/#group */
+preprocessing_file:
+
+        | group
+        ;
+
+group: group_part
+        | group group_part
+        ;
+
+group_part: if_section
+        | control_line
+        | text-line
+        | PP_SHARP non_directive
+        ;
+
+if_section: if_group elif_groups else_group endif_line
+        | if_group elif_groups endif_line
+        | if_group else_group endif_line
+        | if_group endif_line
+        ;
+
+if_group: PP_SHARP PP_IF constant_expression PP_NEWLINE group_opt
+        | PP_SHARP PP_IFDEF IDENTIFIER PP_NEWLINE group_opt
+        | PP_SHARP PP_IFNDEF IDENTIFIER PP_NEWLINE group_opt
+        ;
+
+elif_groups: elif_group
+        | elif_group elif_group
+        ;
+
+elif_group: PP_SHARP PP_ELIF constant_expression PP_NEWLINE group_opt
+        ;
+
+else_group: PP_SHARP PP_ELSE PP_NEWLINE group_opt
+        ;
+
+endif_line: PP_SHARP PP_ENDIF PP_NEWLINE
+        ;
+
+control_line: PP_SHARP PP_INCLUDE pp_tokens PP_NEWLINE
+        | PP_SHARP PP_DEFINE IDENTIFIER replacement_list PP_NEWLINE
+        | PP_SHARP PP_DEFINE IDENTIFIER PP_LPAREN identifier_list_opt ')' replacement_list PP_NEWLINE
+        | PP_SHARP PP_DEFINE IDENTIFIER PP_LPAREN identifier_list ',' ELLIPSIS ')' replacement_list PP_NEWLINE
+        | PP_SHARP PP_UNDEF IDENTIFIER PP_NEWLINE
+        | PP_SHARP PP_LINE pp_tokens PP_NEWLINE
+        | PP_SHARP PP_ERROR pp_tokens_opt PP_NEWLINE
+        | PP_SHARP PP_PRAGMA pp_tokens_opt PP_NEWLINE
+        | PP_SHARP PP_NEWLINE
+        ;
+
+text_line: pp_tokens_opt PP_NEWLINE
+        ;
+
+non_directive: pp_tokens PP_NEWLINE
+        ;
+
+identifier_list:
+        | IDENTIFIER
+        | identifier_list ',' IDENTIFIER
+        ;
+
+identifier_list_opt:
+
+        | identifier_list
+        ;
+
+pp_tokens: preprocessing_token
+        | pp_tokens preprocessing_token
+        ;
+
+/* optional pp_tokens */
+pp_tokens_opt:
+
+        | pp_tokens
+        ;
+
+/* optional group */
+group_opt:
+        | group;
+
+replacement_list: pp_tokens_opt;
+
+preprocessing_token: header_name
+        | IDENTIFER
+        | pp_number
+        | CHARACTERconstant
+        | STRINGliteral
+        | any_operator
+        ;
+
+pp_number: INTEGERconstant
+        | FLOATINGconstant
+        | OCTALconstant
+        | HEXconstant
+        ;
+
+header_name: '<' h_char_sequence PP_G
+        | PP_QUOTE q_char_sequence PP_QUOTE
+        ;
+
+h_char_sequence: PP_ANYCHAR
+        | h_char_sequence PP_ANYCHAR
+        ;
+
+q_char_sequence: PP_ANYCHAR
+        | q_char_sequence PP_ANYCHAR
+        ;
+
+
+/* EXCEPTIONS http://www.nongnu.org/hcb/#exception-specification */
+
 
 /* CONSTANTS */
 constant:
@@ -1424,6 +1557,7 @@ external_definition:
         | linkage_specifier function_definition
         | linkage_specifier declaration
         | linkage_specifier '{' translation_unit '}'
+        | preprocessing_file
         ;
 
 linkage_specifier:
