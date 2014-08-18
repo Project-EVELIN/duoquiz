@@ -25,9 +25,9 @@
     compliance with this notice. Persons or corporations that do make 
     copies in compliance with this notice may charge  whatever  price 
     is  agreeable  to  a  buyer, for such copies or derivative works. 
-    LE_THIS GRAMMAR IS PROVIDED ``AS IS'' AND  WITHOUT  ANY  EXPRESS  OR 
+    THIS GRAMMAR IS PROVIDED ``AS IS'' AND  WITHOUT  ANY  EXPRESS  OR 
     IMPLIED  WARRANTIES,  INCLUDING,  WITHOUT LIMITATION, THE IMPLIED 
-    WARRANTIES  OF  MERCHANTABILITY  AND  FITNESS  LE_FOR  A  PARTICULAR 
+    WARRANTIES  OF  MERCHANTABILITY  AND  FITNESS  FOR  A  PARTICULAR 
     PURPOSE.
 
     James A. Roskind
@@ -129,7 +129,7 @@ Consider:
 
 1) template support: Not  done:  pending  syntax  specification  from 
 ANSI.  (This looks like a major effort, as ANSI has decided to extend 
-the  "LE_TYPEDEFname"-feedback-to-the-lexer-hack  to  support   template 
+the  "TYPEDEFname"-feedback-to-the-lexer-hack  to  support   template 
 names as a new kind of terminal token.)
 
 2)  exception  handling:  Not done: pending syntax specification from 
@@ -206,7 +206,7 @@ ANSI C section 3.5.6, "If the [typedef  name]  is  redeclared  at  an
 inner  scope,  the  type specifiers shall not be omitted in the inner 
 declaration".  Supplying type specifiers prevents consideration of  T 
 as a typedef name in this grammar.  Failure to supply type specifiers 
-forced the use of the LE_TYPEDEFname as a type specifier.  This is taken 
+forced the use of the TYPEDEFname as a type specifier.  This is taken 
 to an (unnecessary) extreme by this implementation.  The ambiguity is 
 only  a  problem  with  the first declarator in a declaration, but we 
 restrict  ALL  declarators  whenever  the  users  fails  to   use   a 
@@ -242,70 +242,58 @@ int moo(const int identifier1 (T identifier2 (int identifier3)));
 				     We are telling the graphical debugger
 				     where to find the spelling of the 
 				     tokens.*/
-#define YYDEBUG 0        /* get the pretty debugging code to compile*/
-#include "stdio.h"
-int yyparse();
-void yyerror(char *string);
-extern int yylex();
-extern char* yytext;
-void setLexerInput(const char *line);
+#define YYDEBUG 1        /* get the pretty debugging code to compile*/
+#define YYSTYPE  char *  /* interface with flex: should be in header file */
 
 /*************** Standard ytab.c continues here *********************/
 %}
-
-%union {
-	char value[128];
-}
 
 /*************************************************************************/
 
 
 /* This group is used by the C/C++ language parser */
-%token <value> LE_AUTO            LE_DOUBLE          LE_INT             LE_STRUCT
-%token <value> LE_BREAK           LE_ELSE            LE_LONG            LE_SWITCH
-%token <value> LE_CASE            LE_ENUM            LE_REGISTER        LE_TYPEDEF
-%token <value> LE_CHAR            LE_EXTERN          LE_RETURN          LE_UNION
-%token <value> LE_CONST           LE_FLOAT           LE_SHORT           LE_UNSIGNED
-%token <value> LE_CONTINUE        LE_FOR             LE_SIGNED          LE_VOID
-%token <value> LE_DEFAULT         LE_GOTO            LE_SIZEOF          LE_VOLATILE
-%token <value> LE_DO              LE_IF              LE_STATIC          LE_WHILE
+%token AUTO            DOUBLE          INT             STRUCT
+%token BREAK           ELSE            LONG            SWITCH
+%token CASE            ENUM            REGISTER        TYPEDEF
+%token CHAR            EXTERN          RETURN          UNION
+%token CONST           FLOAT           SHORT           UNSIGNED
+%token CONTINUE        FOR             SIGNED          VOID
+%token DEFAULT         GOTO            SIZEOF          VOLATILE
+%token DO              IF              STATIC          WHILE
 
 /* The following are used in C++ only.  ANSI C would call these IDENTIFIERs */
-%token <value> LE_NEW             LE_DELETE
-%token <value> LE_THIS
-%token <value> LE_OPERATOR
-%token <value> LE_CLASS
-%token <value> LE_PUBLIC          LE_PROTECTED       LE_PRIVATE
-%token <value> LE_VIRTUAL         LE_FRIEND
-%token <value> LE_INLINE          LE_OVERLOAD
+%token NEW             DELETE
+%token THIS
+%token OPERATOR
+%token CLASS
+%token PUBLIC          PROTECTED       PRIVATE
+%token VIRTUAL         FRIEND
+%token INLINE          OVERLOAD
 
 /* ANSI C Grammar suggestions */
-%token <value> LE_IDENTIFIER              LE_STRINGliteral
-%token <value> LE_FLOATINGconstant        LE_INTEGERconstant        LE_CHARACTERconstant
-%token <value> LE_OCTALconstant           LE_HEXconstant
-%token <value> LE_POUNDPOUND LE_CComment LE_CPPComment LE_NAMESPACE
+%token IDENTIFIER              STRINGliteral
+%token FLOATINGconstant        INTEGERconstant        CHARACTERconstant
+%token OCTALconstant           HEXconstant
 
 /* New Lexical element, whereas ANSI C suggested non-terminal */
-%token LE_TYPEDEFname
+%token TYPEDEFname
 
 /* Multi-Character operators */
-%token  <value> LE_ARROW            /*    ->                              */
-%token  <value> LE_ICR LE_DECR         /*    ++      --                      */
-%token  <value> LE_LS LE_RS            /*    <<      >>                      */
-%token  <value> LE_LE LE_GE LE_EQ LE_NE      /*    <=      >=      ==      !=      */
-%token  <value> LE_ANDAND LE_OROR      /*    &&      ||                      */
-%token  <value> LE_ELLIPSIS         /*    ...                             */
+%token  ARROW            /*    ->                              */
+%token  ICR DECR         /*    ++      --                      */
+%token  LS RS            /*    <<      >>                      */
+%token  LE GE EQ NE      /*    <=      >=      ==      !=      */
+%token  ANDAND OROR      /*    &&      ||                      */
+%token  ELLIPSIS         /*    ...                             */
                  /* Following are used in C++, not ANSI C        */
-%token  <value> LE_CLCL             /*    ::                              */
-%token  <value> LE_DOTstar LE_ARROWstar/*    .*       ->*                    */
+%token  CLCL             /*    ::                              */
+%token  DOTstar ARROWstar/*    .*       ->*                    */
 
 /* modifying assignment operators */
-%token <value> LE_MULTassign  LE_DIVassign    LE_MODassign   /*   *=      /=      %=      */
-%token <value> LE_PLUSassign  LE_MINUSassign              /*   +=      -=              */
-%token <value> LE_LSassign    LE_RSassign                 /*   <<=     >>=             */
-%token <value> LE_ANDassign   LE_ERassign     LE_ORassign    /*   &=      ^=      |=      */
-%token <value> LE_TEMPLATE
-%token <value> LE_TYPENAME
+%token MULTassign  DIVassign    MODassign   /*   *=      /=      %=      */
+%token PLUSassign  MINUSassign              /*   +=      -=              */
+%token LSassign    RSassign                 /*   <<=     >>=             */
+%token ANDassign   ERassign     ORassign    /*   &=      ^=      |=      */
 
 /*************************************************************************/
 
@@ -317,19 +305,19 @@ void setLexerInput(const char *line);
 
 /*********************** CONSTANTS *********************************/
 constant:
-        LE_INTEGERconstant
-        | LE_FLOATINGconstant
+        INTEGERconstant
+        | FLOATINGconstant
         /*  We  are not including ENUMERATIONconstant here because we 
           are treating it like a variable with a type of "enumeration 
           constant".  */
-        | LE_OCTALconstant
-        | LE_HEXconstant
-        | LE_CHARACTERconstant
+        | OCTALconstant
+        | HEXconstant
+        | CHARACTERconstant
         ;
 
 string_literal_list:
-                LE_STRINGliteral
-                | string_literal_list LE_STRINGliteral
+                STRINGliteral
+                | string_literal_list STRINGliteral
                 ;
 
 
@@ -374,7 +362,7 @@ paren_identifier_declarator:
         ;
 
 
-    /* Note that LE_CLCL LE_IDENTIFIER is NOT part of scope_opt_identifier, 
+    /* Note that CLCL IDENTIFIER is NOT part of scope_opt_identifier, 
     but  it  is  part of global_opt_scope_opt_identifier.  It is ONLY 
     valid for referring to an identifier, and NOT valid for declaring 
     (or importing an external declaration of)  an  identifier.   This 
@@ -399,7 +387,7 @@ paren_identifier_declarator:
 primary_expression:
         global_opt_scope_opt_identifier
         | global_opt_scope_opt_complex_name
-        | LE_THIS   /* C++, not ANSI C */
+        | THIS   /* C++, not ANSI C */
         | constant
         | string_literal_list
         | '(' comma_expression ')'
@@ -429,8 +417,8 @@ primary_expression:
     Hence,   whenever   non_elaborating_type_specifier  is  used,  an 
     adjacent rule is supplied containing type_qualifier_list.  It  is 
     not  generally  possible  to  know  immediately  (i_e., reduce) a 
-    type_qualifier_list, as a LE_TYPEDEFname that follows might  not  be 
-    part of a type specifier, but might instead be "LE_TYPEDEFname ::*".  
+    type_qualifier_list, as a TYPEDEFname that follows might  not  be 
+    part of a type specifier, but might instead be "TYPEDEFname ::*".  
     */
 
 non_elaborating_type_specifier:
@@ -439,7 +427,7 @@ non_elaborating_type_specifier:
         | typedef_type_specifier
 
         | basic_type_name
-        | LE_TYPEDEFname
+        | TYPEDEFname
         | global_or_scoped_typedefname
         ;
 
@@ -449,9 +437,9 @@ non_elaborating_type_specifier:
     help a lot. */
 
 operator_function_name:
-        LE_OPERATOR any_operator
-        | LE_OPERATOR type_qualifier_list            operator_function_ptr_opt
-        | LE_OPERATOR non_elaborating_type_specifier operator_function_ptr_opt
+        OPERATOR any_operator
+        | OPERATOR type_qualifier_list            operator_function_ptr_opt
+        | OPERATOR non_elaborating_type_specifier operator_function_ptr_opt
         ;
 
 
@@ -486,25 +474,25 @@ any_operator:
         | '!'
         | '<'
         | '>'
-        | LE_LS
-        | LE_RS
-        | LE_ANDAND
-        | LE_OROR
-        | LE_ARROW
-        | LE_ARROWstar
+        | LS
+        | RS
+        | ANDAND
+        | OROR
+        | ARROW
+        | ARROWstar
         | '.'
-        | LE_DOTstar
-        | LE_ICR
-        | LE_DECR
-        | LE_LE
-        | LE_GE
-        | LE_EQ
-        | LE_NE
+        | DOTstar
+        | ICR
+        | DECR
+        | LE
+        | GE
+        | EQ
+        | NE
         | assignment_operator
         | '(' ')'
         | '[' ']'
-        | LE_NEW
-        | LE_DELETE
+        | NEW
+        | DELETE
         | ','
         ;
 
@@ -537,7 +525,7 @@ type_qualifier_list_opt:
 
     /*  The  {}  in  the following rules allow the parser to tell the 
     lexer to search for the member name  in  the  appropriate  scope, 
-    much the way the LE_CLCL operator works.*/
+    much the way the CLCL operator works.*/
 
 postfix_expression:
         primary_expression
@@ -545,14 +533,14 @@ postfix_expression:
         | postfix_expression '(' ')'
         | postfix_expression '(' argument_expression_list ')'
         | postfix_expression {} '.'   member_name
-        | postfix_expression {} LE_ARROW member_name
-        | postfix_expression LE_ICR
-        | postfix_expression LE_DECR
+        | postfix_expression {} ARROW member_name
+        | postfix_expression ICR
+        | postfix_expression DECR
 
                 /* The next 4 rules are the source of cast ambiguity */
-        | LE_TYPEDEFname                  '(' ')'
+        | TYPEDEFname                  '(' ')'
         | global_or_scoped_typedefname '(' ')'
-        | LE_TYPEDEFname                  '(' argument_expression_list ')'
+        | TYPEDEFname                  '(' argument_expression_list ')'
         | global_or_scoped_typedefname '(' argument_expression_list ')'
         | basic_type_name '(' assignment_expression ')'
             /* If the following rule is added to the  grammar,  there 
@@ -575,10 +563,10 @@ postfix_expression:
 member_name:
         scope_opt_identifier
         | scope_opt_complex_name
-        | basic_type_name LE_CLCL '~' basic_type_name  /* C++, not ANSI C */
+        | basic_type_name CLCL '~' basic_type_name  /* C++, not ANSI C */
 
-        | declaration_qualifier_list  LE_CLCL '~'   declaration_qualifier_list
-        | type_qualifier_list         LE_CLCL '~'   type_qualifier_list
+        | declaration_qualifier_list  CLCL '~'   declaration_qualifier_list
+        | type_qualifier_list         CLCL '~'   type_qualifier_list
         ;
 
 argument_expression_list:
@@ -588,15 +576,15 @@ argument_expression_list:
 
 unary_expression:
         postfix_expression
-        | LE_ICR  unary_expression
-        | LE_DECR unary_expression
+        | ICR  unary_expression
+        | DECR unary_expression
         | asterisk_or_ampersand cast_expression
         | '-'                   cast_expression
         | '+'                   cast_expression
         | '~'                   cast_expression
         | '!'                   cast_expression
-        | LE_SIZEOF unary_expression
-        | LE_SIZEOF '(' type_name ')'
+        | SIZEOF unary_expression
+        | SIZEOF '(' type_name ')'
         | allocation_expression
         ;
 
@@ -633,8 +621,8 @@ allocation_expression:
 
        /* Following are C++, not ANSI C */
 global_opt_scope_opt_operator_new:
-        LE_NEW
-        | global_or_scope LE_NEW
+        NEW
+        | global_or_scope NEW
         ;
 
 operator_new_type:
@@ -647,7 +635,7 @@ operator_new_type:
 
     
     /*  Right  recursion  is critical in the following productions to 
-    avoid a conflict on LE_TYPEDEFname */
+    avoid a conflict on TYPEDEFname */
 
 operator_new_declarator_opt:
         /* Nothing */
@@ -685,16 +673,16 @@ deallocation_expression:
 
     /* Following are C++, not ANSI C */
 global_opt_scope_opt_delete:
-        LE_DELETE
-        | global_or_scope LE_DELETE
+        DELETE
+        | global_or_scope DELETE
         ;
 
 
     /* Following are C++, not ANSI C */
 point_member_expression:
         deallocation_expression
-        | point_member_expression LE_DOTstar  deallocation_expression
-        | point_member_expression LE_ARROWstar  deallocation_expression
+        | point_member_expression DOTstar  deallocation_expression
+        | point_member_expression ARROWstar  deallocation_expression
         ;
 
 multiplicative_expression:
@@ -712,22 +700,22 @@ additive_expression:
 
 shift_expression:
         additive_expression
-        | shift_expression LE_LS additive_expression
-        | shift_expression LE_RS additive_expression
+        | shift_expression LS additive_expression
+        | shift_expression RS additive_expression
         ;
 
 relational_expression:
         shift_expression
         | relational_expression '<' shift_expression
         | relational_expression '>' shift_expression
-        | relational_expression LE_LE  shift_expression
-        | relational_expression LE_GE  shift_expression
+        | relational_expression LE  shift_expression
+        | relational_expression GE  shift_expression
         ;
 
 equality_expression:
         relational_expression
-        | equality_expression LE_EQ relational_expression
-        | equality_expression LE_NE relational_expression
+        | equality_expression EQ relational_expression
+        | equality_expression NE relational_expression
         ;
 
 AND_expression:
@@ -747,12 +735,12 @@ inclusive_OR_expression:
 
 logical_AND_expression:
         inclusive_OR_expression
-        | logical_AND_expression LE_ANDAND inclusive_OR_expression
+        | logical_AND_expression ANDAND inclusive_OR_expression
         ;
 
 logical_OR_expression:
         logical_AND_expression
-        | logical_OR_expression LE_OROR logical_AND_expression
+        | logical_OR_expression OROR logical_AND_expression
         ;
 
 conditional_expression:
@@ -769,16 +757,16 @@ assignment_expression:
 
 assignment_operator:
         '='
-        | LE_MULTassign
-        | LE_DIVassign
-        | LE_MODassign
-        | LE_PLUSassign
-        | LE_MINUSassign
-        | LE_LSassign
-        | LE_RSassign
-        | LE_ANDassign
-        | LE_ERassign
-        | LE_ORassign
+        | MULTassign
+        | DIVassign
+        | MODassign
+        | PLUSassign
+        | MINUSassign
+        | LSassign
+        | RSassign
+        | ANDassign
+        | ERassign
+        | ORassign
         ;
 
 comma_expression:
@@ -812,11 +800,12 @@ comma_expression_opt:
     visible in the current scope). */
 
 declaration:
-        declaring_list ';'						 	{printf("declaring_list\n");}
-        | default_declaring_list ';'		 	{printf("default_declaring_list\n");}
-        | sue_declaration_specifier ';' 	 	{printf("sue_declaration_specifier\n");}
-        | sue_type_specifier ';'				 	{printf("sue_type_specifier\n");}
-        | sue_type_specifier_elaboration ';'	{printf("sue_type_specifier_elaboration\n");}
+        declaring_list ';'
+        | default_declaring_list ';'
+        | sue_declaration_specifier ';' { /* this is constraint error, as it
+                                        includes a storage class!?!*/ }
+        | sue_type_specifier ';'
+        | sue_type_specifier_elaboration ';'
         ;
 
 
@@ -837,7 +826,7 @@ declaration:
     /*  The  presence of `{}' in the following rules indicates points 
     at which the symbol table MUST be updated so that  the  tokenizer 
     can  IMMEDIATELY  continue  to  maintain  the  proper distinction 
-    between a LE_TYPEDEFname and an LE_IDENTIFIER. */
+    between a TYPEDEFname and an IDENTIFIER. */
 
 default_declaring_list:  /* Can't  redeclare typedef names */
         declaration_qualifier_list   identifier_declarator {} initializer_opt
@@ -855,19 +844,19 @@ default_declaring_list:  /* Can't  redeclare typedef names */
     typedef-names (as prescribed by the ANSI C standard).*/
 
 declaring_list:
-        declaration_specifier          declarator {} initializer_opt	{printf("1\n");}
-        | type_specifier               declarator {} initializer_opt {printf("2\n");}
-        | basic_type_name              declarator {} initializer_opt {printf("3\n");}
-        | LE_TYPEDEFname                  declarator {} initializer_opt {printf("4\n");}
-        | global_or_scoped_typedefname declarator {} initializer_opt {printf("5\n");}
-        | declaring_list ','           declarator {} initializer_opt {printf("6\n");}
+        declaration_specifier          declarator {} initializer_opt
+        | type_specifier               declarator {} initializer_opt
+        | basic_type_name              declarator {} initializer_opt
+        | TYPEDEFname                  declarator {} initializer_opt
+        | global_or_scoped_typedefname declarator {} initializer_opt
+        | declaring_list ','           declarator {} initializer_opt
 
-        | declaration_specifier        constructed_declarator {printf("7\n");}
-        | type_specifier               constructed_declarator {printf("8\n");}
-        | basic_type_name              constructed_declarator {printf("9\n");}
-        | LE_TYPEDEFname                  constructed_declarator {printf("10\n");}
-        | global_or_scoped_typedefname constructed_declarator {printf("11\n");}
-        | declaring_list ','           constructed_declarator {printf("12\n");}
+        | declaration_specifier        constructed_declarator
+        | type_specifier               constructed_declarator
+        | basic_type_name              constructed_declarator
+        | TYPEDEFname                  constructed_declarator
+        | global_or_scoped_typedefname constructed_declarator
+        | declaring_list ','           constructed_declarator
         ;
 
 
@@ -916,15 +905,15 @@ constructed_paren_typedef_declarator:
         | '(' simple_paren_typedef_declarator postfixing_abstract_declarator ')'
                    '(' argument_expression_list ')'
 
-        | '(' LE_TYPEDEFname postfixing_abstract_declarator ')'
+        | '(' TYPEDEFname postfixing_abstract_declarator ')'
                    '(' argument_expression_list ')'
         ;
 
 
 constructed_parameter_typedef_declarator:
-        LE_TYPEDEFname    '(' argument_expression_list ')'
+        TYPEDEFname    '(' argument_expression_list ')'
 
-        | LE_TYPEDEFname  postfixing_abstract_declarator
+        | TYPEDEFname  postfixing_abstract_declarator
                        '(' argument_expression_list ')'  /* constraint error */
 
         | '(' clean_typedef_declarator ')'
@@ -991,8 +980,8 @@ declaration_qualifier:
         ;
 
 type_qualifier:
-        LE_CONST
-        | LE_VOLATILE
+        CONST
+        | VOLATILE
         ;
 
 basic_declaration_specifier:      /*Storage Class+Arithmetic or void*/
@@ -1032,21 +1021,21 @@ sue_type_specifier:
         ;
 
 typedef_declaration_specifier:       /*Storage Class + typedef types */
-        declaration_qualifier_list   LE_TYPEDEFname
+        declaration_qualifier_list   TYPEDEFname
         | declaration_qualifier_list global_or_scoped_typedefname
 
         | typedef_type_specifier       storage_class
-        | LE_TYPEDEFname                  storage_class
+        | TYPEDEFname                  storage_class
         | global_or_scoped_typedefname storage_class
 
         | typedef_declaration_specifier declaration_qualifier
         ;
 
 typedef_type_specifier:              /* typedef types */
-        type_qualifier_list      LE_TYPEDEFname
+        type_qualifier_list      TYPEDEFname
         | type_qualifier_list    global_or_scoped_typedefname
 
-        | LE_TYPEDEFname                  type_qualifier
+        | TYPEDEFname                  type_qualifier
         | global_or_scoped_typedefname type_qualifier
 
         | typedef_type_specifier type_qualifier
@@ -1066,39 +1055,39 @@ error recovery (i_e.: a syntax error does not disrupt the parse).
 
                 File    File    Member  Member  Local   Local  Formal
                 Var     Funct   Var     Funct   Var     Funct  Params
-LE_TYPEDEF         x       x       x       x       x       x
-LE_EXTERN          x       x                       x       x
-LE_STATIC          x       x       x       x       x
-LE_AUTO                                            x              x
-LE_REGISTER                                        x              x
-LE_FRIEND                                  x
-LE_OVERLOAD                x               x               x
-LE_INLINE                  x               x               x
-LE_VIRTUAL                                 x               x
+TYPEDEF         x       x       x       x       x       x
+EXTERN          x       x                       x       x
+STATIC          x       x       x       x       x
+AUTO                                            x              x
+REGISTER                                        x              x
+FRIEND                                  x
+OVERLOAD                x               x               x
+INLINE                  x               x               x
+VIRTUAL                                 x               x
 */
 
 storage_class:
-        LE_EXTERN
-        | LE_TYPEDEF
-        | LE_STATIC
-        | LE_AUTO
-        | LE_REGISTER
-        | LE_FRIEND   /* C++, not ANSI C */
-        | LE_OVERLOAD /* C++, not ANSI C */
-        | LE_INLINE   /* C++, not ANSI C */
-        | LE_VIRTUAL  /* C++, not ANSI C */
+        EXTERN
+        | TYPEDEF
+        | STATIC
+        | AUTO
+        | REGISTER
+        | FRIEND   /* C++, not ANSI C */
+        | OVERLOAD /* C++, not ANSI C */
+        | INLINE   /* C++, not ANSI C */
+        | VIRTUAL  /* C++, not ANSI C */
         ;
 
 basic_type_name:
-        LE_INT
-        | LE_CHAR
-        | LE_SHORT
-        | LE_LONG
-        | LE_FLOAT
-        | LE_DOUBLE
-        | LE_SIGNED
-        | LE_UNSIGNED
-        | LE_VOID
+        INT
+        | CHAR
+        | SHORT
+        | LONG
+        | FLOAT
+        | DOUBLE
+        | SIGNED
+        | UNSIGNED
+        | VOID
         ;
 
 elaborated_type_name_elaboration:
@@ -1163,13 +1152,13 @@ derivation_list:
 
 parent_class:
                                        global_opt_scope_opt_typedefname
-        | LE_VIRTUAL access_specifier_opt global_opt_scope_opt_typedefname
+        | VIRTUAL access_specifier_opt global_opt_scope_opt_typedefname
         | access_specifier virtual_opt global_opt_scope_opt_typedefname
         ;
 
 virtual_opt:
         /* nothing */
-        | LE_VIRTUAL
+        | VIRTUAL
         ;
 
 access_specifier_opt:
@@ -1178,15 +1167,15 @@ access_specifier_opt:
         ;
 
 access_specifier:
-        LE_PUBLIC
-        | LE_PRIVATE
-        | LE_PROTECTED
+        PUBLIC
+        | PRIVATE
+        | PROTECTED
         ;
 
 aggregate_key:
-        LE_STRUCT
-        | LE_UNION
-        | LE_CLASS /* C++, not ANSI C */
+        STRUCT
+        | UNION
+        | CLASS /* C++, not ANSI C */
         ;
 
 
@@ -1253,7 +1242,7 @@ member_declaring_list:        /* Can possibly redeclare typedefs */
 
         | type_specifier                bit_field_declarator
         | basic_type_name               bit_field_declarator
-        | LE_TYPEDEFname                   bit_field_declarator
+        | TYPEDEFname                   bit_field_declarator
         | global_or_scoped_typedefname  bit_field_declarator
         | declaration_specifier         bit_field_declarator /* constraint violation: storage class used */
         | member_declaring_list ','     bit_field_declarator
@@ -1262,15 +1251,15 @@ member_declaring_list:        /* Can possibly redeclare typedefs */
 
     /* The following conflict with constructors-
       member_conflict_declaring_item:
-        LE_TYPEDEFname             declarator member_pure_opt
+        TYPEDEFname             declarator member_pure_opt
         | declaration_specifier declarator member_pure_opt /* C++, not ANSI C * /
         ;
     so we inline expand declarator to get the following productions...
     */
 member_conflict_declaring_item:
-        LE_TYPEDEFname             identifier_declarator            member_pure_opt
-        | LE_TYPEDEFname           parameter_typedef_declarator     member_pure_opt
-        | LE_TYPEDEFname           simple_paren_typedef_declarator  member_pure_opt
+        TYPEDEFname             identifier_declarator            member_pure_opt
+        | TYPEDEFname           parameter_typedef_declarator     member_pure_opt
+        | TYPEDEFname           simple_paren_typedef_declarator  member_pure_opt
 
         | declaration_specifier identifier_declarator            member_pure_opt
         | declaration_specifier parameter_typedef_declarator     member_pure_opt
@@ -1282,23 +1271,23 @@ member_conflict_declaring_item:
 
     /* The following still conflicts with constructors-
       member_conflict_paren_declaring_item:
-        LE_TYPEDEFname             paren_typedef_declarator     member_pure_opt
+        TYPEDEFname             paren_typedef_declarator     member_pure_opt
         | declaration_specifier paren_typedef_declarator     member_pure_opt
         ;
     so paren_typedef_declarator is expanded inline to get...*/
 
 member_conflict_paren_declaring_item:
-        LE_TYPEDEFname   asterisk_or_ampersand
+        TYPEDEFname   asterisk_or_ampersand
                 '(' simple_paren_typedef_declarator ')' member_pure_opt
-        | LE_TYPEDEFname unary_modifier
+        | TYPEDEFname unary_modifier
                 '(' simple_paren_typedef_declarator ')' member_pure_opt
-        | LE_TYPEDEFname asterisk_or_ampersand
-                '(' LE_TYPEDEFname ')'                     member_pure_opt
-        | LE_TYPEDEFname unary_modifier
-                '(' LE_TYPEDEFname ')'                     member_pure_opt
-        | LE_TYPEDEFname asterisk_or_ampersand
+        | TYPEDEFname asterisk_or_ampersand
+                '(' TYPEDEFname ')'                     member_pure_opt
+        | TYPEDEFname unary_modifier
+                '(' TYPEDEFname ')'                     member_pure_opt
+        | TYPEDEFname asterisk_or_ampersand
                  paren_typedef_declarator               member_pure_opt
-        | LE_TYPEDEFname unary_modifier
+        | TYPEDEFname unary_modifier
                  paren_typedef_declarator               member_pure_opt
 
         | declaration_specifier asterisk_or_ampersand
@@ -1306,9 +1295,9 @@ member_conflict_paren_declaring_item:
         | declaration_specifier unary_modifier
                 '(' simple_paren_typedef_declarator ')' member_pure_opt
         | declaration_specifier asterisk_or_ampersand
-                '(' LE_TYPEDEFname ')'                     member_pure_opt
+                '(' TYPEDEFname ')'                     member_pure_opt
         | declaration_specifier unary_modifier
-                '(' LE_TYPEDEFname ')'                     member_pure_opt
+                '(' TYPEDEFname ')'                     member_pure_opt
         | declaration_specifier asterisk_or_ampersand
                 paren_typedef_declarator                member_pure_opt
         | declaration_specifier unary_modifier
@@ -1320,26 +1309,26 @@ member_conflict_paren_declaring_item:
 
     /* but we still have the following conflicts with constructors-
    member_conflict_paren_postfix_declaring_item:
-      LE_TYPEDEFname             postfix_paren_typedef_declarator member_pure_opt
+      TYPEDEFname             postfix_paren_typedef_declarator member_pure_opt
       | declaration_specifier postfix_paren_typedef_declarator member_pure_opt
       ;
     so we expand paren_postfix_typedef inline and get...*/
 
 member_conflict_paren_postfix_declaring_item:
-        LE_TYPEDEFname     '(' paren_typedef_declarator ')'
+        TYPEDEFname     '(' paren_typedef_declarator ')'
                                                            member_pure_opt
-        | LE_TYPEDEFname   '(' simple_paren_typedef_declarator
+        | TYPEDEFname   '(' simple_paren_typedef_declarator
                         postfixing_abstract_declarator ')' member_pure_opt
-        | LE_TYPEDEFname   '(' LE_TYPEDEFname
+        | TYPEDEFname   '(' TYPEDEFname
                         postfixing_abstract_declarator ')' member_pure_opt
-        | LE_TYPEDEFname   '(' paren_typedef_declarator ')'
+        | TYPEDEFname   '(' paren_typedef_declarator ')'
                         postfixing_abstract_declarator     member_pure_opt
 
         | declaration_specifier '(' paren_typedef_declarator ')'
                                                            member_pure_opt
         | declaration_specifier '(' simple_paren_typedef_declarator
                         postfixing_abstract_declarator ')' member_pure_opt
-        | declaration_specifier '(' LE_TYPEDEFname
+        | declaration_specifier '(' TYPEDEFname
                         postfixing_abstract_declarator ')' member_pure_opt
         | declaration_specifier '(' paren_typedef_declarator ')'
                         postfixing_abstract_declarator     member_pure_opt
@@ -1350,7 +1339,7 @@ member_conflict_paren_postfix_declaring_item:
 
 member_pure_opt:
         /* nothing */
-        | '=' LE_OCTALconstant /* C++, not ANSI C */ /* Pure function*/
+        | '=' OCTALconstant /* C++, not ANSI C */ /* Pure function*/
         ;
 
 
@@ -1359,14 +1348,14 @@ member_pure_opt:
     this  part of the grammar is simpler than ANSI C. :-) The problem 
     occurs because:
 
-         LE_TYPEDEFname ( LE_TYPEDEFname) : .....
+         TYPEDEFname ( TYPEDEFname) : .....
 
     doesn't look like a bit field, rather it looks like a constructor 
     definition! */
 
 bit_field_declarator:
         bit_field_identifier_declarator
-        | LE_TYPEDEFname {} ':' constant_expression
+        | TYPEDEFname {} ':' constant_expression
         ;
 
 
@@ -1403,8 +1392,8 @@ enum_name:
         ;
 
 global_opt_scope_opt_enum_key:
-        LE_ENUM
-        | global_or_scope LE_ENUM
+        ENUM
+        | global_or_scope ENUM
         ;
 
 enumerator_list:
@@ -1428,8 +1417,8 @@ enumerator_list_no_trailing_comma:
         ;
 
 enumerator_name:
-        LE_IDENTIFIER
-        | LE_TYPEDEFname
+        IDENTIFIER
+        | TYPEDEFname
         ;
 
 enumerator_value_opt:
@@ -1482,12 +1471,12 @@ named_parameter_type_list:  /* WARNING: excludes lone type_name*/
         | parameter_list comma_opt_ellipsis
         | type_name comma_opt_ellipsis
         | type_name initializer comma_opt_ellipsis  /* C++, not ANSI C */
-        | LE_ELLIPSIS /* C++, not ANSI C */
+        | ELLIPSIS /* C++, not ANSI C */
         ;
 
 comma_opt_ellipsis:
-        LE_ELLIPSIS       /* C++, not ANSI C */
-        | ',' LE_ELLIPSIS
+        ELLIPSIS       /* C++, not ANSI C */
+        | ',' ELLIPSIS
         ;
 
 parameter_list:
@@ -1555,9 +1544,9 @@ parameter_declaration:
     contexts),  and  then  give an error if is to a following context 
     (like "0" above) that invalidated this syntax evaluation. */
 
-    /* One big thing implemented here is that a LE_TYPEDEFname CANNOT be 
+    /* One big thing implemented here is that a TYPEDEFname CANNOT be 
     redeclared when we don't have declaration_specifiers! Notice that 
-    when we do use a LE_TYPEDEFname based declarator, only the "special" 
+    when we do use a TYPEDEFname based declarator, only the "special" 
     (non-ambiguous  in  this  context)  typedef_declarator  is  used. 
     Everything else that is "missing" shows up as a type_name. */
 
@@ -1577,8 +1566,8 @@ non_casting_parameter_declaration: /*have names or storage classes */
         | basic_type_name identifier_declarator
         | basic_type_name parameter_typedef_declarator
 
-        | LE_TYPEDEFname                   identifier_declarator
-        | LE_TYPEDEFname                   parameter_typedef_declarator
+        | TYPEDEFname                   identifier_declarator
+        | TYPEDEFname                   parameter_typedef_declarator
 
         | global_or_scoped_typedefname  identifier_declarator
         | global_or_scoped_typedefname  parameter_typedef_declarator
@@ -1589,13 +1578,13 @@ non_casting_parameter_declaration: /*have names or storage classes */
 type_name:
         type_specifier
         | basic_type_name
-        | LE_TYPEDEFname
+        | TYPEDEFname
         | global_or_scoped_typedefname
         | type_qualifier_list
 
         | type_specifier               abstract_declarator
         | basic_type_name              abstract_declarator
-        | LE_TYPEDEFname                  abstract_declarator
+        | TYPEDEFname                  abstract_declarator
         | global_or_scoped_typedefname abstract_declarator
         | type_qualifier_list          abstract_declarator
         ;
@@ -1635,8 +1624,8 @@ statement:
 
 labeled_statement:
         label                      ':' statement
-        | LE_CASE constant_expression ':' statement
-        | LE_DEFAULT                  ':' statement
+        | CASE constant_expression ':' statement
+        | DEFAULT                  ':' statement
         ;
 
 
@@ -1663,27 +1652,27 @@ expression_statement:
         ;
 
 selection_statement:
-          LE_IF '(' comma_expression ')' statement
-        | LE_IF '(' comma_expression ')' statement LE_ELSE statement
-        | LE_SWITCH '(' comma_expression ')' statement
+          IF '(' comma_expression ')' statement
+        | IF '(' comma_expression ')' statement ELSE statement
+        | SWITCH '(' comma_expression ')' statement
         ;
 
 iteration_statement:
-        LE_WHILE '(' comma_expression_opt ')' statement
-        | LE_DO statement LE_WHILE '(' comma_expression ')' ';'
+        WHILE '(' comma_expression_opt ')' statement
+        | DO statement WHILE '(' comma_expression ')' ';'
 
-        | LE_FOR '(' comma_expression_opt ';' comma_expression_opt ';'
+        | FOR '(' comma_expression_opt ';' comma_expression_opt ';'
                 comma_expression_opt ')' statement
 
-        | LE_FOR '(' declaration        comma_expression_opt ';'
+        | FOR '(' declaration        comma_expression_opt ';'
                 comma_expression_opt ')' statement  /* C++, not ANSI C */
         ;
 
 jump_statement:
-        LE_GOTO label                     ';'
-        | LE_CONTINUE                     ';'
-        | LE_BREAK                        ';'
-        | LE_RETURN comma_expression_opt  ';'
+        GOTO label                     ';'
+        | CONTINUE                     ';'
+        | BREAK                        ';'
+        | RETURN comma_expression_opt  ';'
         ;
 
 
@@ -1691,8 +1680,8 @@ jump_statement:
     "label" name space */
 
 label:
-        LE_IDENTIFIER
-        | LE_TYPEDEFname
+        IDENTIFIER
+        | TYPEDEFname
         ;
 
 
@@ -1704,9 +1693,9 @@ translation_unit:
         ;
 
 external_definition:
-        function_declaration                       {printf("Found function (decl)\n");}
-        | function_definition								{printf("Found function (impl)\n");}
-        | declaration										{printf("Found declaration %s\n", yytext);}
+        function_declaration                         /* C++, not ANSI C*/
+        | function_definition
+        | declaration
         | linkage_specifier function_declaration     /* C++, not ANSI C*/
         | linkage_specifier function_definition      /* C++, not ANSI C*/
         | linkage_specifier declaration              /* C++, not ANSI C*/
@@ -1714,7 +1703,7 @@ external_definition:
         ;
 
 linkage_specifier:
-        LE_EXTERN LE_STRINGliteral
+        EXTERN STRINGliteral
         ;
 
 
@@ -1763,7 +1752,7 @@ new_function_definition:
         | declaration_specifier                   declarator compound_statement /* partially C++ only */
         | type_specifier                          declarator compound_statement /* partially C++ only */
         | basic_type_name                         declarator compound_statement /* partially C++ only */
-        | LE_TYPEDEFname                             declarator compound_statement /* partially C++ only */
+        | TYPEDEFname                             declarator compound_statement /* partially C++ only */
         | global_or_scoped_typedefname            declarator compound_statement /* partially C++ only */
         | declaration_qualifier_list   identifier_declarator compound_statement
         | type_qualifier_list          identifier_declarator compound_statement
@@ -1781,7 +1770,7 @@ old_function_definition:
         | declaration_specifier        old_function_declarator {} old_function_body
         | type_specifier               old_function_declarator {} old_function_body
         | basic_type_name              old_function_declarator {} old_function_body
-        | LE_TYPEDEFname                  old_function_declarator {} old_function_body
+        | TYPEDEFname                  old_function_declarator {} old_function_body
         | global_or_scoped_typedefname old_function_declarator {} old_function_body
         | declaration_qualifier_list   old_function_declarator {} old_function_body
         | type_qualifier_list          old_function_declarator {} old_function_body
@@ -1797,14 +1786,14 @@ old_function_body:
         declaration_specifier           is          really          a 
         typedef_declaration_specifier, consisting of:
 
-        ... LE_TYPEDEFname :: LE_TYPEDEFname
+        ... TYPEDEFname :: TYPEDEFname
 
     optionally *preceded* by a "inline" keyword.   Use  care  not  to 
     support "inline" as a postfix!
 
     Similarly, the global_or_scoped_typedefname must be:
 
-        ... LE_TYPEDEFname :: LE_TYPEDEFname
+        ... TYPEDEFname :: TYPEDEFname
 
     with matching names at the end of the list.
 
@@ -1832,9 +1821,9 @@ constructor_function_declaration:
 
 
     /* The following use of declaration_specifiers are made to  allow 
-    for  a LE_TYPEDEFname preceded by an LE_INLINE modifier. This fact must 
+    for  a TYPEDEFname preceded by an INLINE modifier. This fact must 
     be verified semantically.  It should also be  verified  that  the 
-    LE_TYPEDEFname  is  ACTUALLY  the  class name being elaborated. Note 
+    TYPEDEFname  is  ACTUALLY  the  class name being elaborated. Note 
     that we could break out typedef_declaration_specifier from within 
     declaration_specifier, and we  might  narrow  down  the  conflict 
     region a bit. A second alternative (to what is done) for cleaning 
@@ -1852,7 +1841,7 @@ constructor_function_declaration:
 
 constructor_function_in_class:
         declaration_specifier   constructor_parameter_list_and_body
-        | LE_TYPEDEFname           constructor_parameter_list_and_body
+        | TYPEDEFname           constructor_parameter_list_and_body
         ;
 
 
@@ -1900,7 +1889,7 @@ constructor_conflicting_parameter_list_and_body:
         | '(' basic_type_name              ')' type_qualifier_list_opt
                 ';'
 
-        | '(' LE_TYPEDEFname                  ')' type_qualifier_list_opt
+        | '(' TYPEDEFname                  ')' type_qualifier_list_opt
                 ';'
 
         | '(' global_or_scoped_typedefname ')' type_qualifier_list_opt
@@ -1929,7 +1918,7 @@ constructor_conflicting_parameter_list_and_body:
         | '(' basic_type_name              ')' type_qualifier_list_opt
                 constructor_init_list_opt compound_statement
 
-        | '(' LE_TYPEDEFname                  ')' type_qualifier_list_opt
+        | '(' TYPEDEFname                  ')' type_qualifier_list_opt
                 constructor_init_list_opt compound_statement
 
         | '(' global_or_scoped_typedefname ')' type_qualifier_list_opt
@@ -1959,32 +1948,32 @@ constructor_conflicting_parameter_list_and_body:
 
     /* The following have ambiguities with member declarations-
     constructor_conflicting_typedef_declarator:
-      '(' LE_TYPEDEFname abstract_declarator ')' type_qualifier_list_opt
+      '(' TYPEDEFname abstract_declarator ')' type_qualifier_list_opt
                 ';'
-      |  '(' LE_TYPEDEFname abstract_declarator ')' type_qualifier_list_opt
+      |  '(' TYPEDEFname abstract_declarator ')' type_qualifier_list_opt
                 constructor_init_list_opt compound_statement
       ;
     which can be deferred by expanding abstract_declarator, and in two
     cases parameter_qualifier_list, resulting in ...*/
 
 constructor_conflicting_typedef_declarator:
-        '(' LE_TYPEDEFname unary_abstract_declarator          ')' type_qualifier_list_opt
+        '(' TYPEDEFname unary_abstract_declarator          ')' type_qualifier_list_opt
                 ';'
 
-        | '(' LE_TYPEDEFname unary_abstract_declarator       ')' type_qualifier_list_opt
+        | '(' TYPEDEFname unary_abstract_declarator       ')' type_qualifier_list_opt
                 constructor_init_list_opt compound_statement
 
-        | '(' LE_TYPEDEFname postfix_abstract_declarator     ')' type_qualifier_list_opt
+        | '(' TYPEDEFname postfix_abstract_declarator     ')' type_qualifier_list_opt
                 ';'
 
-        | '(' LE_TYPEDEFname postfix_abstract_declarator     ')' type_qualifier_list_opt
+        | '(' TYPEDEFname postfix_abstract_declarator     ')' type_qualifier_list_opt
                 constructor_init_list_opt compound_statement
 
 
-        | '(' LE_TYPEDEFname postfixing_abstract_declarator  ')' type_qualifier_list_opt
+        | '(' TYPEDEFname postfixing_abstract_declarator  ')' type_qualifier_list_opt
                 ';'
 
-        | '(' LE_TYPEDEFname postfixing_abstract_declarator  ')' type_qualifier_list_opt
+        | '(' TYPEDEFname postfixing_abstract_declarator  ')' type_qualifier_list_opt
                 constructor_init_list_opt compound_statement
         ;
 
@@ -2000,11 +1989,11 @@ constructor_init_list:
         ;
 
 constructor_init:
-        LE_IDENTIFIER   '(' argument_expression_list ')'
-        | LE_IDENTIFIER '('                          ')'
+        IDENTIFIER   '(' argument_expression_list ')'
+        | IDENTIFIER '('                          ')'
 
-        | LE_TYPEDEFname '(' argument_expression_list ')'
-        | LE_TYPEDEFname '('                          ')'
+        | TYPEDEFname '(' argument_expression_list ')'
+        | TYPEDEFname '('                          ')'
         | global_or_scoped_typedefname '(' argument_expression_list ')'
         | global_or_scoped_typedefname '('                          ')'
 
@@ -2024,17 +2013,17 @@ typedef_declarator:
         ;
 
 parameter_typedef_declarator:
-        LE_TYPEDEFname
-        | LE_TYPEDEFname postfixing_abstract_declarator
+        TYPEDEFname
+        | TYPEDEFname postfixing_abstract_declarator
         | clean_typedef_declarator
         ;
 
 
     /*  The  following  have  at  least  one  '*'or '&'.  There is no 
-    (redundant) '(' between the '*'/'&'  and  the  LE_TYPEDEFname.  This 
+    (redundant) '(' between the '*'/'&'  and  the  TYPEDEFname.  This 
     definition  is  critical  in  that  a redundant paren that it too 
-    close to the LE_TYPEDEFname (i.e.,  nothing  between  them  at  all) 
-    would  make  the LE_TYPEDEFname into a parameter list, rather than a 
+    close to the TYPEDEFname (i.e.,  nothing  between  them  at  all) 
+    would  make  the TYPEDEFname into a parameter list, rather than a 
     declarator.*/
 
 clean_typedef_declarator:
@@ -2050,16 +2039,16 @@ clean_postfix_typedef_declarator:
 
 
     /* The following have a redundant '(' placed immediately  to  the 
-    left  of the LE_TYPEDEFname.  This opens up the possibility that the 
-    LE_TYPEDEFname is really the start of a parameter list, and *not*  a 
+    left  of the TYPEDEFname.  This opens up the possibility that the 
+    TYPEDEFname is really the start of a parameter list, and *not*  a 
     declarator*/
 
 paren_typedef_declarator:
         postfix_paren_typedef_declarator
         | asterisk_or_ampersand '(' simple_paren_typedef_declarator ')'
         | unary_modifier        '(' simple_paren_typedef_declarator ')'
-        | asterisk_or_ampersand '(' LE_TYPEDEFname ')' /* redundant paren */
-        | unary_modifier        '(' LE_TYPEDEFname ')' /* redundant paren */
+        | asterisk_or_ampersand '(' TYPEDEFname ')' /* redundant paren */
+        | unary_modifier        '(' TYPEDEFname ')' /* redundant paren */
         | asterisk_or_ampersand paren_typedef_declarator
         | unary_modifier        paren_typedef_declarator
         ;
@@ -2067,17 +2056,17 @@ paren_typedef_declarator:
 postfix_paren_typedef_declarator:
         '(' paren_typedef_declarator ')'
         | '(' simple_paren_typedef_declarator postfixing_abstract_declarator ')'
-        | '(' LE_TYPEDEFname postfixing_abstract_declarator ')'              /* redundant paren */
+        | '(' TYPEDEFname postfixing_abstract_declarator ')'              /* redundant paren */
         | '(' paren_typedef_declarator ')' postfixing_abstract_declarator
         ;
 
 
-    /*  The following excludes lone LE_TYPEDEFname to help in a conflict 
-    resolution.  We have special cased lone  LE_TYPEDEFname  along  side 
+    /*  The following excludes lone TYPEDEFname to help in a conflict 
+    resolution.  We have special cased lone  TYPEDEFname  along  side 
     all uses of simple_paren_typedef_declarator */
 
 simple_paren_typedef_declarator:
-        '(' LE_TYPEDEFname ')'
+        '(' TYPEDEFname ')'
         | '(' simple_paren_typedef_declarator ')'
         ;
 
@@ -2127,7 +2116,7 @@ old_function_declarator:
         int foo(constant) ...
 
     Is  this an old function definition or constructor?  The decision 
-    is made later by LE_THIS grammar based on trailing context :-). This 
+    is made later by THIS grammar based on trailing context :-). This 
     ambiguity is probably what caused many parsers to give up on  old 
     style function definitions. */
 
@@ -2190,14 +2179,14 @@ unary_modifier:
 
     /*  The  actions taken in the rules that follow involve notifying 
     the lexer that it should use the scope specified to determine  if 
-    the  next  LE_IDENTIFIER  token is really a LE_TYPEDEFname token.  Note 
+    the  next  IDENTIFIER  token is really a TYPEDEFname token.  Note 
     that the actions must be taken before the parse has a  chance  to 
     "look-ahead" at the token that follows the "::", and hence should 
     be  done  during  a  reduction to "scoping_name" (which is always 
-    followed by LE_CLCL).  Since we are defining an  LR(1)  grammar,  we 
+    followed by CLCL).  Since we are defining an  LR(1)  grammar,  we 
     are  assured  that  an action specified *before* the :: will take 
     place before the :: is shifted, and hence before the  token  that 
-    follows the LE_CLCL is scanned/lexed. */
+    follows the CLCL is scanned/lexed. */
 
     /*  Note that at the end of each of the following rules we should 
     be sure that the tag name is  in,  or  placed  in  the  indicated 
@@ -2211,13 +2200,13 @@ scoping_name:
         ;
 
 scope:
-        scoping_name LE_CLCL
-        | scope scoping_name  LE_CLCL
+        scoping_name CLCL
+        | scope scoping_name  CLCL
         ;
 
 
     /*  Don't try to simplify the count of non-terminals by using one 
-    of the other definitions of  "LE_IDENTIFIER  or  LE_TYPEDEFname"  (like 
+    of the other definitions of  "IDENTIFIER  or  TYPEDEFname"  (like 
     "label").   If you reuse such a non-terminal, 2 RR conflicts will 
     appear. The conflicts are LALR-only. The underlying cause of  the 
     LALR-only   conflict   is  that  labels,  are  followed  by  ':'.  
@@ -2226,12 +2215,12 @@ scope:
     context, is too much for an LALR parser. */
 
 tag_name:
-        LE_IDENTIFIER
-        | LE_TYPEDEFname
+        IDENTIFIER
+        | TYPEDEFname
         ;
 
 global_scope:
-        { /*scan for upcoming name in file scope */ } LE_CLCL
+        { /*scan for upcoming name in file scope */ } CLCL
         ;
 
 global_or_scope:
@@ -2242,14 +2231,14 @@ global_or_scope:
 
 
     /*  The  following can be used in an identifier based declarator. 
-    (Declarators  that  redefine  an  existing  LE_TYPEDEFname   require 
+    (Declarators  that  redefine  an  existing  TYPEDEFname   require 
     special  handling,  and are not included here).  In addition, the 
     following are valid "identifiers" in  an  expression,  whereas  a 
-    LE_TYPEDEFname is NOT.*/
+    TYPEDEFname is NOT.*/
 
 scope_opt_identifier:
-                LE_IDENTIFIER
-        | scope LE_IDENTIFIER  /* C++ not ANSI C */
+                IDENTIFIER
+        | scope IDENTIFIER  /* C++ not ANSI C */
         ;
 
 scope_opt_complex_name:
@@ -2258,7 +2247,7 @@ scope_opt_complex_name:
         ;
 
 complex_name:
-        '~' LE_TYPEDEFname
+        '~' TYPEDEFname
         | operator_function_name
         ;
 
@@ -2286,36 +2275,36 @@ global_opt_scope_opt_complex_name:
         ;
 
 
-    /*  Note  that we exclude a lone LE_TYPEDEFname.  When all alone, it 
+    /*  Note  that we exclude a lone TYPEDEFname.  When all alone, it 
     gets involved in a lot of ambiguities (re: function like cast  vs 
     declaration),   and  hence  must  be  special  cased  in  several 
     contexts. Note that generally every use of scoped_typedefname  is 
-    accompanied by a parallel production using lone LE_TYPEDEFname */
+    accompanied by a parallel production using lone TYPEDEFname */
 
 scoped_typedefname:
-        scope LE_TYPEDEFname
+        scope TYPEDEFname
         ;
 
 global_or_scoped_typedefname:
                        scoped_typedefname
         | global_scope scoped_typedefname
-        | global_scope LE_TYPEDEFname
+        | global_scope TYPEDEFname
         ;
 
 global_opt_scope_opt_typedefname:
-        LE_TYPEDEFname
+        TYPEDEFname
         | global_or_scoped_typedefname
         ;
 
 %%
-void yyerror(char* string)
+yyerror(string)
+char*string;
 {
-    printf("CodeLite: parser error: %s\n", string);
+    printf("parser error: %s\n", string);
 }
 
 
 main()
 {
-	setLexerInput("class A{}; int foo(){ for(i=0; i<100; i++){}; return 3;}");
-   yyparse();
+    yyparse();
 }

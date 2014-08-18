@@ -46,13 +46,13 @@
 
 	function IDENTIFIER_RETURN() {
 		if (isaTYPE(yytext)) {
-			RETURN_VAL(parser.symbols_.LE_TYPEDEFname);
+			return RETURN_VAL(parser.symbols_.TYPEDEFname);
 		} else if (isaMACRO(yytext)) {
-			RETURN_VAL(parser.symbols_.LE_MACRO);
+			return RETURN_VAL(parser.symbols_.MACRO);
 		} else if (isignoredToken(yytext)) {
 			// do nothing
 		} else {
-			RETURN_VAL(parser.symbols_.LE_IDENTIFIER);
+			return RETURN_VAL(parser.symbols_.IDENTIFIER);
 		}
 	}
 
@@ -77,7 +77,7 @@
 
 	/* PreProcess and Parser operator */
 	function PPOP_RETURN(x) {
-		return RETURN_VAL(x);
+		return RETURN_VAL(yytext);
 	}
 
 	function NAMED_PPOP_RETURN(x) {
@@ -86,7 +86,7 @@
 
 	/* a single character operator */
 	function ASCIIOP_RETURN(x) {
-		return RETURN_VAL(x);
+		return RETURN_VAL(yytext);
 	}
 
 	/* a multichar operator, with a name */
@@ -157,116 +157,116 @@ horizontal_white [ ]|{h_tab}
 
 ({horizontal_white}|{v_tab}|{c_return}|{form_feed})*"\n" {WHITE_RETURN('\n');}
 
-auto      { return(PA_KEYWORD_RETURN(parser.symbols_.LE_AUTO));}
-"break"			{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_BREAK));}
-"case"			{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_CASE));}
-"char"			{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_CHAR));}
-"const"			{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_CONST));}
-"continue"		{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_CONTINUE));}
-"default"   { return(PA_KEYWORD_RETURN(parser.symbols_.LE_DEFAULT));}
+auto      { return(PA_KEYWORD_RETURN(parser.symbols_.AUTO));}
+"break"			{ return(PA_KEYWORD_RETURN(parser.symbols_.BREAK));}
+"case"			{ return(PA_KEYWORD_RETURN(parser.symbols_.CASE));}
+"char"			{ return(PA_KEYWORD_RETURN(parser.symbols_.CHAR));}
+"const"			{ return(PA_KEYWORD_RETURN(parser.symbols_.CONST));}
+"continue"		{ return(PA_KEYWORD_RETURN(parser.symbols_.CONTINUE));}
+"default"   { return(PA_KEYWORD_RETURN(parser.symbols_.DEFAULT));}
 "define"   { return("define");}
 "defined"		{ return("defined");}
-"do"			{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_DO));}
-"double"    { return(PA_KEYWORD_RETURN(parser.symbols_.LE_DOUBLE));}
+"do"			{ return(PA_KEYWORD_RETURN(parser.symbols_.DO));}
+"double"    { return(PA_KEYWORD_RETURN(parser.symbols_.DOUBLE));}
 "elif"		{ return("elif");}
-"else"      { return(PPPA_KEYWORD_RETURN(parser.symbols_.LE_ELSE));}
+"else"      { return(PPPA_KEYWORD_RETURN(parser.symbols_.ELSE));}
 "endif"     { return("endif");}
-"error"			{ return(PP_KEYWORD_RETURN(parser.symbols_.LE_ERROR));}
-"enum"			{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_ENUM));}
-"extern"		{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_EXTERN));}
-"float"			{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_FLOAT));}
-"for"			{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_FOR));}
-"goto"			{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_GOTO));}
-"if"      { return(PPPA_KEYWORD_RETURN(parser.symbols_.LE_IF));}
+"error"			{ return(PP_KEYWORD_RETURN(parser.symbols_.ERROR));}
+"enum"			{ return(PA_KEYWORD_RETURN(parser.symbols_.ENUM));}
+"extern"		{ return(PA_KEYWORD_RETURN(parser.symbols_.EXTERN));}
+"float"			{ return(PA_KEYWORD_RETURN(parser.symbols_.FLOAT));}
+"for"			{ return(PA_KEYWORD_RETURN(parser.symbols_.FOR));}
+"goto"			{ return(PA_KEYWORD_RETURN(parser.symbols_.GOTO));}
+"if"      { return(PPPA_KEYWORD_RETURN(parser.symbols_.IF));}
 "ifdef"      { return("ifdef");}
 "ifndef"      { return("ifndef");}
-"include"			{ return(PP_KEYWORD_RETURN(parser.symbols_.LE_INCLUDE));}
-"int"				{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_INT));}
+"include"			{ return(PP_KEYWORD_RETURN(parser.symbols_.INCLUDE));}
+"int"				{ return(PA_KEYWORD_RETURN(parser.symbols_.INT));}
 "line"			{ return("line");}
-"long"      { return(PA_KEYWORD_RETURN(parser.symbols_.LE_LONG));}
-"bool"			{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_BOOL));}
+"long"      { return(PA_KEYWORD_RETURN(parser.symbols_.LONG));}
+"bool"			{ return(PA_KEYWORD_RETURN(parser.symbols_.BOOL));}
 "pragma"    { return("pragma");}
-"register"	{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_REGISTER));}
-"return"		{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_RETURN));}
-"short"			{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_SHORT));}
-"signed"		{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_SIGNED));}
-"sizeof"		{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_SIZEOF));}
-"static"		{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_STATIC));}
-"struct"		{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_STRUCT));}
-"switch"		{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_SWITCH));}
-"typedef"   { return(PA_KEYWORD_RETURN(parser.symbols_.LE_TYPEDEF));}
+"register"	{ return(PA_KEYWORD_RETURN(parser.symbols_.REGISTER));}
+"return"		{ return(PA_KEYWORD_RETURN(parser.symbols_.RETURN));}
+"short"			{ return(PA_KEYWORD_RETURN(parser.symbols_.SHORT));}
+"signed"		{ return(PA_KEYWORD_RETURN(parser.symbols_.SIGNED));}
+"sizeof"		{ return(PA_KEYWORD_RETURN(parser.symbols_.SIZEOF));}
+"static"		{ return(PA_KEYWORD_RETURN(parser.symbols_.STATIC));}
+"struct"		{ return(PA_KEYWORD_RETURN(parser.symbols_.STRUCT));}
+"switch"		{ return(PA_KEYWORD_RETURN(parser.symbols_.SWITCH));}
+"typedef"   { return(PA_KEYWORD_RETURN(parser.symbols_.TYPEDEF));}
 "undef"		  { return("undef");}
-"union" 		{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_UNION));}
-"unsigned"		{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_UNSIGNED));}
-"void"			{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_VOID));}
-"volatile"		{ return(PA_KEYWORD_RETURN(parser.symbols_.LE_VOLATILE));}
-"while"     { return(PA_KEYWORD_RETURN(parser.symbols_.LE_WHILE));}
+"union" 		{ return(PA_KEYWORD_RETURN(parser.symbols_.UNION));}
+"unsigned"		{ return(PA_KEYWORD_RETURN(parser.symbols_.UNSIGNED));}
+"void"			{ return(PA_KEYWORD_RETURN(parser.symbols_.VOID));}
+"volatile"		{ return(PA_KEYWORD_RETURN(parser.symbols_.VOLATILE));}
+"while"     { return(PA_KEYWORD_RETURN(parser.symbols_.WHILE));}
 "time_t"    {PA_KEYWORD_RETURN("time_t");}
 "size_t"    {PA_KEYWORD_RETURN("size_t");}
 
-"class"      { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_CLASS));}
-"namespace"  { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_NAMESPACE));}
-"delete"     { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_DELETE));}
-"friend"     { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_FRIEND));}
-"inline"     { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_INLINE));}
-"new"        { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_NEW));}
-"operator"   { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_OPERATOR));}
-"overload"     { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_OVERLOAD));}
-"protected"     { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_PROTECTED));}
-"private"     { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_PRIVATE));}
-"public"     { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_PUBLIC));}
-"this"     { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_THIS));}
-"virtual"     { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_VIRTUAL));}
-"template"     { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_TEMPLATE));}
-"typename"     { return(CPP_KEYWORD_RETURN(parser.symbols_.LE_TYPENAME));}
-"dynamic_cast"     {return(CPP_KEYWORD_RETURN(parser.symbols_.LE_DYNAMIC_CAST));}
-"static_cast"     {return(CPP_KEYWORD_RETURN(parser.symbols_.LE_STATIC_CAST));}
-"const_cast"     {return(CPP_KEYWORD_RETURN(parser.symbols_.LE_CONST_CAST));}
-"reinterpret_cast"     {return(CPP_KEYWORD_RETURN(parser.symbols_.LE_REINTERPRET_CAST));}
-"using"     {return(CPP_KEYWORD_RETURN(parser.symbols_.LE_USING));}
-"throw"     {return(CPP_KEYWORD_RETURN(parser.symbols_.LE_THROW));}
-"catch"     {return(CPP_KEYWORD_RETURN(parser.symbols_.LE_CATCH));}
+"class"      { return(CPP_KEYWORD_RETURN(parser.symbols_.CLASS));}
+"namespace"  { return(CPP_KEYWORD_RETURN(parser.symbols_.NAMESPACE));}
+"delete"     { return(CPP_KEYWORD_RETURN(parser.symbols_.DELETE));}
+"friend"     { return(CPP_KEYWORD_RETURN(parser.symbols_.FRIEND));}
+"inline"     { return(CPP_KEYWORD_RETURN(parser.symbols_.INLINE));}
+"new"        { return(CPP_KEYWORD_RETURN(parser.symbols_.NEW));}
+"operator"   { return(CPP_KEYWORD_RETURN(parser.symbols_.OPERATOR));}
+"overload"     { return(CPP_KEYWORD_RETURN(parser.symbols_.OVERLOAD));}
+"protected"     { return(CPP_KEYWORD_RETURN(parser.symbols_.PROTECTED));}
+"private"     { return(CPP_KEYWORD_RETURN(parser.symbols_.PRIVATE));}
+"public"     { return(CPP_KEYWORD_RETURN(parser.symbols_.PUBLIC));}
+"this"     { return(CPP_KEYWORD_RETURN(parser.symbols_.THIS));}
+"virtual"     { return(CPP_KEYWORD_RETURN(parser.symbols_.VIRTUAL));}
+"template"     { return(CPP_KEYWORD_RETURN(parser.symbols_.TEMPLATE));}
+"typename"     { return(CPP_KEYWORD_RETURN(parser.symbols_.TYPENAME));}
+"dynamic_cast"     {return(CPP_KEYWORD_RETURN(parser.symbols_.DYNAMIC_CAST));}
+"static_cast"     {return(CPP_KEYWORD_RETURN(parser.symbols_.STATIC_CAST));}
+"const_cast"     {return(CPP_KEYWORD_RETURN(parser.symbols_.CONST_CAST));}
+"reinterpret_cast"     {return(CPP_KEYWORD_RETURN(parser.symbols_.REINTERPRET_CAST));}
+"using"     {return(CPP_KEYWORD_RETURN(parser.symbols_.USING));}
+"throw"     {return(CPP_KEYWORD_RETURN(parser.symbols_.THROW));}
+"catch"     {return(CPP_KEYWORD_RETURN(parser.symbols_.CATCH));}
 "__declspec"     {return(CPP_KEYWORD_RETURN("__declspec"));}
 "dllimport"     {return(CPP_KEYWORD_RETURN("dllimport"));}
 "dllexport"     {return(CPP_KEYWORD_RETURN("dllexport"));}
 
 {identifier} { return(IDENTIFIER_RETURN());}
 
-{decimal_constant}  {return parser.symbols_.LE_INTEGERconstant;}
-{octal_constant}    {return parser.symbols_.LE_OCTALconstant;}
-{hex_constant}      {return parser.symbols_.LE_HEXconstant;}
-{floating_constant} {return parser.symbols_.LE_FLOATINGconstant;}
+{decimal_constant}  {return parser.symbols_.INTEGERconstant;}
+{octal_constant}    {return parser.symbols_.OCTALconstant;}
+{hex_constant}      {return parser.symbols_.HEXconstant;}
+{floating_constant} {return parser.symbols_.FLOATINGconstant;}
 
-"L"?[']{c_char}+[']     {return parser.symbols_.LE_CHARACTERconstant;}
+"L"?[']{c_char}+[']     {return parser.symbols_.CHARACTERconstant;}
 
 
-"L"?["]{s_char}*["]     {return parser.symbols_.LE_STRINGliteral;}
+"L"?["]{s_char}*["]     {return parser.symbols_.STRINGliteral;}
 
-"..."			{ return(NAMEDOP_RETURN(parser.symbols_.LE_ELLIPSIS));}
-">>="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_RSassign));}
-"<<="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_LSassign));}
-"+="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_PLUSassign));}
-"-="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_MINUSassign));}
-"*="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_MULTassign));}
-"/="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_DIVassign));}
-"%="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_MODassign));}
-"&="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_ANDassign));}
-"^="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_ERassign));}
-"|="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_ORassign));}
-">>"			{ return(NAMEDOP_RETURN(parser.symbols_.LE_RS));}
-"<<"			{ return(NAMEDOP_RETURN(parser.symbols_.LE_LS));}
-"++"			{ return(NAMEDOP_RETURN(parser.symbols_.LE_ICR));}
-"--"			{ return(NAMEDOP_RETURN(parser.symbols_.LE_DECR));}
-"->"      { return(NAMEDOP_RETURN(parser.symbols_.LE_ARROW));}
-"->*"			{ return(NAMEDOP_RETURN(parser.symbols_.LE_ARROWstar));}
-"&&"			{ return(NAMEDOP_RETURN(parser.symbols_.LE_ANDAND));}
-"||"			{ return(NAMEDOP_RETURN(parser.symbols_.LE_OROR));}
-"<="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_LE));}
-">="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_GE));}
-"=="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_EQ));}
-"!="			{ return(NAMEDOP_RETURN(parser.symbols_.LE_NE));}
-".*"			{ return(NAMEDOP_RETURN(parser.symbols_.LE_DOTstar));}
-"::"			{ return(NAMEDOP_RETURN(parser.symbols_.LE_CLCL));}
+"..."			{ return(NAMEDOP_RETURN(parser.symbols_.ELLIPSIS));}
+">>="			{ return(NAMEDOP_RETURN(parser.symbols_.RSassign));}
+"<<="			{ return(NAMEDOP_RETURN(parser.symbols_.LSassign));}
+"+="			{ return(NAMEDOP_RETURN(parser.symbols_.PLUSassign));}
+"-="			{ return(NAMEDOP_RETURN(parser.symbols_.MINUSassign));}
+"*="			{ return(NAMEDOP_RETURN(parser.symbols_.MULTassign));}
+"/="			{ return(NAMEDOP_RETURN(parser.symbols_.DIVassign));}
+"%="			{ return(NAMEDOP_RETURN(parser.symbols_.MODassign));}
+"&="			{ return(NAMEDOP_RETURN(parser.symbols_.ANDassign));}
+"^="			{ return(NAMEDOP_RETURN(parser.symbols_.ERassign));}
+"|="			{ return(NAMEDOP_RETURN(parser.symbols_.ORassign));}
+">>"			{ return(NAMEDOP_RETURN(parser.symbols_.RS));}
+"<<"			{ return(NAMEDOP_RETURN(parser.symbols_.LS));}
+"++"			{ return(NAMEDOP_RETURN(parser.symbols_.ICR));}
+"--"			{ return(NAMEDOP_RETURN(parser.symbols_.DECR));}
+"->"      { return(NAMEDOP_RETURN(parser.symbols_.ARROW));}
+"->*"			{ return(NAMEDOP_RETURN(parser.symbols_.ARROWstar));}
+"&&"			{ return(NAMEDOP_RETURN(parser.symbols_.ANDAND));}
+"||"			{ return(NAMEDOP_RETURN(parser.symbols_.OROR));}
+"<="			{ return(NAMEDOP_RETURN(parser.symbols_.LE));}
+">="			{ return(NAMEDOP_RETURN(parser.symbols_.GE));}
+"=="			{ return(NAMEDOP_RETURN(parser.symbols_.EQ));}
+"!="			{ return(NAMEDOP_RETURN(parser.symbols_.NE));}
+".*"			{ return(NAMEDOP_RETURN(parser.symbols_.DOTstar));}
+"::"			{ return(NAMEDOP_RETURN(parser.symbols_.CLCL));}
 ";"			{ return(ASCIIOP_RETURN(';'));}
 "{"			%{ return(ASCIIOP_RETURN("{"));%}
 "}"			%{ return(ASCIIOP_RETURN("}"));%}
