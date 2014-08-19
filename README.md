@@ -2,7 +2,9 @@ duoquiz
 =======
 # Javascript C++ Lexer and Parser
 
-* based on grammar and lex files from: https://github.com/eranif/codelite/tree/master/CxxParser
+* based on LALR(1) grammar from James A. Roskind
+* updated to new language features
+* lexes and parses preprocessor directives
 * generated with jison
 * generates AST only
 
