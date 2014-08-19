@@ -62,14 +62,18 @@
 %token PP_QUOTE
 %token PP_ANYCHAR
 
-%start translation_unit
+%start start_sym
 
 %%
+
+/* starting point required to return AST */
+start_sym: translation_unit { return $1;}
+        ;
 
 /* PREPROCESSING see http://www.nongnu.org/hcb/#group */
 preprocessing_file:
 
-        | group { $$ = $1;}
+        | group { yy.parser.setValueAndLog("preprocessing_file", $1, $$);}
         ;
 
 group: group_part
@@ -658,7 +662,7 @@ comma_expression_opt:
     visible in the current scope). */
 
 declaration:
-        declaring_list ';' { $$ = [$1, $2];}
+        declaring_list ';' { $$ = [$1, $2]; console.log("declaration");}
         | default_declaring_list ';' { $$ = [$1, $2];}
         | sue_declaration_specifier ';' { $$ = [$1, $2];}
         | sue_type_specifier ';' { $$ = [$1, $2];}
@@ -1543,14 +1547,7 @@ label:
 
 translation_unit:
 
-        | translation_unit external_definition
-            %{
-                if($1 === undefined) {
-                    return [$2];
-                } else {
-                    return [$1, $2];
-                }
-            %}
+        | translation_unit external_definition {$$= [$1, $2];}
         ;
 
 external_definition:
@@ -1561,7 +1558,7 @@ external_definition:
         | linkage_specifier function_definition {$$ = [$1, $2];}
         | linkage_specifier declaration {$$ = [$1, $2];}
         | linkage_specifier '{' translation_unit '}' {$$ = [$1, $2, $3, $4];}
-        | preprocessing_file {$$ = $1;}
+        | preprocessing_file { $$ = $1;}
         ;
 
 linkage_specifier:
@@ -2148,3 +2145,7 @@ global_opt_scope_opt_typedefname:
         ;
 
 %%
+parser.setValueAndLog = function(rule, obj, $$) {
+    $$ = obj;
+    console.log(rule, obj);
+};
