@@ -69,17 +69,17 @@
 /* PREPROCESSING see http://www.nongnu.org/hcb/#group */
 preprocessing_file:
 
-        | group
+        | group { $$ = $1;}
         ;
 
 group: group_part
-        | group group_part
+        | group group_part {$$ = [$1, $2];}
         ;
 
-group_part: if_section
-        | control_line
-        | text-line
-        | PP_SHARP non_directive
+group_part: if_section { $$ = $1;}
+        | control_line { $$ = $1;}
+        | text-line { $$ = $1;}
+        | PP_SHARP non_directive {$$ = [$1, $2];}
         ;
 
 if_section: if_group elif_groups else_group endif_line
@@ -106,93 +106,88 @@ else_group: PP_SHARP PP_ELSE PP_NEWLINE group_opt
 endif_line: PP_SHARP PP_ENDIF PP_NEWLINE
         ;
 
-control_line: PP_SHARP PP_INCLUDE pp_tokens PP_NEWLINE
-        | PP_SHARP PP_DEFINE IDENTIFIER replacement_list PP_NEWLINE
+control_line: PP_SHARP PP_INCLUDE pp_tokens PP_NEWLINE { $$ = [$1, $2, $3];}
+        | PP_SHARP PP_DEFINE IDENTIFIER replacement_list PP_NEWLINE { $$ = [$1, $2, $3, $4];}
         | PP_SHARP PP_DEFINE IDENTIFIER PP_LPAREN identifier_list_opt ')' replacement_list PP_NEWLINE
+          { $$ = [$1, $2, $3, $4, $5, $6, $7];}
         | PP_SHARP PP_DEFINE IDENTIFIER PP_LPAREN identifier_list ',' ELLIPSIS ')' replacement_list PP_NEWLINE
-        | PP_SHARP PP_UNDEF IDENTIFIER PP_NEWLINE
-        | PP_SHARP PP_LINE pp_tokens PP_NEWLINE
-        | PP_SHARP PP_ERROR pp_tokens_opt PP_NEWLINE
-        | PP_SHARP PP_PRAGMA pp_tokens_opt PP_NEWLINE
-        | PP_SHARP PP_NEWLINE
+        | PP_SHARP PP_UNDEF IDENTIFIER PP_NEWLINE { $$ = [$1, $2, $3];}
+        | PP_SHARP PP_LINE pp_tokens PP_NEWLINE { $$ = [$1, $2, $3];}
+        | PP_SHARP PP_ERROR pp_tokens_opt PP_NEWLINE { $$ = [$1, $2, $3];}
+        | PP_SHARP PP_PRAGMA pp_tokens_opt PP_NEWLINE { $$ = [$1, $2, $3];}
+        | PP_SHARP PP_NEWLINE { $$ = $1;}
         ;
 
-text_line: pp_tokens_opt PP_NEWLINE
+text_line: pp_tokens_opt PP_NEWLINE {$$ = [$1, $2];}
         ;
 
-non_directive: pp_tokens PP_NEWLINE
+non_directive: pp_tokens PP_NEWLINE {$$ = [$1, $2];}
         ;
 
 identifier_list:
-        | IDENTIFIER
-        | identifier_list ',' IDENTIFIER
+        | IDENTIFIER { $$ = yytext;}
+        | identifier_list ',' IDENTIFIER {$$ = [$1, $2, $3];}
         ;
 
 identifier_list_opt:
 
-        | identifier_list
+        | identifier_list { $$ = $1;}
         ;
 
-pp_tokens: preprocessing_token
-        | pp_tokens preprocessing_token
+pp_tokens: preprocessing_token { $$ = $1;}
+        | pp_tokens preprocessing_token {$$ = [$1, $2];}
         ;
 
 /* optional pp_tokens */
 pp_tokens_opt:
 
-        | pp_tokens
+        | pp_tokens { $$ = $1;}
         ;
 
 /* optional group */
 group_opt:
-        | group;
 
-replacement_list: pp_tokens_opt;
-
-preprocessing_token: header_name
-        | IDENTIFER
-        | pp_number
-        | CHARACTERconstant
-        | STRINGliteral
-        | any_operator
+        | group { $$ = $1;}
         ;
 
-pp_number: INTEGERconstant
-        | FLOATINGconstant
-        | OCTALconstant
-        | HEXconstant
+replacement_list: pp_tokens_opt { $$ = $1;}
         ;
 
-header_name: PP_HCHARSEQUENCE
-        | PP_QCHARSEQUENCEE
+preprocessing_token: header_name { $$ = $1;}
+        | IDENTIFER { $$ = yytext;}
+        | pp_number { $$ = $1;}
+        | CHARACTERconstant { $$ = $1;}
+        | STRINGliteral { $$ = $1;}
+        | any_operator { $$ = $1;}
         ;
 
-/* depcrecated in favor of above rule
-h_char_sequence: PP_ANYCHAR
-        | h_char_sequence PP_ANYCHAR
+pp_number: INTEGERconstant { $$ = yytext;}
+        | FLOATINGconstant { $$ = yytext;}
+        | OCTALconstant { $$ = yytext;}
+        | HEXconstant { $$ = yytext;}
         ;
 
-q_char_sequence: PP_ANYCHAR
-        | q_char_sequence PP_ANYCHAR
+header_name: PP_HCHARSEQUENCE { $$ = yytext;}
+        | PP_QCHARSEQUENCEE { $$ = yytext;}
         ;
-*/
 
 /* EXCEPTIONS http://www.nongnu.org/hcb/#exception-specification */
+/* TODO */
 
 
 /* CONSTANTS */
 constant:
-        INTEGERconstant
-        | FLOATINGconstant
-        | OCTALconstant
-        | HEXconstant
-        | CHARACTERconstant
+        INTEGERconstant { $$ = yytext;}
+        | FLOATINGconstant { $$ = yytext;}
+        | OCTALconstant { $$ = yytext;}
+        | HEXconstant { $$ = yytext;}
+        | CHARACTERconstant { $$ = yytext;}
         ;
 
 string_literal_list:
-                STRINGliteral
-                | string_literal_list STRINGliteral
-                ;
+        STRINGliteral { $$ = yytext;}
+        | string_literal_list STRINGliteral  { $$ = [$1, $2];}
+        ;
 
 
 /* EXPRESSIONS */
@@ -259,12 +254,12 @@ paren_identifier_declarator:
         */
 
 primary_expression:
-        global_opt_scope_opt_identifier
-        | global_opt_scope_opt_complex_name
-        | THIS
-        | constant
-        | string_literal_list
-        | '(' comma_expression ')'
+        global_opt_scope_opt_identifier { $$ = $1;}
+        | global_opt_scope_opt_complex_name { $$ = $1;}
+        | THIS { $$ = $1;}
+        | constant { $$ = $1;}
+        | string_literal_list { $$ = $1;}
+        | '(' comma_expression ')' { $$ = [$1, $2, $3];}
         ;
 
 
@@ -296,13 +291,13 @@ primary_expression:
     */
 
 non_elaborating_type_specifier:
-        sue_type_specifier
-        | basic_type_specifier
-        | typedef_type_specifier
+        sue_type_specifier { $$ = $1;}
+        | basic_type_specifier { $$ = $1;}
+        | typedef_type_specifier { $$ = $1;}
 
-        | basic_type_name
-        | TYPEDEFname
-        | global_or_scoped_typedefname
+        | basic_type_name { $$ = $1;}
+        | TYPEDEFname { $$ = $1;}
+        | global_or_scoped_typedefname { $$ = $1;}
         ;
 
 
@@ -328,45 +323,45 @@ operator_function_name:
     effectively make a second pass! */
 
 operator_function_ptr_opt:
-        | unary_modifier        operator_function_ptr_opt
-        | asterisk_or_ampersand operator_function_ptr_opt
+        | unary_modifier        operator_function_ptr_opt { $$ = [$1, $2];}
+        | asterisk_or_ampersand operator_function_ptr_opt { $$ = [$1, $2];}
         ;
 
 
     /* List of operators we can overload */
 any_operator:
-        '+'
-        | '-'
-        | '*'
-        | '/'
-        | '%'
-        | '^'
-        | '&'
-        | '|'
-        | '~'
-        | '!'
-        | '<'
-        | '>'
-        | LS
-        | RS
-        | ANDAND
-        | OROR
-        | ARROW
-        | ARROWstar
-        | '.'
-        | DOTstar
-        | ICR
-        | DECR
-        | LE
-        | GE
-        | EQ
-        | NE
-        | assignment_operator
-        | '(' ')'
-        | '[' ']'
-        | NEW
-        | DELETE
-        | ','
+        '+' { $$ = $1;}
+        | '-' { $$ = $1;}
+        | '*' { $$ = $1;}
+        | '/' { $$ = $1;}
+        | '%' { $$ = $1;}
+        | '^' { $$ = $1;}
+        | '&' { $$ = $1;}
+        | '|' { $$ = $1;}
+        | '~' { $$ = $1;}
+        | '!' { $$ = $1;}
+        | '<' { $$ = $1;}
+        | '>' { $$ = $1;}
+        | LS { $$ = $1;}
+        | RS { $$ = $1;}
+        | ANDAND { $$ = $1;}
+        | OROR { $$ = $1;}
+        | ARROW { $$ = $1;}
+        | ARROWstar { $$ = $1;}
+        | '.' { $$ = $1;}
+        | DOTstar { $$ = $1;}
+        | ICR { $$ = $1;}
+        | DECR { $$ = $1;}
+        | LE { $$ = $1;}
+        | GE { $$ = $1;}
+        | EQ { $$ = $1;}
+        | NE { $$ = $1;}
+        | assignment_operator { $$ = $1;}
+        | '(' ')' { $$ = $1;}
+        | '[' ']' { $$ = $1;}
+        | NEW { $$ = $1;}
+        | DELETE { $$ = $1;}
+        | ',' { $$ = $1;}
         ;
 
 
@@ -381,7 +376,7 @@ any_operator:
 
 type_qualifier_list_opt:
 
-        | type_qualifier_list
+        | type_qualifier_list { $$ = $1;}
         ;
 
 
@@ -401,19 +396,19 @@ type_qualifier_list_opt:
     much the way the CLCL operator works.*/
 
 postfix_expression:
-        primary_expression
+        primary_expression { $$ = $1;}
         | postfix_expression '[' comma_expression ']'
-        | postfix_expression '(' ')'
-        | postfix_expression '(' argument_expression_list ')'
-        | postfix_expression '.'   member_name
-        | postfix_expression ARROW member_name
-        | postfix_expression ICR
-        | postfix_expression DECR
-        | TYPEDEFname                  '(' ')'
-        | global_or_scoped_typedefname '(' ')'
-        | TYPEDEFname                  '(' argument_expression_list ')'
-        | global_or_scoped_typedefname '(' argument_expression_list ')'
-        | basic_type_name '(' assignment_expression ')'
+        | postfix_expression '(' ')' { $$ = [$1, $2, $3];}
+        | postfix_expression '(' argument_expression_list ')' { $$ = [$1, $2, $3, $4];}
+        | postfix_expression '.'   member_name { $$ = [$1, $2, $3];}
+        | postfix_expression ARROW member_name { $$ = [$1, $2, $3];}
+        | postfix_expression ICR { $$ = [$1, $2];}
+        | postfix_expression DECR { $$ = [$1, $2];}
+        | TYPEDEFname                  '(' ')' { $$ = [$1, $2, $3];}
+        | global_or_scoped_typedefname '(' ')' { $$ = [$1, $2, $3];}
+        | TYPEDEFname                  '(' argument_expression_list ')' { $$ = [$1, $2, $3, $4];}
+        | global_or_scoped_typedefname '(' argument_expression_list ')' { $$ = [$1, $2, $3, $4];}
+        | basic_type_name '(' assignment_expression ')' { $$ = [$1, $2, $3, $4];}
         ;
 
 
@@ -434,8 +429,8 @@ member_name:
         ;
 
 argument_expression_list:
-        assignment_expression
-        | argument_expression_list ',' assignment_expression
+        assignment_expression { $$ = $1;}
+        | argument_expression_list ',' assignment_expression { $$ = [$1, $2, $3];}
         ;
 
 unary_expression:
@@ -663,11 +658,11 @@ comma_expression_opt:
     visible in the current scope). */
 
 declaration:
-        declaring_list ';'
-        | default_declaring_list ';'
-        | sue_declaration_specifier ';'
-        | sue_type_specifier ';'
-        | sue_type_specifier_elaboration ';'
+        declaring_list ';' { $$ = [$1, $2];}
+        | default_declaring_list ';' { $$ = [$1, $2];}
+        | sue_declaration_specifier ';' { $$ = [$1, $2];}
+        | sue_type_specifier ';' { $$ = [$1, $2];}
+        | sue_type_specifier_elaboration ';' { $$ = [$1, $2];}
         ;
 
 
@@ -813,94 +808,94 @@ nonunary_constructed_identifier_declarator:
 
 
 declaration_specifier:
-        basic_declaration_specifier
-        | sue_declaration_specifier
-        | typedef_declaration_specifier
+        basic_declaration_specifier {$$ = $1;}
+        | sue_declaration_specifier {$$ = $1;}
+        | typedef_declaration_specifier {$$ = $1;}
         ;
 
 type_specifier:
-        basic_type_specifier
-        | sue_type_specifier
-        | sue_type_specifier_elaboration
-        | typedef_type_specifier
+        basic_type_specifier {$$ = $1;}
+        | sue_type_specifier {$$ = $1;}
+        | sue_type_specifier_elaboration {$$ = $1;}
+        | typedef_type_specifier {$$ = $1;}
         ;
 
 declaration_qualifier_list:
-        storage_class
-        | type_qualifier_list storage_class
-        | declaration_qualifier_list declaration_qualifier
+        storage_class {$$ = $1;}
+        | type_qualifier_list storage_class {$$ = [$1, $2];}
+        | declaration_qualifier_list declaration_qualifier {$$ = [$1, $2];}
         ;
 
 type_qualifier_list:
-        type_qualifier
-        | type_qualifier_list type_qualifier
+        type_qualifier {$$ = $1;}
+        | type_qualifier_list type_qualifier {$$ = [$1, $2];}
         ;
 
 declaration_qualifier:
-        storage_class
-        | type_qualifier
+        storage_class {$$ = $1;}
+        | type_qualifier {$$ = $1;}
         ;
 
 type_qualifier:
-        CONST
-        | VOLATILE
+        CONST {$$ = $1;}
+        | VOLATILE {$$ = $1;}
         ;
 
 basic_declaration_specifier:
-        declaration_qualifier_list    basic_type_name
-        | basic_type_specifier        storage_class
-        | basic_type_name             storage_class
-        | basic_declaration_specifier declaration_qualifier
-        | basic_declaration_specifier basic_type_name
+        declaration_qualifier_list    basic_type_name {$$ = [$1, $2];}
+        | basic_type_specifier        storage_class {$$ = [$1, $2];}
+        | basic_type_name             storage_class {$$ = [$1, $2];}
+        | basic_declaration_specifier declaration_qualifier {$$ = [$1, $2];}
+        | basic_declaration_specifier basic_type_name {$$ = [$1, $2];}
         ;
 
 basic_type_specifier:
-        type_qualifier_list    basic_type_name
-        | basic_type_name      basic_type_name
-        | basic_type_name      type_qualifier
-        | basic_type_specifier type_qualifier
-        | basic_type_specifier basic_type_name
+        type_qualifier_list    basic_type_name {$$ = [$1, $2];}
+        | basic_type_name      basic_type_name {$$ = [$1, $2];}
+        | basic_type_name      type_qualifier {$$ = [$1, $2];}
+        | basic_type_specifier type_qualifier {$$ = [$1, $2];}
+        | basic_type_specifier basic_type_name {$$ = [$1, $2];}
         ;
 
 sue_declaration_specifier:
-        declaration_qualifier_list       elaborated_type_name
-        | declaration_qualifier_list     elaborated_type_name_elaboration
-        | sue_type_specifier             storage_class
-        | sue_type_specifier_elaboration storage_class
-        | sue_declaration_specifier      declaration_qualifier
+        declaration_qualifier_list       elaborated_type_name {$$ = [$1, $2];}
+        | declaration_qualifier_list     elaborated_type_name_elaboration {$$ = [$1, $2];}
+        | sue_type_specifier             storage_class {$$ = [$1, $2];}
+        | sue_type_specifier_elaboration storage_class {$$ = [$1, $2];}
+        | sue_declaration_specifier      declaration_qualifier {$$ = [$1, $2];}
         ;
 
 sue_type_specifier_elaboration:
-        elaborated_type_name_elaboration
-        | type_qualifier_list elaborated_type_name_elaboration
-        | sue_type_specifier_elaboration type_qualifier
+        elaborated_type_name_elaboration {$$ = $1;}
+        | type_qualifier_list elaborated_type_name_elaboration {$$ = [$1, $2];}
+        | sue_type_specifier_elaboration type_qualifier {$$ = [$1, $2];}
         ;
 
 sue_type_specifier:
-        elaborated_type_name
-        | type_qualifier_list elaborated_type_name
-        | sue_type_specifier type_qualifier
+        elaborated_type_name {$$ = $1;}
+        | type_qualifier_list elaborated_type_name {$$ = [$1, $2];}
+        | sue_type_specifier type_qualifier {$$ = [$1, $2];}
         ;
 
 typedef_declaration_specifier:
-        declaration_qualifier_list   TYPEDEFname
-        | declaration_qualifier_list global_or_scoped_typedefname
+        declaration_qualifier_list   TYPEDEFname {$$ = [$1, $2];}
+        | declaration_qualifier_list global_or_scoped_typedefname {$$ = [$1, $2];}
 
-        | typedef_type_specifier       storage_class
-        | TYPEDEFname                  storage_class
-        | global_or_scoped_typedefname storage_class
+        | typedef_type_specifier       storage_class {$$ = [$1, $2];}
+        | TYPEDEFname                  storage_class {$$ = [$1, $2];}
+        | global_or_scoped_typedefname storage_class {$$ = [$1, $2];}
 
-        | typedef_declaration_specifier declaration_qualifier
+        | typedef_declaration_specifier declaration_qualifier {$$ = [$1, $2];}
         ;
 
 typedef_type_specifier:
-        type_qualifier_list      TYPEDEFname
-        | type_qualifier_list    global_or_scoped_typedefname
+        type_qualifier_list      TYPEDEFname {$$ = [$1, $2];}
+        | type_qualifier_list    global_or_scoped_typedefname {$$ = [$1, $2];}
 
-        | TYPEDEFname                  type_qualifier
-        | global_or_scoped_typedefname type_qualifier
+        | TYPEDEFname                  type_qualifier {$$ = [$1, $2];}
+        | global_or_scoped_typedefname type_qualifier {$$ = [$1, $2];}
 
-        | typedef_type_specifier type_qualifier
+        | typedef_type_specifier type_qualifier {$$ = [$1, $2];}
         ;
 
 
@@ -929,37 +924,37 @@ VIRTUAL                                 x               x
 */
 
 storage_class:
-        EXTERN
-        | TYPEDEF
-        | STATIC
-        | AUTO
-        | REGISTER
-        | FRIEND
-        | OVERLOAD
-        | INLINE
-        | VIRTUAL
+        EXTERN { $$ = $1;}
+        | TYPEDEF { $$ = $1;}
+        | STATIC { $$ = $1;}
+        | AUTO { $$ = $1;}
+        | REGISTER { $$ = $1;}
+        | FRIEND { $$ = $1;}
+        | OVERLOAD { $$ = $1;}
+        | INLINE { $$ = $1;}
+        | VIRTUAL { $$ = $1;}
         ;
 
 basic_type_name:
-        INT
-        | CHAR
-        | SHORT
-        | LONG
-        | FLOAT
-        | DOUBLE
-        | SIGNED
-        | UNSIGNED
-        | VOID
+        INT { $$ = $1;}
+        | CHAR { $$ = $1;}
+        | SHORT { $$ = $1;}
+        | LONG { $$ = $1;}
+        | FLOAT { $$ = $1;}
+        | DOUBLE { $$ = $1;}
+        | SIGNED { $$ = $1;}
+        | UNSIGNED { $$ = $1;}
+        | VOID { $$ = $1;}
         ;
 
 elaborated_type_name_elaboration:
-        aggregate_name_elaboration
-        | enum_name_elaboration
+        aggregate_name_elaboration { $$ = $1;}
+        | enum_name_elaboration { $$ = $1;}
         ;
 
 elaborated_type_name:
-        aggregate_name
-        | enum_name
+        aggregate_name { $$ = $1;}
+        | enum_name { $$ = $1;}
         ;
 
 
@@ -976,8 +971,8 @@ elaborated_type_name:
     new information. */
 
 aggregate_name_elaboration:
-        aggregate_name derivation_opt  '{' member_declaration_list_opt '}'
-        | aggregate_key derivation_opt '{' member_declaration_list_opt '}'
+        aggregate_name derivation_opt  '{' member_declaration_list_opt '}' { $$ = [$1, $2, $3, $4, $5];}
+        | aggregate_key derivation_opt '{' member_declaration_list_opt '}' { $$ = [$1, $2, $3, $4, $5];}
         ;
 
 
@@ -996,20 +991,20 @@ aggregate_name_elaboration:
     scope. */
 
 aggregate_name:
-                             aggregate_key tag_name
-        | global_scope scope aggregate_key tag_name
-        | global_scope       aggregate_key tag_name
-        | scope              aggregate_key tag_name
+                             aggregate_key tag_name { $$ = [$1, $2];}
+        | global_scope scope aggregate_key tag_name { $$ = [$1, $2, $3, $4];}
+        | global_scope       aggregate_key tag_name { $$ = [$1, $2, $3];}
+        | scope              aggregate_key tag_name { $$ = [$1, $2, $3];}
         ;
 
 derivation_opt:
 
-        | ':' derivation_list
+        | ':' derivation_list { $$ = [$1, $2];}
         ;
 
 derivation_list:
-        parent_class
-        | derivation_list ',' parent_class
+        parent_class { $$ = $1;}
+        | derivation_list ',' parent_class { $$ = [$1, $2, $3];}
         ;
 
 parent_class:
@@ -1020,24 +1015,24 @@ parent_class:
 
 virtual_opt:
 
-        | VIRTUAL
+        | VIRTUAL { $$ = $1;}
         ;
 
 access_specifier_opt:
 
-        | access_specifier
+        | access_specifier { $$ = $1;}
         ;
 
 access_specifier:
-        PUBLIC
-        | PRIVATE
-        | PROTECTED
+        PUBLIC { $$ = $1;}
+        | PRIVATE { $$ = $1;}
+        | PROTECTED { $$ = $1;}
         ;
 
 aggregate_key:
-        STRUCT
-        | UNION
-        | CLASS
+        STRUCT { $$ = $1;}
+        | UNION { $$ = $1;}
+        | CLASS { $$ = $1;}
         ;
 
 
@@ -1247,17 +1242,17 @@ enum_name_elaboration:
     */
 
 enum_name:
-        global_opt_scope_opt_enum_key tag_name
+        global_opt_scope_opt_enum_key tag_name { $$ = [$1, $2];}
         ;
 
 global_opt_scope_opt_enum_key:
-        ENUM
-        | global_or_scope ENUM
+        ENUM { $$ = $1;}
+        | global_or_scope ENUM { $$ = [$1, $2];}
         ;
 
 enumerator_list:
-        enumerator_list_no_trailing_comma
-        | enumerator_list_no_trailing_comma ','
+        enumerator_list_no_trailing_comma { $$ = $1;}
+        | enumerator_list_no_trailing_comma ',' { $$ = [$1, $2];}
         ;
 
 
@@ -1271,18 +1266,18 @@ enumerator_list:
     enter scope as soon as the declarator is complete. */
 
 enumerator_list_no_trailing_comma:
-        enumerator_name enumerator_value_opt
-        | enumerator_list_no_trailing_comma ',' enumerator_name enumerator_value_opt
+        enumerator_name enumerator_value_opt { $$ = [$1, $2];}
+        | enumerator_list_no_trailing_comma ',' enumerator_name enumerator_value_opt { $$ = [$1, $2, $3, $4];}
         ;
 
 enumerator_name:
-        IDENTIFIER
-        | TYPEDEFname
+        IDENTIFIER { $$ = $1;}
+        | TYPEDEFname { $$ = $1;}
         ;
 
 enumerator_value_opt:
-        /* Nothing */
-        | '=' constant_expression
+
+        | '=' constant_expression { $$ = [$1, $2];}
         ;
 
 
@@ -1291,10 +1286,10 @@ enumerator_value_opt:
     This helped to disambiguate type-names in parenthetical casts.*/
 
 parameter_type_list:
-        '(' ')'                             type_qualifier_list_opt
-        | '(' type_name ')'                 type_qualifier_list_opt
-        | '(' type_name initializer ')'     type_qualifier_list_opt
-        | '(' named_parameter_type_list ')' type_qualifier_list_opt
+        '(' ')'                             type_qualifier_list_opt { $$ = [$1, $2, $3];}
+        | '(' type_name ')'                 type_qualifier_list_opt { $$ = [$1, $2, $3, $4];}
+        | '(' type_name initializer ')'     type_qualifier_list_opt { $$ = [$1, $2, $3, $4];}
+        | '(' named_parameter_type_list ')' type_qualifier_list_opt { $$ = [$1, $2, $3, $4];}
         ;
 
 
@@ -1319,31 +1314,31 @@ parameter_type_list:
     cases for a member function.  */
 
 old_parameter_type_list:
-        '(' ')'
-        | '(' type_name ')'
-        | '(' type_name initializer ')'
-        | '(' named_parameter_type_list ')'
+        '(' ')' { $$ = [$1, $2];}
+        | '(' type_name ')' { $$ = [$1, $2, $3];}
+        | '(' type_name initializer ')' { $$ = [$1, $2, $3, $4];}
+        | '(' named_parameter_type_list ')' { $$ = [$1, $2, $3];}
         ;
 
 named_parameter_type_list:
-        parameter_list
-        | parameter_list comma_opt_ellipsis
-        | type_name comma_opt_ellipsis
-        | type_name initializer comma_opt_ellipsis
-        | ELLIPSIS
+        parameter_list { $$ = $1;}
+        | parameter_list comma_opt_ellipsis {$$ = [$1, $2];}
+        | type_name comma_opt_ellipsis {$$ = [$1, $2];}
+        | type_name initializer comma_opt_ellipsis { $$ = [$1, $2, $3];}
+        | ELLIPSIS { $$ = $1;}
         ;
 
 comma_opt_ellipsis:
-        ELLIPSIS
-        | ',' ELLIPSIS
+        ELLIPSIS { $$ = $1;}
+        | ',' ELLIPSIS {$$ = [$1, $2];}
         ;
 
 parameter_list:
-        non_casting_parameter_declaration
-        | non_casting_parameter_declaration initializer
-        | type_name             ',' parameter_declaration
-        | type_name initializer ',' parameter_declaration
-        | parameter_list        ',' parameter_declaration
+        non_casting_parameter_declaration { $$ = $1;}
+        | non_casting_parameter_declaration initializer {$$ = [$1, $2];}
+        | type_name             ',' parameter_declaration { $$ = [$1, $2, $3];}
+        | type_name initializer ',' parameter_declaration { $$ = [$1, $2, $3];}
+        | parameter_list        ',' parameter_declaration { $$ = [$1, $2, $3];}
         ;
 
 
@@ -1356,10 +1351,10 @@ parameter_list:
     contexts where parameter type lists look like old-style-casts. */
 
 parameter_declaration:
-        type_name
-        | type_name                         initializer 
-        | non_casting_parameter_declaration
-        | non_casting_parameter_declaration initializer
+        type_name { $$ = $1;}
+        | type_name                         initializer {$$ = [$1, $2];}
+        | non_casting_parameter_declaration { $$ = $1;}
+        | non_casting_parameter_declaration initializer {$$ = [$1, $2];}
         ;
 
 
@@ -1410,75 +1405,75 @@ parameter_declaration:
     Everything else that is "missing" shows up as a type_name. */
 
 non_casting_parameter_declaration:
-        declaration_specifier
-        | declaration_specifier abstract_declarator
-        | declaration_specifier identifier_declarator
-        | declaration_specifier parameter_typedef_declarator
+        declaration_specifier {$$ = $1;}
+        | declaration_specifier abstract_declarator {$$ = [$1, $2];}
+        | declaration_specifier identifier_declarator {$$ = [$1, $2];}
+        | declaration_specifier parameter_typedef_declarator {$$ = [$1, $2];}
 
-        | declaration_qualifier_list
-        | declaration_qualifier_list abstract_declarator
-        | declaration_qualifier_list identifier_declarator
+        | declaration_qualifier_list {$$ = $1;}
+        | declaration_qualifier_list abstract_declarator {$$ = [$1, $2];}
+        | declaration_qualifier_list identifier_declarator {$$ = [$1, $2];}
 
-        | type_specifier identifier_declarator
-        | type_specifier parameter_typedef_declarator
+        | type_specifier identifier_declarator {$$ = [$1, $2];}
+        | type_specifier parameter_typedef_declarator {$$ = [$1, $2];}
 
-        | basic_type_name identifier_declarator
-        | basic_type_name parameter_typedef_declarator
+        | basic_type_name identifier_declarator {$$ = [$1, $2];}
+        | basic_type_name parameter_typedef_declarator {$$ = [$1, $2];}
 
-        | TYPEDEFname                   identifier_declarator
-        | TYPEDEFname                   parameter_typedef_declarator
+        | TYPEDEFname                   identifier_declarator {$$ = [$1, $2];}
+        | TYPEDEFname                   parameter_typedef_declarator {$$ = [$1, $2];}
 
-        | global_or_scoped_typedefname  identifier_declarator
-        | global_or_scoped_typedefname  parameter_typedef_declarator
+        | global_or_scoped_typedefname  identifier_declarator {$$ = [$1, $2];}
+        | global_or_scoped_typedefname  parameter_typedef_declarator {$$ = [$1, $2];}
 
-        | type_qualifier_list identifier_declarator
+        | type_qualifier_list identifier_declarator {$$ = [$1, $2];}
         ;
 
 type_name:
-        type_specifier
-        | basic_type_name
-        | TYPEDEFname
-        | global_or_scoped_typedefname
-        | type_qualifier_list
+        type_specifier {$$ = $1;}
+        | basic_type_name {$$ = $1;}
+        | TYPEDEFname {$$ = $1;}
+        | global_or_scoped_typedefname {$$ = $1;}
+        | type_qualifier_list {$$ = $1;}
 
-        | type_specifier               abstract_declarator
-        | basic_type_name              abstract_declarator
-        | TYPEDEFname                  abstract_declarator
-        | global_or_scoped_typedefname abstract_declarator
-        | type_qualifier_list          abstract_declarator
+        | type_specifier               abstract_declarator {$$ = [$1, $2];}
+        | basic_type_name              abstract_declarator {$$ = [$1, $2];}
+        | TYPEDEFname                  abstract_declarator {$$ = [$1, $2];}
+        | global_or_scoped_typedefname abstract_declarator {$$ = [$1, $2];}
+        | type_qualifier_list          abstract_declarator {$$ = [$1, $2];}
         ;
 
 initializer_opt:
 
-        | initializer
+        | initializer {$$ = $1;}
         ;
 
 initializer:
-        '=' initializer_group
+        '=' initializer_group {$$ = [$1, $2];}
         ;
 
 initializer_group:
-        '{' initializer_list '}'
-        | '{' initializer_list ',' '}'
-        | assignment_expression
+        '{' initializer_list '}' {$$ = [$1, $2, $3];}
+        | '{' initializer_list ',' '}' {$$ = [$1, $2, $3, $4];}
+        | assignment_expression {$$ = $1;}
         ;
 
 initializer_list:
-        initializer_group
-        | initializer_list ',' initializer_group
+        initializer_group {$$ = $1;}
+        | initializer_list ',' initializer_group {$$ = [$1, $2, $3];}
         ;
 
 
 /* STATEMENTS */
 
 statement:
-        labeled_statement
-        | compound_statement
-        | expression_statement
-        | selection_statement
-        | iteration_statement
-        | jump_statement
-        | declaration
+        labeled_statement { $$ = $1;}
+        | compound_statement { $$ = $1;}
+        | expression_statement { $$ = $1;}
+        | selection_statement { $$ = $1;}
+        | iteration_statement { $$ = $1;}
+        | jump_statement { $$ = $1;}
+        | declaration { $$ = $1;}
         ;
 
 labeled_statement:
@@ -1493,17 +1488,17 @@ labeled_statement:
     syntax is heavily localized */
 
 compound_statement:
-        '{' statement_list_opt '}'
+        '{' statement_list_opt '}' { $$ = [$1, $2, $3];}
         ;
 
 declaration_list:
-        declaration
-        | declaration_list declaration
+        declaration { $$ = $1;}
+        | declaration_list declaration  { $$ = [$1, $2];}
         ;
 
 statement_list_opt:
-        /* nothing */
-        | statement_list_opt statement
+
+        | statement_list_opt statement { $$ = [$1, $2];}
         ;
 
 expression_statement:
@@ -1549,21 +1544,28 @@ label:
 translation_unit:
 
         | translation_unit external_definition
+            %{
+                if($1 === undefined) {
+                    return [$2];
+                } else {
+                    return [$1, $2];
+                }
+            %}
         ;
 
 external_definition:
-        function_declaration
-        | function_definition
-        | declaration
-        | linkage_specifier function_declaration
-        | linkage_specifier function_definition
-        | linkage_specifier declaration
-        | linkage_specifier '{' translation_unit '}'
-        | preprocessing_file
+        function_declaration {$$ = $1;}
+        | function_definition {$$ = $1;}
+        | declaration {$$ = $1;}
+        | linkage_specifier function_declaration {$$ = [$1, $2];}
+        | linkage_specifier function_definition {$$ = [$1, $2];}
+        | linkage_specifier declaration {$$ = [$1, $2];}
+        | linkage_specifier '{' translation_unit '}' {$$ = [$1, $2, $3, $4];}
+        | preprocessing_file {$$ = $1;}
         ;
 
 linkage_specifier:
-        EXTERN STRINGliteral
+        EXTERN STRINGliteral {$$ = $1;}
         ;
 
 
@@ -1573,14 +1575,14 @@ linkage_specifier:
     should be specified (e_g., a conversion operator).*/
 
 function_declaration:
-        identifier_declarator ';'
-        | constructor_function_declaration ';'
+        identifier_declarator ';' { $$ = [$1, $2];}
+        | constructor_function_declaration ';' { $$ = [$1, $2];}
         ;
 
 function_definition:
-        new_function_definition
-        | old_function_definition
-        | constructor_function_definition
+        new_function_definition { $$ = $1;}
+        | old_function_definition { $$ = $1;}
+        | constructor_function_definition { $$ = $1;}
         ;
 
 
@@ -1602,14 +1604,14 @@ function_definition:
     requirements.  */
 
 new_function_definition:
-                                       identifier_declarator compound_statement
-        | declaration_specifier                   declarator compound_statement /* partially C++ only */
-        | type_specifier                          declarator compound_statement /* partially C++ only */
-        | basic_type_name                         declarator compound_statement /* partially C++ only */
-        | TYPEDEFname                             declarator compound_statement /* partially C++ only */
-        | global_or_scoped_typedefname            declarator compound_statement /* partially C++ only */
-        | declaration_qualifier_list   identifier_declarator compound_statement
-        | type_qualifier_list          identifier_declarator compound_statement
+                                       identifier_declarator compound_statement { $$ = [$1, $2];}
+        | declaration_specifier                   declarator compound_statement { $$ = [$1, $2, $3];}
+        | type_specifier                          declarator compound_statement { $$ = [$1, $2, $3];}
+        | basic_type_name                         declarator compound_statement { $$ = [$1, $2, $3];}
+        | TYPEDEFname                             declarator compound_statement { $$ = [$1, $2, $3];}
+        | global_or_scoped_typedefname            declarator compound_statement { $$ = [$1, $2, $3];}
+        | declaration_qualifier_list   identifier_declarator compound_statement { $$ = [$1, $2, $3];}
+        | type_qualifier_list          identifier_declarator compound_statement { $$ = [$1, $2, $3];}
         ;
 
 
@@ -1620,19 +1622,19 @@ new_function_definition:
     considered TYPEDEFnames. */
 
 old_function_definition:
-                                       old_function_declarator old_function_body
-        | declaration_specifier        old_function_declarator old_function_body
-        | type_specifier               old_function_declarator old_function_body
-        | basic_type_name              old_function_declarator old_function_body
-        | TYPEDEFname                  old_function_declarator old_function_body
-        | global_or_scoped_typedefname old_function_declarator old_function_body
-        | declaration_qualifier_list   old_function_declarator old_function_body
-        | type_qualifier_list          old_function_declarator old_function_body
+                                       old_function_declarator old_function_body { $$ = [$1, $2];}
+        | declaration_specifier        old_function_declarator old_function_body { $$ = [$1, $2, $3];}
+        | type_specifier               old_function_declarator old_function_body { $$ = [$1, $2, $3];}
+        | basic_type_name              old_function_declarator old_function_body { $$ = [$1, $2, $3];}
+        | TYPEDEFname                  old_function_declarator old_function_body { $$ = [$1, $2, $3];}
+        | global_or_scoped_typedefname old_function_declarator old_function_body { $$ = [$1, $2, $3];}
+        | declaration_qualifier_list   old_function_declarator old_function_body { $$ = [$1, $2, $3];}
+        | type_qualifier_list          old_function_declarator old_function_body { $$ = [$1, $2, $3];}
         ;
 
 old_function_body:
-        declaration_list compound_statement
-        | compound_statement
+        declaration_list compound_statement { $$ = [$1, $2];}
+        | compound_statement { $$ = $1;}
         ;
 
 
@@ -1851,20 +1853,20 @@ constructor_init:
         ;
 
 declarator:
-        identifier_declarator
-        | typedef_declarator
+        identifier_declarator { $$ = $1;}
+        | typedef_declarator { $$ = $1;}
         ;
 
 typedef_declarator:
-        paren_typedef_declarator
-        | simple_paren_typedef_declarator
-        | parameter_typedef_declarator
+        paren_typedef_declarator { $$ = $1;}
+        | simple_paren_typedef_declarator { $$ = $1;}
+        | parameter_typedef_declarator { $$ = $1;}
         ;
 
 parameter_typedef_declarator:
-        TYPEDEFname
-        | TYPEDEFname postfixing_abstract_declarator
-        | clean_typedef_declarator
+        TYPEDEFname { $$ = $1;}
+        | TYPEDEFname postfixing_abstract_declarator { $$ = [$1, $2];}
+        | clean_typedef_declarator { $$ = $1;}
         ;
 
 
@@ -1876,14 +1878,14 @@ parameter_typedef_declarator:
     declarator.*/
 
 clean_typedef_declarator:
-        clean_postfix_typedef_declarator
-        | asterisk_or_ampersand parameter_typedef_declarator
-        | unary_modifier        parameter_typedef_declarator
+        clean_postfix_typedef_declarator { $$ = $1;}
+        | asterisk_or_ampersand parameter_typedef_declarator { $$ = [$1, $2];}
+        | unary_modifier        parameter_typedef_declarator { $$ = [$1, $2];}
         ;
 
 clean_postfix_typedef_declarator:
-        '('   clean_typedef_declarator ')'
-        | '(' clean_typedef_declarator ')' postfixing_abstract_declarator
+        '('   clean_typedef_declarator ')' { $$ = [$1, $2, $3];}
+        | '(' clean_typedef_declarator ')' postfixing_abstract_declarator { $$ = [$1, $2, $3, $4];}
         ;
 
 
@@ -1893,20 +1895,20 @@ clean_postfix_typedef_declarator:
     declarator*/
 
 paren_typedef_declarator:
-        postfix_paren_typedef_declarator
-        | asterisk_or_ampersand '(' simple_paren_typedef_declarator ')'
-        | unary_modifier        '(' simple_paren_typedef_declarator ')'
-        | asterisk_or_ampersand '(' TYPEDEFname ')'
-        | unary_modifier        '(' TYPEDEFname ')'
-        | asterisk_or_ampersand paren_typedef_declarator
-        | unary_modifier        paren_typedef_declarator
+        postfix_paren_typedef_declarator { $$ = $1;}
+        | asterisk_or_ampersand '(' simple_paren_typedef_declarator ')' { $$ = [$1, $2, $3, $4];}
+        | unary_modifier        '(' simple_paren_typedef_declarator ')' { $$ = [$1, $2, $3, $4];}
+        | asterisk_or_ampersand '(' TYPEDEFname ')' { $$ = [$1, $2, $3, $4];}
+        | unary_modifier        '(' TYPEDEFname ')' { $$ = [$1, $2, $3, $4];}
+        | asterisk_or_ampersand paren_typedef_declarator { $$ = [$1, $2];}
+        | unary_modifier        paren_typedef_declarator { $$ = [$1, $2];}
         ;
 
 postfix_paren_typedef_declarator:
-        '(' paren_typedef_declarator ')'
-        | '(' simple_paren_typedef_declarator postfixing_abstract_declarator ')'
-        | '(' TYPEDEFname postfixing_abstract_declarator ')'
-        | '(' paren_typedef_declarator ')' postfixing_abstract_declarator
+        '(' paren_typedef_declarator ')' { $$ = [$1, $2, $3];}
+        | '(' simple_paren_typedef_declarator postfixing_abstract_declarator ')' { $$ = [$1, $2, $3, $4];}
+        | '(' TYPEDEFname postfixing_abstract_declarator ')' { $$ = [$1, $2, $3, $4];}
+        | '(' paren_typedef_declarator ')' postfixing_abstract_declarator { $$ = [$1, $2, $3, $4];}
         ;
 
 
@@ -1915,13 +1917,13 @@ postfix_paren_typedef_declarator:
     all uses of simple_paren_typedef_declarator */
 
 simple_paren_typedef_declarator:
-        '(' TYPEDEFname ')'
-        | '(' simple_paren_typedef_declarator ')'
+        '(' TYPEDEFname ')' { $$ = [$1, $2, $3];}
+        | '(' simple_paren_typedef_declarator ')' { $$ = [$1, $2, $3];}
         ;
 
 identifier_declarator:
-        unary_identifier_declarator
-        | paren_identifier_declarator
+        unary_identifier_declarator { $$ = $1;}
+        | paren_identifier_declarator {$$ = $1;}
         ;
 
 
@@ -1932,21 +1934,21 @@ identifier_declarator:
     simple constraint errors. */
 
 unary_identifier_declarator:
-        postfix_identifier_declarator
-        | asterisk_or_ampersand identifier_declarator
-        | unary_modifier        identifier_declarator
+        postfix_identifier_declarator { $$ = $1;}
+        | asterisk_or_ampersand identifier_declarator { $$ = [$1, $2];}
+        | unary_modifier        identifier_declarator { $$ = [$1, $2];}
         ;
 
 postfix_identifier_declarator:
-        paren_identifier_declarator           postfixing_abstract_declarator
-        | '(' unary_identifier_declarator ')'
-        | '(' unary_identifier_declarator ')' postfixing_abstract_declarator
+        paren_identifier_declarator           postfixing_abstract_declarator { $$ = [$1, $2];}
+        | '(' unary_identifier_declarator ')' { $$ = [$1, $2, $3];}
+        | '(' unary_identifier_declarator ')' postfixing_abstract_declarator { $$ = [$1, $2, $3, $4];}
         ;
 
 old_function_declarator:
-        postfix_old_function_declarator
-        | asterisk_or_ampersand old_function_declarator
-        | unary_modifier      old_function_declarator
+        postfix_old_function_declarator { $$ = $1;}
+        | asterisk_or_ampersand old_function_declarator { $$ = [$1, $2];}
+        | unary_modifier      old_function_declarator { $$ = [$1, $2];}
         ;
 
 
@@ -1970,55 +1972,55 @@ old_function_declarator:
     style function definitions. */
 
 postfix_old_function_declarator:
-        paren_identifier_declarator '(' argument_expression_list ')'
-        | '(' old_function_declarator ')'
-        | '(' old_function_declarator ')' old_postfixing_abstract_declarator
+        paren_identifier_declarator '(' argument_expression_list ')' { $$ = [$1, $2, $3, $4];}
+        | '(' old_function_declarator ')' { $$ = [$1, $2, $3];}
+        | '(' old_function_declarator ')' old_postfixing_abstract_declarator { $$ = [$1, $2, $3, $4];}
         ;
 
 old_postfixing_abstract_declarator:
-        array_abstract_declarator /* array modifiers */
-        | old_parameter_type_list  /* function returning modifiers */
+        array_abstract_declarator { $$ = $1;}
+        | old_parameter_type_list { $$ = $1;}
         ;
 
 abstract_declarator:
-        unary_abstract_declarator
-        | postfix_abstract_declarator
-        | postfixing_abstract_declarator
+        unary_abstract_declarator { $$ = $1;}
+        | postfix_abstract_declarator { $$ = $1;}
+        | postfixing_abstract_declarator { $$ = $1;}
         ;
 
 postfixing_abstract_declarator:
-        array_abstract_declarator
-        | parameter_type_list
+        array_abstract_declarator { $$ = $1;}
+        | parameter_type_list { $$ = $1;}
         ;
 
 array_abstract_declarator:
-        '[' ']'
-        | '[' constant_expression ']'
-        | array_abstract_declarator '[' constant_expression ']'
+        '[' ']' { $$ = [$1, $2];}
+        | '[' constant_expression ']' { $$ = [$1, $2, $3];}
+        | array_abstract_declarator '[' constant_expression ']' { $$ = [$1, $2, $3, $4];}
         ;
 
 unary_abstract_declarator:
-        asterisk_or_ampersand
-        | unary_modifier
-        | asterisk_or_ampersand abstract_declarator
-        | unary_modifier        abstract_declarator
+        asterisk_or_ampersand { $$ = $1;}
+        | unary_modifier { $$ = $1;}
+        | asterisk_or_ampersand abstract_declarator { $$ = [$1, $2];}
+        | unary_modifier        abstract_declarator { $$ = [$1, $2];}
         ;
 
 postfix_abstract_declarator:
-        '(' unary_abstract_declarator ')'
-        | '(' postfix_abstract_declarator ')'
-        | '(' postfixing_abstract_declarator ')'
-        | '(' unary_abstract_declarator ')' postfixing_abstract_declarator
+        '(' unary_abstract_declarator ')' { $$ = [$1, $2, $3];}
+        | '(' postfix_abstract_declarator ')' { $$ = [$1, $2, $3];}
+        | '(' postfixing_abstract_declarator ')' { $$ = [$1, $2, $3];}
+        | '(' unary_abstract_declarator ')' postfixing_abstract_declarator { $$ = [$1, $2, $3, $4];}
         ;
 
 asterisk_or_ampersand:
-        '*'
-        | '&'
+        '*' { $$ = $1;}
+        | '&' { $$ = $1;}
         ;
 
 unary_modifier:
-        scope '*' type_qualifier_list_opt
-        | asterisk_or_ampersand type_qualifier_list
+        scope '*' type_qualifier_list_opt { $$ = [$1, $2, $3];}
+        | asterisk_or_ampersand type_qualifier_list { $$ = [$1, $2];}
         ;
 
 
