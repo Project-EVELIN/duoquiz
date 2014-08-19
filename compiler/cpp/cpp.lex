@@ -299,6 +299,12 @@ horizontal_white [ ]|{h_tab}
 <PREPR>"endif"										{ return(PPOP_RETURN(parser.symbols_.PP_ENDIF));}
 <PREPR>"elif"											{ return(PPOP_RETURN(parser.symbols_.PP_ELIF));}
 <PREPR>{identifier}								{	return IDENTIFIER_RETURN()}
+<PREPR>{decimal_constant}  {return parser.symbols_.INTEGERconstant;}
+<PREPR>{octal_constant}    {return parser.symbols_.OCTALconstant;}
+<PREPR>{hex_constant}      {return parser.symbols_.HEXconstant;}
+<PREPR>{floating_constant} {return parser.symbols_.FLOATINGconstant;}
+<PREPR>"L"?[']{c_char}+[']     {return parser.symbols_.CHARACTERconstant;}
+<PREPR>"L"?["]{s_char}*["]     {return parser.symbols_.STRINGliteral;}
 <PREPR>["][^\n]*["]							{ return(PPOP_RETURN(parser.symbols_.PP_QCHARSEQUENCE));}
 <PREPR>"<"[^\n]*">"							{ return(PPOP_RETURN(parser.symbols_.PP_HCHARSEQUENCE));}
 <PREPR>.													{ return(PPOP_RETURN(parser.symbols_.PP_ANYCHAR));}

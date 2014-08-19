@@ -330,8 +330,8 @@ operator_function_ptr_opt:
 
     /* List of operators we can overload */
 any_operator:
-        '+' { $$ = $1;}
-        | '-' { $$ = $1;}
+        '+' { $$ = "+";}
+        | '-' { $$ = "-";}
         | '*' { $$ = $1;}
         | '/' { $$ = $1;}
         | '%' { $$ = $1;}
@@ -434,17 +434,17 @@ argument_expression_list:
         ;
 
 unary_expression:
-        postfix_expression
-        | ICR  unary_expression
-        | DECR unary_expression
-        | asterisk_or_ampersand cast_expression
-        | '-'                   cast_expression
-        | '+'                   cast_expression
-        | '~'                   cast_expression
-        | '!'                   cast_expression
-        | SIZEOF unary_expression
-        | SIZEOF '(' type_name ')'
-        | allocation_expression
+        postfix_expression { $$ = $1;}
+        | ICR  unary_expression { $$ = [$1, $2];}
+        | DECR unary_expression { $$ = [$1, $2];}
+        | asterisk_or_ampersand cast_expression { $$ = [$1, $2];}
+        | '-'                   cast_expression { $$ = [$1, $2];}
+        | '+'                   cast_expression { $$ = [$1, $2];}
+        | '~'                   cast_expression { $$ = [$1, $2];}
+        | '!'                   cast_expression { $$ = [$1, $2];}
+        | SIZEOF unary_expression { $$ = [$1, $2];}
+        | SIZEOF '(' type_name ')' { $$ = [$1, $2, $3, $4];}
+        | allocation_expression { $$ = $1;}
         ;
 
 
@@ -609,12 +609,12 @@ conditional_expression:
         ;
 
 assignment_expression:
-        conditional_expression
-        | unary_expression assignment_operator assignment_expression
+        conditional_expression { $$ = $1;}
+        | unary_expression assignment_operator assignment_expression { $$ = [$1, $2, $3];}
         ;
 
 assignment_operator:
-        '='
+        '=' { $$ = "="; console.log("assignment_operator: =");}
         | MULTassign
         | DIVassign
         | MODassign
@@ -628,19 +628,19 @@ assignment_operator:
         ;
 
 comma_expression:
-        assignment_expression
-        | comma_expression ',' assignment_expression
+        assignment_expression { $$ = $1;}
+        | comma_expression ',' assignment_expression { $$ = [$1, $2, $3];}
         ;
 
 constant_expression:
-        conditional_expression
+        conditional_expression { $$ = $1;}
         ;
 
 
     /* The following was used for clarity */
 comma_expression_opt:
 
-        | comma_expression
+        | comma_expression { $$ = $1;}
         ;
 
 
