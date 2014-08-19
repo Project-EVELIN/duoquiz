@@ -57,7 +57,8 @@
 %token PP_LINE
 %token PP_NEWLINE
 %token PP_LPAREN
-%token PP_G
+%token PP_HCHARSEQUENCE
+%token PP_QCHARSEQUENCE
 %token PP_QUOTE
 %token PP_ANYCHAR
 
@@ -162,10 +163,11 @@ pp_number: INTEGERconstant
         | HEXconstant
         ;
 
-header_name: '<' h_char_sequence PP_G
-        | PP_QUOTE q_char_sequence PP_QUOTE
+header_name: PP_HCHARSEQUENCE
+        | PP_QCHARSEQUENCEE
         ;
 
+/* depcrecated in favor of above rule
 h_char_sequence: PP_ANYCHAR
         | h_char_sequence PP_ANYCHAR
         ;
@@ -173,7 +175,7 @@ h_char_sequence: PP_ANYCHAR
 q_char_sequence: PP_ANYCHAR
         | q_char_sequence PP_ANYCHAR
         ;
-
+*/
 
 /* EXCEPTIONS http://www.nongnu.org/hcb/#exception-specification */
 

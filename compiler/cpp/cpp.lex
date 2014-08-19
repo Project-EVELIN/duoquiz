@@ -157,20 +157,16 @@ horizontal_white [ ]|{h_tab}
 
 ({horizontal_white}|{v_tab}|{c_return}|{form_feed})*"\n" {WHITE_RETURN('\n');}
 
-auto        { return(PA_KEYWORD_RETURN(parser.symbols_.AUTO));}
+"auto"			{ return(PA_KEYWORD_RETURN(parser.symbols_.AUTO));}
 "break"			{ return(PA_KEYWORD_RETURN(parser.symbols_.BREAK));}
 "case"			{ return(PA_KEYWORD_RETURN(parser.symbols_.CASE));}
 "char"			{ return(PA_KEYWORD_RETURN(parser.symbols_.CHAR));}
 "const"			{ return(PA_KEYWORD_RETURN(parser.symbols_.CONST));}
 "continue"	{ return(PA_KEYWORD_RETURN(parser.symbols_.CONTINUE));}
 "default"   { return(PA_KEYWORD_RETURN(parser.symbols_.DEFAULT));}
-"define"    { return(PPOP_RETURN(parser.symbols_.PP_DEFINE));}
-"defined"		{ return(PPOP_RETURN(parser.symbols_.PP_DEFINED));}
 "do"			  { return(PA_KEYWORD_RETURN(parser.symbols_.DO));}
 "double"    { return(PA_KEYWORD_RETURN(parser.symbols_.DOUBLE));}
-"elif"		  { return(PPOP_RETURN(parser.symbols_.PP_ELIF));}
 "else"      { return(PPPA_KEYWORD_RETURN(parser.symbols_.ELSE));}
-"endif"     { return(PPOP_RETURN(parser.symbols_.PP_ENDIF));}
 "error"			{ return(PP_KEYWORD_RETURN(parser.symbols_.ERROR));}
 "enum"			{ return(PA_KEYWORD_RETURN(parser.symbols_.ENUM));}
 "extern"		{ return(PA_KEYWORD_RETURN(parser.symbols_.EXTERN));}
@@ -178,14 +174,9 @@ auto        { return(PA_KEYWORD_RETURN(parser.symbols_.AUTO));}
 "for"			  { return(PA_KEYWORD_RETURN(parser.symbols_.FOR));}
 "goto"			{ return(PA_KEYWORD_RETURN(parser.symbols_.GOTO));}
 "if"        { return(PPPA_KEYWORD_RETURN(parser.symbols_.IF));}
-"ifdef"     { return(PPOP_RETURN(parser.symbols_.PP_IFDEF));}
-"ifndef"    { return(PPOP_RETURN(parser.symbols_.PP_IFNDEF));}
-"include"		{ return(PPOP_RETURN(parser.symbols_.PP_INCLUDE));}
 "int"				{ return(PA_KEYWORD_RETURN(parser.symbols_.INT));}
-"line"			{ return(PPOP_RETURN(parser.symbols_.PP_LINE));}
 "long"      { return(PA_KEYWORD_RETURN(parser.symbols_.LONG));}
 "bool"			{ return(PA_KEYWORD_RETURN(parser.symbols_.BOOL));}
-"pragma"    { return(PPOP_RETURN(parser.symbols_.PP_PRAGMA));}
 "register"	{ return(PA_KEYWORD_RETURN(parser.symbols_.REGISTER));}
 "return"		{ return(PA_KEYWORD_RETURN(parser.symbols_.RETURN));}
 "short"			{ return(PA_KEYWORD_RETURN(parser.symbols_.SHORT));}
@@ -195,14 +186,12 @@ auto        { return(PA_KEYWORD_RETURN(parser.symbols_.AUTO));}
 "struct"		{ return(PA_KEYWORD_RETURN(parser.symbols_.STRUCT));}
 "switch"		{ return(PA_KEYWORD_RETURN(parser.symbols_.SWITCH));}
 "typedef"   { return(PA_KEYWORD_RETURN(parser.symbols_.TYPEDEF));}
-"undef"		  { return(PPOP_RETURN(parser.symbols_.PP_UNDEF));}
+
 "union" 		{ return(PA_KEYWORD_RETURN(parser.symbols_.UNION));}
 "unsigned"	{ return(PA_KEYWORD_RETURN(parser.symbols_.UNSIGNED));}
 "void"			{ return(PA_KEYWORD_RETURN(parser.symbols_.VOID));}
 "volatile"	{ return(PA_KEYWORD_RETURN(parser.symbols_.VOLATILE));}
 "while"     { return(PA_KEYWORD_RETURN(parser.symbols_.WHILE));}
-"time_t"    {PA_KEYWORD_RETURN("time_t");}
-"size_t"    {PA_KEYWORD_RETURN("size_t");}
 
 "class"      { return(CPP_KEYWORD_RETURN(parser.symbols_.CLASS));}
 "namespace"  { return(CPP_KEYWORD_RETURN(parser.symbols_.NAMESPACE));}
@@ -238,8 +227,6 @@ auto        { return(PA_KEYWORD_RETURN(parser.symbols_.AUTO));}
 {floating_constant} {return parser.symbols_.FLOATINGconstant;}
 
 "L"?[']{c_char}+[']     {return parser.symbols_.CHARACTERconstant;}
-
-
 "L"?["]{s_char}*["]     {return parser.symbols_.STRINGliteral;}
 
 "..."			{ return(NAMEDOP_RETURN(parser.symbols_.ELLIPSIS));}
@@ -267,44 +254,59 @@ auto        { return(PA_KEYWORD_RETURN(parser.symbols_.AUTO));}
 "!="			{ return(NAMEDOP_RETURN(parser.symbols_.NE));}
 ".*"			{ return(NAMEDOP_RETURN(parser.symbols_.DOTstar));}
 "::"			{ return(NAMEDOP_RETURN(parser.symbols_.CLCL));}
-";"			{ return(ASCIIOP_RETURN(';'));}
-"{"			%{ return(ASCIIOP_RETURN("{"));%}
-"}"			%{ return(ASCIIOP_RETURN("}"));%}
-","			{ return(PPOP_RETURN(','));}
-":"			{ return(ASCIIOP_RETURN(':'));}
-"="			{ return(ASCIIOP_RETURN('='));}
-"("			{ return(PPOP_RETURN('('));}
-")"			{ return(PPOP_RETURN(')'));}
-"["			{ return(ASCIIOP_RETURN('['));}
-"]"			{ return(ASCIIOP_RETURN(']'));}
-"."			{ return(ASCIIOP_RETURN('.'));}
-"&"			{ return(ASCIIOP_RETURN('&'));}
-"!"			{ return(ASCIIOP_RETURN('!'));}
-"~"			{ return(ASCIIOP_RETURN('~'));}
-"-"			{ return(ASCIIOP_RETURN('-'));}
-"+"			{ return(ASCIIOP_RETURN('+'));}
-"*"			{ return(ASCIIOP_RETURN('*'));}
-"/"			{ return(ASCIIOP_RETURN('/'));}
-"%"			{ return(ASCIIOP_RETURN('%'));}
-"<"			{ return(ASCIIOP_RETURN('<'));}
-">"			{ return(ASCIIOP_RETURN('>'));}
-"^"			{ return(ASCIIOP_RETURN("^"));}
-"|"			{ return(ASCIIOP_RETURN('|'));}
-"?"			{ return(ASCIIOP_RETURN('?'));}
+";"				{ return(ASCIIOP_RETURN(';'));}
+"{"				%{ return(ASCIIOP_RETURN("{"));%}
+"}"				%{ return(ASCIIOP_RETURN("}"));%}
+","				{ return(PPOP_RETURN(','));}
+":"				{ return(ASCIIOP_RETURN(':'));}
+"="				{ return(ASCIIOP_RETURN('='));}
+"("				{ return(PPOP_RETURN('('));}
+")"				{ return(PPOP_RETURN(')'));}
+"["				{ return(ASCIIOP_RETURN('['));}
+"]"				{ return(ASCIIOP_RETURN(']'));}
+"."				{ return(ASCIIOP_RETURN('.'));}
+"&"				{ return(ASCIIOP_RETURN('&'));}
+"!"				{ return(ASCIIOP_RETURN('!'));}
+"~"				{ return(ASCIIOP_RETURN('~'));}
+"-"				{ return(ASCIIOP_RETURN('-'));}
+"+"				{ return(ASCIIOP_RETURN('+'));}
+"*"				{ return(ASCIIOP_RETURN('*'));}
+"/"				{ return(ASCIIOP_RETURN('/'));}
+"%"				{ return(ASCIIOP_RETURN('%'));}
+"<"				{ return(ASCIIOP_RETURN('<'));}
+">"				{ return(ASCIIOP_RETURN('>'));}
+"^"				{ return(ASCIIOP_RETURN("^"));}
+"|"				{ return(ASCIIOP_RETURN('|'));}
+"?"				{ return(ASCIIOP_RETURN('?'));}
 ^({horizontal_white})*"#"		%{ this.begin("PREPR"); return PPOP_RETURN(parser.symbols_.PP_SHARP); %}
 
-<PREPR>\n		%{ this.begin("INITIAL"); return PPOP_RETURN(parser.symbols_.PP_NEWLINE); %}
-<PREPR>\\		{ this.begin("WRAP_PREP");}
+<PREPR>{NL}												%{ this.begin("INITIAL"); return PPOP_RETURN(parser.symbols_.PP_NEWLINE); %}
+<PREPR>\\													{ this.begin("WRAP_PREP");}
+<PREPR>({horizontal_white})				{ return WHITE_RETURN(" ");}
 <PREPR>({horizontal_white})*"("		{ return PPOP_RETURN(parser.symbols_.PP_LPAREN);}
-<PREPR>">"	{ return PPOP_RETURN(parser.symbols_.PP_G);}
-<PREPR>["]	{ return PPOP_RETURN(parser.symbols_.PP_QUOTE);}
-<PREPR>"include" { return(PPOP_RETURN(parser.symbols_.PP_INCLUDE));}
-<PREPR>.  	{ return PPOP_RETURN(parser.symbols_.PP_ANYCHAR);}
-<WRAP_PREP>\n	{ this.begin("PREPR");}
-<WRAP_PREP>{identifier} {return IDENTIFIER_RETURN()}
-<PREPR>{identifier} {return IDENTIFIER_RETURN()}
-<CPP_COMMENT>\n 	{this.begin("INITIAL");}
-<CPP_COMMENT>.	 	{return("");}
-<C_COMMENT>"*/" 	{this.begin("INITIAL");}
-<C_COMMENT>.	  	{return("");}
+
+<PREPR>["]												{ return PPOP_RETURN(parser.symbols_.PP_QUOTE);}
+<PREPR>"include"									{ return(PPOP_RETURN(parser.symbols_.PP_INCLUDE));}
+<PREPR>"undef"										{ return(PPOP_RETURN(parser.symbols_.PP_UNDEF));}
+<PREPR>"line"											{ return(PPOP_RETURN(parser.symbols_.PP_LINE));}
+<PREPR>"pragma"										{ return(PPOP_RETURN(parser.symbols_.PP_PRAGMA));}
+<PREPR>"define"  									{ return(PPOP_RETURN(parser.symbols_.PP_DEFINE));}
+<PREPR>"defined"									{ return(PPOP_RETURN(parser.symbols_.PP_DEFINED));}
+<PREPR>"ifdef"										{ return(PPOP_RETURN(parser.symbols_.PP_IFDEF));}
+<PREPR>"ifndef"										{ return(PPOP_RETURN(parser.symbols_.PP_IFNDEF));}
+<PREPR>"if"												{ return(PPOP_RETURN(parser.symbols_.PP_IF));}
+<PREPR>"else"											{ return(PPOP_RETURN(parser.symbols_.PP_ELSE));}
+<PREPR>"endif"										{ return(PPOP_RETURN(parser.symbols_.PP_ENDIF));}
+<PREPR>"elif"											{ return(PPOP_RETURN(parser.symbols_.PP_ELIF));}
+<PREPR>{identifier}								{	return IDENTIFIER_RETURN()}
+<PREPR>["][^\n]*["]							{ return(PPOP_RETURN(parser.symbols_.PP_QCHARSEQUENCE));}
+<PREPR>"<"[^\n]*">"							{ return(PPOP_RETURN(parser.symbols_.PP_HCHARSEQUENCE));}
+<PREPR>.													{ return(PPOP_RETURN(parser.symbols_.PP_ANYCHAR));}
+
+<WRAP_PREP>\n											{ this.begin("PREPR");}
+<WRAP_PREP>{identifier}						{return IDENTIFIER_RETURN()}
+<CPP_COMMENT>\n 									{this.begin("INITIAL");}
+<CPP_COMMENT>.										{return("");}
+<C_COMMENT>"*/"										{this.begin("INITIAL");}
+<C_COMMENT>.											{return("");}
 %%

@@ -1,7 +1,9 @@
 document.body.onload = function(){
 	var input_decl = "int i = 4;";
-	var input_main = "#include <stdio.h>\n int main(void){}";
-	var input = input_main;
+	var input_main = "#include <stdio.h>\
+	int main(void){}";
+	var input_prep = "#include <stdio.h>\n#define MAX 32\n";
+	var input = input_prep;
 
 	// initialize lexer
 	var lexer = cpp.lexer.setInput(input);
@@ -22,5 +24,5 @@ document.body.onload = function(){
 
 	// try parsing
 	var parse_result = cpp.parse(input);
-	console.log(parse_result);
+	console.log("\n\nParsing result: ", parse_result);
 };
