@@ -177,6 +177,9 @@ horizontal_white [ ]|{h_tab}
 "int"				{ return(PA_KEYWORD_RETURN(parser.symbols_.INT));}
 "long"      { return(PA_KEYWORD_RETURN(parser.symbols_.LONG));}
 "bool"			{ return(PA_KEYWORD_RETURN(parser.symbols_.BOOL));}
+"char16_t"			{ return(PA_KEYWORD_RETURN(parser.symbols_.CHAR16_T));}
+"char32_t"			{ return(PA_KEYWORD_RETURN(parser.symbols_.CHAR32_T));}
+"wchar_t"			{ return(PA_KEYWORD_RETURN(parser.symbols_.WCHAR_T));}
 "register"	{ return(PA_KEYWORD_RETURN(parser.symbols_.REGISTER));}
 "return"		{ return(PA_KEYWORD_RETURN(parser.symbols_.RETURN));}
 "short"			{ return(PA_KEYWORD_RETURN(parser.symbols_.SHORT));}
@@ -218,6 +221,8 @@ horizontal_white [ ]|{h_tab}
 "__declspec" {return(CPP_KEYWORD_RETURN("__declspec"));}
 "dllimport"  {return(CPP_KEYWORD_RETURN("dllimport"));}
 "dllexport"  {return(CPP_KEYWORD_RETURN("dllexport"));}
+"true"  {return(CPP_KEYWORD_RETURN(parser.symbols_.TRUE));}
+"false"  {return(CPP_KEYWORD_RETURN(parser.symbols_.FALSE));}
 
 {identifier} { return(IDENTIFIER_RETURN());}
 

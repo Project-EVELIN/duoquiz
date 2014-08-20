@@ -6,6 +6,7 @@
 #
 SHELL=C:/Windows/System32/cmd.exe
 COMMON		= ./cpp.js
+EBNF			= ./ebnf.js
 
 all:	common
 
@@ -16,6 +17,12 @@ common:	cpp.jison cpp.lex
 	@echo "For testing, run 'nodejs ./cpp.js FILE.c'."
 	@echo "------------------------------"
 
+ebnf:	cpp0x.ebnf
+	node cli-wrapper.js -m commonjs -t true -o $(EBNF) cpp0x.ebnf
+	@echo ""
+	@echo "------------------------------"
+	@echo "------------------------------"
 
 clean:
 	rm -f $(COMMON)
+	rm -f $(EBNF)

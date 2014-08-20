@@ -7,15 +7,17 @@
 %token CONTINUE        FOR             SIGNED          VOID
 %token DEFAULT         GOTO            SIZEOF          VOLATILE
 %token DO              IF              STATIC          WHILE
+%token BOOL            WCHAR_T          CHAR16_T         CHAR32_T
 
 /* The following are used in C++ only.  ANSI C would call these IDENTIFIERs */
 %token NEW             DELETE
 %token THIS
 %token OPERATOR
 %token CLASS
-%token PUBLIC          PROTECTED       PRIVATE
-%token VIRTUAL         FRIEND
-%token INLINE          OVERLOAD
+%token PUBLIC           PROTECTED       PRIVATE
+%token VIRTUAL          FRIEND
+%token INLINE           OVERLOAD
+%token TRUE             FALSE
 
 /* ANSI C Grammar suggestions */
 %token IDENTIFIER              STRINGliteral
@@ -73,7 +75,7 @@ start_sym: translation_unit { return $1;}
 /* PREPROCESSING see http://www.nongnu.org/hcb/#group */
 preprocessing_file:
 
-        | group { yy.parser.setValueAndLog("preprocessing_file", $1, $$);}
+        | group { $$ = $1;}
         ;
 
 group: group_part
@@ -113,16 +115,19 @@ endif_line: PP_SHARP PP_ENDIF PP_NEWLINE
 control_line: PP_SHARP PP_INCLUDE pp_tokens PP_NEWLINE { $$ = [$1, $2, $3];}
         | PP_SHARP PP_DEFINE IDENTIFIER replacement_list PP_NEWLINE { $$ = [$1, $2, $3, $4];}
         | PP_SHARP PP_DEFINE IDENTIFIER PP_LPAREN identifier_list_opt ')' replacement_list PP_NEWLINE
-          { $$ = [$1, $2, $3, $4, $5, $6, $7];}
+        { $$ = yy.parser.createArrayOpt("control_line", [$1, $2, $3, $4, $5, $6, $7]);}
         | PP_SHARP PP_DEFINE IDENTIFIER PP_LPAREN identifier_list ',' ELLIPSIS ')' replacement_list PP_NEWLINE
         | PP_SHARP PP_UNDEF IDENTIFIER PP_NEWLINE { $$ = [$1, $2, $3];}
         | PP_SHARP PP_LINE pp_tokens PP_NEWLINE { $$ = [$1, $2, $3];}
-        | PP_SHARP PP_ERROR pp_tokens_opt PP_NEWLINE { $$ = [$1, $2, $3];}
-        | PP_SHARP PP_PRAGMA pp_tokens_opt PP_NEWLINE { $$ = [$1, $2, $3];}
+        | PP_SHARP PP_ERROR pp_tokens_opt PP_NEWLINE
+        { $$ = yy.parser.createArrayOpt("control_line", [$1, $2, $3]);}
+        | PP_SHARP PP_PRAGMA pp_tokens_opt PP_NEWLINE
+        { $$ = yy.parser.createArrayOpt("control_line", [$1, $2, $3]);}
         | PP_SHARP PP_NEWLINE { $$ = $1;}
         ;
 
-text_line: pp_tokens_opt PP_NEWLINE {$$ = [$1, $2];}
+text_line: pp_tokens_opt PP_NEWLINE
+        { $$ = yy.parser.createArrayOpt("control_line", [$1, $2]);}
         ;
 
 non_directive: pp_tokens PP_NEWLINE {$$ = [$1, $2];}
@@ -186,6 +191,12 @@ constant:
         | OCTALconstant { $$ = yytext;}
         | HEXconstant { $$ = yytext;}
         | CHARACTERconstant { $$ = yytext;}
+        | boolean_constant {$$ = $1;}
+        ;
+
+/* http://www.nongnu.org/hcb/#boolean-literal */
+boolean_constant: TRUE { $$ = yytext;}
+        | FALSE { $$ = yytext;}
         ;
 
 string_literal_list:
@@ -919,19 +930,19 @@ error recovery (i_e.: a syntax error does not disrupt the parse).
 TYPEDEF         x       x       x       x       x       x
 EXTERN          x       x                       x       x
 STATIC          x       x       x       x       x
-AUTO                                            x              x
 REGISTER                                        x              x
 FRIEND                                  x
 OVERLOAD                x               x               x
 INLINE                  x               x               x
 VIRTUAL                                 x               x
+
+AUTO has been removed in C++0x and placed in simple-type-specifier 
 */
 
 storage_class:
         EXTERN { $$ = $1;}
         | TYPEDEF { $$ = $1;}
         | STATIC { $$ = $1;}
-        | AUTO { $$ = $1;}
         | REGISTER { $$ = $1;}
         | FRIEND { $$ = $1;}
         | OVERLOAD { $$ = $1;}
@@ -949,6 +960,11 @@ basic_type_name:
         | SIGNED { $$ = $1;}
         | UNSIGNED { $$ = $1;}
         | VOID { $$ = $1;}
+        | BOOL { $$ = $1;}
+        | CHAR32_T { $$ = $1;}
+        | CHAR16_T { $$ = $1;}
+        | WCHAR_T { $$ = $1;}
+        | AUTO { $$ = $1;}
         ;
 
 elaborated_type_name_elaboration:
@@ -1547,7 +1563,8 @@ label:
 
 translation_unit:
 
-        | translation_unit external_definition {$$= [$1, $2];}
+        | translation_unit external_definition
+        { $$ = yy.parser.createArrayOpt("translation_unit", [$1, $2]);}
         ;
 
 external_definition:
@@ -2145,7 +2162,12 @@ global_opt_scope_opt_typedefname:
         ;
 
 %%
-parser.setValueAndLog = function(rule, obj, $$) {
-    $$ = obj;
-    console.log(rule, obj);
+parser.createArrayOpt = function(rule, arr) {
+    var obj = [];
+    var i;
+    for(i = 0; i < arr.length; i++) {
+        if(arr[i] !== undefined) obj.push(arr[i]);
+    }
+    console.log(rule, arr, obj);
+    return obj;
 };

@@ -1,0 +1,115 @@
+%lex
+NL                      [\n]
+identifier [a-zA-Z_][0-9a-zA-Z_]*
+
+%%
+
+{identifier} { return("IDENTIFIER");}
+
+/lex
+
+
+
+/*	EBNF Grammar does not need tokens like typical bison grammar.
+		This allows us to use the 'symbols' directly from the parser.
+ */
+%ebnf
+
+%start translation_unit
+
+%%
+/* basic.link */
+translation_unit:
+			delcaration_seq?
+			;
+
+/* expr.prim.general */
+primary_expression:
+			literal
+			|THIS
+			|'(' expression ')'
+			|id_expression
+			|lambda_expression
+			;
+
+id_expression:
+			unqualified_id
+			|qualified_id
+			;
+
+unqualified_id:
+			identifier
+			|operator_function_id
+			|conversion_function_id
+			|literal_operator_id
+			|'~' class_name
+			|'~' decltype_specifier
+			|template_id
+			;
+
+qualified_id:
+			CLCL? nested_name_specifier TEMPLATE? unqualified_id
+			|CLCL identifier
+			|CLCL operator_function_id
+			|CLCL literal_operator_id
+			|CLCL template_id
+			;
+
+nested_name_specifier:
+			type_name CLCL
+			|namespace_name CLCL
+			|decltype_specifier CLCL
+			|nested_name_specifier identifier CLCL
+			|nested_name_specifier TEMPLATE? simple_template_id CLCL
+			;
+
+/* expr.prim.lambda */
+lambda_expression:
+			lambda_introducer lambda_declarator? compound_statement
+			;
+
+lambda_introducer:
+			'[' lambda_capture? ']'
+			;
+
+lambda_capture:
+			capture_default
+			|capture_list
+			|capture_default ',' capture_list
+			;
+
+capture_default:
+			'&'
+			|'='
+			;
+
+capture_list:
+			capture ELLIPSIS?
+			|capture_list ',' ELLIPSIS?
+			;
+
+capture:
+			identifier
+			|'&' identifier
+			|THIS
+			;
+
+lambda_declarator:
+			'(' parameter_declaration_cause ')' MUTABLE? exception_specification? attribute_specifier_seq? trailing_return_type?
+			;
+
+/* expr.post */
+
+
+
+identifier:
+			IDENTIFIER
+			;
+
+/* old lex definition
+identifier_nondigit -> $1
+| identifier identifier_nondigit -> $1
+| identifier digit -> $1
+;
+*/
+%%
