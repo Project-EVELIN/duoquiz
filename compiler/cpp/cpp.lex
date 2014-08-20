@@ -119,7 +119,7 @@ exponent_part [eE][-+]?[0-9]+
 fractional_constant ([0-9]*"."[0-9]+)|([0-9]+".")
 floating_constant (({fractional_constant}{exponent_part}?)|([0-9]+{exponent_part}))[FfLl]?
 
-integer_suffix_opt ([uU]?[lL]?)|([lL][uU])
+integer_suffix_opt ([uU]?[lL]{0,2})|([lL]{1,2}[uU])
 decimal_constant [1-9][0-9]*{integer_suffix_opt}
 octal_constant "0"[0-7]*{integer_suffix_opt}
 hex_constant "0"[xX][0-9a-fA-F]+{integer_suffix_opt}
@@ -139,7 +139,6 @@ c_return [\015]
 
 horizontal_white [ ]|{h_tab}
 
-%s typedef_mode
 %x PREPR
 %x WRAP_PREP
 %x CPP_COMMENT
