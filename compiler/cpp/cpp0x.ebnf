@@ -56,12 +56,9 @@ horizontal_white [ ]|{h_tab}
 
 /* lex.token */
 
-/* lex.token.identifier */
-{identifier}		return("IDENTIFIER")
-
 /* lex.token.keyword */
 "alignas"				return "ALIGNAS"
-"alignof"				return "alignof"
+"alignof"				return "ALIGNOF"
 "asm"						return "ASM"
 "auto"					return "AUTO"
 "bool"					return "BOOL"
@@ -134,20 +131,79 @@ horizontal_white [ ]|{h_tab}
 "wchar_t"				return "WCHAR_T"
 "while"					return "WHILE"
 
+/* lex.token.identifier */
+{identifier}		return "IDENTIFIER"
+
 /* lex.token.literal */
 {decimal_constant}				return "DECIMAL_LITERAL"
 {octal_constant}					return "OCTAL_LITERAL"
 {hex_constant}						return "HEXADECIMAL_LITERAL"
 {floating_constant}				return "FLOATING_LITERAL"
 
-"L"?['](uUL)?{c_char}+[']	return "CHARACTER_LITERAL"
+"L"?['](uUL|"u8")?{c_char}+[']	return "CHARACTER_LITERAL"
 "L"?["]{s_char}*["]				return "STRING_LITERAL"
 
 /* lex.token.operator */
 
+/* preprocessing-op-or-punc */
+"{"						return '{'
+"}"						return '}'
+"["						return '['
+"]"						return ']'
+"#"						return '#'
+"##"					return '##'
+"("						return '('
+")"						return ')'
+";"						return ';'
+":"						return ':'
+"..."					return 'ELLIPSIS'
+"?"						return '?'
+"::"					return 'CLCL'
+"."						return '.'
+".*"					return 'DOTSTAR'
+'+'						return '+'
+'-'						return '-'
+'*'						return '*'
+'/'						return '/'
+'%'						return '%'
+'^'						return '^'
+'&'						return '&'
+'|'						return '|'
+'~'						return '~'
+'!'						return '!'
+'!'						return '!'
+'='						return '='
+'<'						return '<'
+'>'						return '>'
+'+='					return 'ADDassign'
+'-='					return 'SUBassign'
+'*='					return 'MULTassign'
+'/='					return 'ADDassign'
+'%='					return 'MODassign'
+'^='					return 'ERassign'
+'&='					return 'ANDassign'
+'|='					return 'ORassign'
+'<<'					return 'LS'
+'>>'					return 'RS'
+'<<='					return 'LSassign'
+'>>='					return 'RSassign'
+'=='					return 'EQ'
+'!='					return 'NE'
+'<='					return 'LE'
+'>='					return 'GE'
+'&&'					return 'ANDAND'
+'||'					return 'OROR'
+'++'					return 'INC'
+'--'					return 'DEC'
+","						return ','
+"->*"					return 'ARROWstar'
+"->"					return 'ARROW'
+
+
 
 /* lex.token.punctuator */
 
+/* lex.ext not supported currently, no used-defined-literals */
 
 /* lex.preprocessor */
 <PREPR>{NL}												%{ this.begin("INITIAL"); return "PP_NEWLINE";%}
@@ -173,7 +229,7 @@ horizontal_white [ ]|{h_tab}
 <PREPR>{octal_constant}						return "OCTAL_LITERAL"
 <PREPR>{hex_constant}							return "HEXADECIMAL_LITERAL"
 <PREPR>{floating_constant}				return "FLOATING_LITERAL"
-<PREPR>"L"?[']{c_char}+[']				return "CHARCATER_LITERAL"
+<PREPR>"L"?[']{c_char}+[']				return "CHARACTER_LITERAL"
 <PREPR>"L"?["]{s_char}*["]				return "STRING_LITERAL"
 <PREPR>["][^\n]*["]								return "PP_QCHARSEQUENCE"
 <PREPR>"<"[^\n]*">"								return "PP_HCHARSEQUENCE"
@@ -223,7 +279,7 @@ string_literal:
 			;
 
 character_literal:
-			CHARCATER_LITERAL
+			CHARACTER_LITERAL
 			;
 
 boolean_literal:
@@ -235,9 +291,13 @@ pointer_literal:
 			NULLPTR
 			;
 
+identifier:
+			IDENTIFIER
+			;
+
 /* basic.link */
 translation_unit:
-			delcaration_seq?
+			declaration_seq?
 			;
 
 /* expr.prim.general */
@@ -316,12 +376,408 @@ lambda_declarator:
 			;
 
 /* expr.post */
-
-
-
-identifier:
-			IDENTIFIER
+postfix_expression:
+			primary_expression
+			|postfix_expression '[' expression ']'
+			|postfix_expression '[' braced_init_list? ']'
+			|postfix_expression '(' expression_list? ')'
+			|simple_type_specifier '(' expresion_list? ')'
+			|typename_specifier '(' expression_list? ')'
+			|simple_type_specifier braced_init_list
+			|typename_specifier braced_init_list
+			|postfix_expression '.' TEMPLATE? id_expression
+			|postfix_expression ARROW TEMPLATE? id_expression
+			|postfix_expression '.' pseudo_destructor_name
+			|postfix_expression ARROW pseudo_destructor_name
+			|postfix_expression INC
+			|postfix_expression DEC
+			|DYNAMIC_CAST '<' type_id '>' '(' expression ')'
+			|STATIC_CAST '<' type_id '>' '(' expression ')'
+			|REINTERPRET_CAST '<' type_id '>' '(' expression ')'
+			|CONST_CAST '<' type_id '>' '(' expression ')'
+			|TYPEID '(' expression ')'
+			|TYPEID '(' type_id ')'
 			;
+
+expression_list:
+			initializer_list
+			;
+
+pseudo_destructor_name:
+			CLCL? nested_name_specifier? type_name CLCL '~' type_name
+			|CLCL? nested_name_specifier TEMPLATE simple_template_id CLCL '~' type_name
+			|CLCL? nested_name_specifier? '~' type_name
+			|'~' decltype_specifier
+			;
+
+/* expr.unary */
+unary_expression:
+			postfix_expression
+			|INC cast_expression
+			|DEC cast_expression
+			|unary_operator cast_expression
+			|SIZEOF unary_expression
+			|SIZEOF '(' type_id ')'
+			|SIZEOF ELLIPSIS '(' identifier ')'
+			|ALIGNOF '(' type_id ')'
+			|noexcept_expression
+			|new_expression
+			|delete_expression
+			;
+
+unary_operator:
+			'*'
+			|'&'
+			|'+'
+			|'-'
+			|'!'
+			|'~'
+			;
+
+/* expr.cond */
+conditional_expression:
+			logical_or_expression
+			|logical_or_expression '?' expression ':' assignment_expression
+			;
+
+/* expr.ass */
+assignment_expression:
+			conditional_expression
+			|logical_or_expression assignment_operator initializer_clause
+			|throw_expression
+			;
+
+assignment_operator:
+			'='
+			|MULTassign
+			|DIVassign
+			|MODassign
+			|ADDassign
+			|SUBassign
+			|RSassign
+			|LSassign
+			|ANDassign
+			|ERassign
+			|ORassign
+			;
+
+/* expr.comma */
+expression:
+			assignment_expression
+			|expression ',' assignment_expression
+			;
+
+/* expr.const */
+constant_expression:
+			conditional_expression
+			;
+
+/*stmt.stmt */
+statement:
+			labeled_statement
+			|attribute_specifier_seq? expression_statement
+			|attribute_specifier_seq? compound_statement
+			|attribute_specifier_seq? selection_statement
+			|attribute_specifier_seq? iteration_statement
+			|attribute_specifier_seq? jump_statement
+			|declaration_statement
+			|attribute_specifier_seq? try_block
+			;
+
+/* stmt.label */
+
+/* stmt.expr */
+expression_statement:
+			expression? ';'
+			;
+
+/* stmt.block */
+compound_statement:
+			'{' statement_seq? '}'
+			;
+
+statement_seq:
+			statement
+			|statement_seq statement
+			;
+
+/* stmt.select */
+/* stmt.iter */
+
+/* stmt.jump */
+jump_statement:
+			BREAK ';'
+			|CONTINUE ';'
+			|RETURN expression? ';'
+			|RETURN braced_init_list? ';'
+			|GOTO identifier ';'
+			;
+
+/* stmt.dcl */
+declaration_statement:
+			block_declaration
+			;
+
+/* dcl.dcl */
+declaration_seq:
+			declaration
+			|declaration_seq declaration
+			;
+
+declaration:
+			block_declaration
+			|function_definition
+			|template_declaration
+			|explicit_instantiation
+			|explicit_specialization
+			|linkage_specification
+			|namespace_definition
+			|empty_declaration
+			|attribute_declaration
+			;
+
+block_declaration:
+			simple_declaration
+			|asm_definition
+			|namespace_alias_definition
+			|using_declaration
+			|using_directive
+			|static_assert_declaration
+			|alias_declaration
+			|opague_enum_declaration
+			;
+
+alias_declaration:
+			USING identifier '=' type_id ';'
+			;
+
+simple_declaration:
+			attribute_specifier_seq? decl_specifier_seq? init_declarator_list? ';'
+			;
+
+static_assert_declaration:
+			STATIC_ASSERT '(' constant_expression ',' string_literal ')' ';'
+			;
+
+empty_declaration:
+			';'
+			;
+
+attribute_declaration:
+			attribute_specifier_seq ';'
+			;
+
+/* dcl.spec */
+decl_specifier:
+			storage_class_specifier
+			|type_specifier
+			|function_specifier
+			|FRIEND
+			|TYPEDEF
+			|CONSTEXPR
+			;
+
+decl_specifier_seq:
+			decl_specifier attribute_specifier_seq?
+			|decl_specifier decl_specifier_seq
+			;
+
+/* dcl.stc */
+storage_class_specifier:
+			REGISTER
+			|STATIC
+			|THREAD_LOCAL
+			|EXTERN
+			|MUTABLE
+			;
+
+/* dcl.fct.spec */
+function_specifier:
+			INLINE
+			|VIRTUAL
+			|EXPLICIT
+			;
+
+/* dcl.typedef */
+typedef_name:
+			identifier
+			;
+
+/* dcl.type */
+type_specifier:
+			trailing_type_specifier
+			|class_specifier
+			|enum_specifier
+			;
+
+trailing_type_specifier:
+			simple_type_specifier
+			|elaborated_type_specifier
+			|typename_specifier
+			|cv_qualifier
+			;
+
+type_specifier_seq:
+			type_specifier attribute_specifier_seq?
+			type_specifier type_specifier_seq
+			;
+
+trailing_type_specifier_seq:
+			trailing_type_specifier attribute_specifier_seq?
+			|trailing_type_specifier trailing_type_specifier_seq
+			;
+
+/* dct.type.simple */
+simple_type_specifier:
+			CLCL? nested_name_specifier? type_name
+			|CLCL? nested_name_specifier TEMPLATE simple_template_id
+			|CHAR
+			|"CHAR16_T"
+			|"CHAR32_T"
+			|WCHAR_T
+			|BOOL
+			|SHORT
+			|INT
+			|LONG
+			|SIGNED
+			|UNSIGNED
+			|FLOAT
+			|DOUBLE
+			|VOID
+			|AUTO
+			|decltype_specifier
+			;
+
+type_name:
+			class_name
+			|enum_name
+			|typedef_name
+			|simple_template_id
+			;
+
+decltype_specifier:
+			DECLTYPE '(' expression ')'
+			;
+
+/* dcl.type.elab */
+/* dcl.enum */
+/* namespace.def */
+/* namespace.alias */
+/* namespace.udecl */
+/* namespace.udir */
+
+/* dcl.asm */
+asm_definition:
+			ASM '(' string_literal ')' ';'
+			;
+
+/* dcl.link */
+/* dcl.attr.grammar */
+
+/* dcl.decl */
+init_declarator_list:
+			init_declarator
+			|init_declarator_list ',' init_declarator
+			;
+
+init_declarator:
+			declarator initializer?
+			;
+
+declarator:
+			ptr_declarator
+			|noptr_declarator parameters_and_qualifiers trailing_return_type
+			;
+
+ptr_declarator:
+			noptr_declarator
+			ptr_operator ptr_declarator
+			;
+
+noptr_declarator:
+			declarator_id attribute_specifier_seq?
+			|noptr_declarator parameters_and_qualifiers
+			|noptr_declarator '[' constant_expression? ']' attribute_specifier_seq?
+			|'(' ptr_declarator ')'
+			;
+
+parameters_and_qualifiers:
+			'(' parameter_declaration_clause ')' attribute_specifier_seq? cv_qualifier_seq? ref_qualifier? exception_specification?
+			;
+
+trailing_return_type:
+			ARROW trailing_type_specifier_seq abstract_declarator?
+			;
+
+ptr_operator:
+			'*' attribute_specifier_seq? cv_qualifier_seq?
+			|'&' attribute_specifier_seq?
+			|ANDAND attribute_specifier_seq?
+			|CLCL? nested_name_specifier '*' attribute_specifier_seq? cv_qualifier_seq?
+			;
+
+cv_qualifier_seq:
+			cv_qualifier
+			|cv_qualifier cv_qualifier_seq
+			;
+
+cv_qualifier:
+			CONST
+			|VOLATILE
+			;
+
+ref_qualifier:
+			'&'
+			|ANDAND
+			;
+
+declarator_id:
+			ELLIPSIS? id_expression
+			|ELLIPSIS? nested_name_specifier? class_name
+			;
+
+/* dcl.name */
+/* dcl.fct */
+/* dcl.fct.def.general */
+
+/* dcl.init */
+initializer:
+			brace_or_equal_initializer
+			|'(' expression_list ')'
+			;
+
+brace_or_equal_initializer:
+			'=' initializer_clause
+			|braced_init_list
+			;
+
+initializer_clause:
+			assignment_expression
+			|braced_init_list
+			;
+
+initializer_list:
+			initializer_clause ELLIPSIS?
+			|initializer_list ',' initializer_clause ELLIPSIS?
+			;
+
+braced_init_list:
+			'{' initializer_list ','? '}'
+			|'{' '}'
+			;
+
+/* class */
+
+
+
+
+/* cpp  preprocessing */
+
+
+
+
+
+
 
 /* old lex definition
 identifier_nondigit -> $1

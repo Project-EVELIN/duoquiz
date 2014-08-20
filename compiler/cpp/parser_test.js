@@ -4,7 +4,7 @@ document.body.onload = function(){
 	var input_prepmain = "#include <stdio.h>\nint main(void){}";
 	var input_main = "int main(void){}";
 	var input_prep = "#include <stdio.h>\n#define MAX 32\n";
-	var input = input_prepmain;
+	var input = input_decl;
 
 	// initialize lexer
 	if(DEBUG_LEXING) {
@@ -22,11 +22,19 @@ document.body.onload = function(){
 			console.log(rule, cpp.terminals_[rule], "\n" + lexer.showPosition(), "\n");
 		}while(rule != 1);
 	}
-	
+
 	// try parsing
 	try {
 		var parse_result = cpp.parse(input);
-		console.log("\n\nParsing result: ", parse_result);
+		console.log("\n\nParsing cpp.js result: ", parse_result);
+	} catch(e) {
+		console.log(e);
+	}
+
+	// try parsing
+	try {
+		var parse_result = ebnf.parse(input);
+		console.log("\n\nParsing ebnf.js result: ", parse_result);
 	} catch(e) {
 		console.log(e);
 	}
