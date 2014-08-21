@@ -1,7 +1,11 @@
 %lex
 /* Those are helper groups */
-NL [\n]
-identifier [a-zA-Z_][0-9a-zA-Z_]*
+CP					("u"|"U"|"L")
+SP					("u"|"u8"|"U"|"L")
+SQ					("'")
+NL					[\n]
+
+identifier	[a-zA-Z_][0-9a-zA-Z_]*
 
 exponent_part [eE][-+]?[0-9]+
 fractional_constant ([0-9]*"."[0-9]+)|([0-9]+".")
@@ -27,13 +31,26 @@ c_return [\015]
 
 horizontal_white [ ]|{h_tab}
 
-%s typedef_mode
 %x PREPR
 %x WRAP_PREP
 %x CPP_COMMENT
 %x C_COMMENT
 
+%options flex
+
 %%
+/* starting */
+"/*" {this.begin("C_COMMENT");}
+
+"//" {this.begin("CPP_COMMENT");}
+
+{horizontal_white}+ {}
+
+({v_tab}|{c_return}|{form_feed})+ {}
+
+({horizontal_white}|{v_tab}|{c_return}|{form_feed})*"\n" {}
+
+
 /* lex.digraph */
 /* is this realy necessary? */
 "<%"						return "{"
@@ -140,8 +157,12 @@ horizontal_white [ ]|{h_tab}
 {hex_constant}						return "HEXADECIMAL_LITERAL"
 {floating_constant}				return "FLOATING_LITERAL"
 
-"L"?['](uUL|"u8")?{c_char}+[']	return "CHARACTER_LITERAL"
+{CP}?{SQ}(\\.|[^\\{SQ}])+{SQ}	return "CHARACTER_LITERAL"
+{SP}?\"(\\.|[^\\"])*\"					return "STRING_LITERAL"
+/*
+"L"?[']?{c_char}+[']			return "CHARACTER_LITERAL"
 "L"?["]{s_char}*["]				return "STRING_LITERAL"
+*/
 
 /* lex.token.operator */
 
@@ -249,6 +270,7 @@ horizontal_white [ ]|{h_tab}
 /*	EBNF Grammar does not need tokens like typical bison grammar.
 		This allows us to use the 'symbols' directly from the parser.
  */
+%token<value> INT
 %ebnf
 
 %start translation_unit
@@ -293,6 +315,30 @@ pointer_literal:
 
 identifier:
 			IDENTIFIER
+			;
+
+keyword:
+;
+
+/* currently missing user-defined-literal */
+literal:
+			integer_literal
+			|character_literal
+			|floating_literal
+			|string_literal
+			|boolean_literal
+			|pointer_literal
+			;
+
+
+preprocessing_op_or_punc:
+;
+
+token:
+			identifier
+			|keyword
+			|literal
+			|preprocessing_op_or_punc
 			;
 
 /* basic.link */
@@ -673,6 +719,60 @@ asm_definition:
 
 /* dcl.link */
 /* dcl.attr.grammar */
+attribute_specifier_seq:
+			attribute_specifier
+			|attribute_specifier_seq attribute_specifier
+			;
+
+attribute_specifier:
+			'[' '[' attribute_list ']' ']'
+			|alignment_specifier
+			;
+
+alignment_specifier:
+			ALIGNAS '(' type_id ELLIPSIS? ')'
+			|ALIGNAS '(' alignment_expression ELLIPSIS? ')'
+			;
+
+attribute_list:
+			attribute?
+			|attribute_list ',' attribute?
+			|attribute ELLIPSIS
+			|attribute_list ',' attribute ELLIPSIS
+			;
+
+attribute:
+			attribute_declaration attribute_argument_clause?
+			;
+
+attribute_token:
+			identifier
+			|attribute_scoped_token
+			;
+
+attribute_scoped_token:
+			attribute_namespace CLCL identifier
+			;
+
+attribute_namespace:
+			identifier
+			;
+
+attribute_argument_clause:
+			'(' balanced_token_seq ')'
+			;
+
+balanced_token_seq:
+			balanced_token
+			|balanced_token_seq balanced_token
+			;
+
+balanced_token:
+			'(' balanced_token_seq ')'
+			|'[' balanced_token_seq ']'
+			|'{' balanced_token_seq '}'
+			|token
+			;
 
 /* dcl.decl */
 init_declarator_list:
