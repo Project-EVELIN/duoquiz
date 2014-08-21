@@ -1,11 +1,11 @@
 document.body.onload = function(){
 	var DEBUG_CPP = false;
 	var DEBUG_EBNF = true;
-	var input_decl = "char c = u's';";
+	var input_decl = "char c = 's';";
 	var input_prepmain = "#include <stdio.h>\nint main(void){}";
 	var input_main = "int main(void){}";
 	var input_prep = "#include <stdio.h>\n#define MAX 32\n";
-	var input = input_decl;
+	var input = input_prep;
 
 	// initialize lexer
 	if(DEBUG_CPP) {

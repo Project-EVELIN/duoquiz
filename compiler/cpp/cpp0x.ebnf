@@ -171,7 +171,6 @@ horizontal_white [ ]|{h_tab}
 "}"						return '}'
 "["						return '['
 "]"						return ']'
-"#"						return '#'
 "##"					return '##'
 "("						return '('
 ")"						return ')'
@@ -219,6 +218,7 @@ horizontal_white [ ]|{h_tab}
 ","						return ','
 "->*"					return 'ARROWstar'
 "->"					return 'ARROW'
+"#"						this.begin("PREPR"); return '#';
 
 
 
@@ -245,6 +245,7 @@ horizontal_white [ ]|{h_tab}
 <PREPR>"else"											return "PP_ELSE"
 <PREPR>"endif"										return "PP_ENDIF"
 <PREPR>"elif"											return "PP_ELIF"
+<PREPR>"error"											return "PP_ERROR"
 <PREPR>{identifier}								return "IDENTIFIER"
 <PREPR>{decimal_constant}					return "DECIMAL_LITERAL"
 <PREPR>{octal_constant}						return "OCTAL_LITERAL"
@@ -318,6 +319,79 @@ identifier:
 			;
 
 keyword:
+			ALIGNAS
+			|ALIGNOF
+			|ASM
+			|AUTO
+			|BOOL
+			|BREAK
+			|CASE
+			|CATCH
+			|CHAR
+			|"CHAR16_T"
+			|"CHAR32_T"
+			|CLASS
+			|CONST
+			|CONSTEXPR
+			|CONST_CAST
+			|CONTINUE
+			|DECLTYPE
+			|DEFAULT
+			|DELETE
+			|DO
+			|DOUBLE
+			|DYNAMIC_CAST
+			|ELSE
+			|ENUM
+			|EXPLICIT
+			|EXPORT
+			|EXTERN
+			|FALSE
+			|FLOAT
+			|FOR
+			|FRIEND
+			|GOTO
+			|IF
+			|INLINE
+			|INT
+			|LONG
+			|MUTABLE
+			|NAMESPACE
+			|NEW
+			|NOEXCEPT
+			|NULLPTR
+			|OPERATOR
+			|PRIVATE
+			|PROTECTED
+			|PUBLIC
+			|REGISTER
+			|REINTERPRET_CAST
+			|RETURN
+			|SHORT
+			|SIGNED
+			|SIZEOF
+			|STATIC
+			|STATIC_ASSERT
+			|STATIC_CAST
+			|STRUCT
+			|SWITCH
+			|TEMPLATE
+			|THIS
+			|THREAD_LOCAL
+			|THROW
+			|TRUE
+			|TRY
+			|TYPEDEF
+			|TYPEID
+			|TYPENAME
+			|UNION
+			|UNSIGNED
+			|USING
+			|VIRTUAL
+			|VOID
+			|VOLATILE
+			|WCHAR_T
+			|WHILE
 ;
 
 /* currently missing user-defined-literal */
@@ -332,6 +406,49 @@ literal:
 
 
 preprocessing_op_or_punc:
+			'{'
+			|'}'
+			|'['
+			|']'
+			|'#'
+			|'##'
+			|'('
+			|')'
+			|';'
+			|':'
+			|ELLIPSIS
+			|NEW
+			|DELETE
+			|'?'
+			|CLCL
+			|'.'
+			|DOTSTAR
+			|'+'
+			|'-'
+			|'*'
+			|'/'
+			|'%'
+			|'^'
+			|'&'
+			|'|'
+			|'~'
+			|'!'
+			|assignment_operator
+			|'<'
+			|'>'
+			|LS
+			|RS
+			|EQ
+			|NE
+			|LE
+			|GE
+			|ANDAND
+			|OROR
+			|INC
+			|DEC
+			|','
+			|ARROWstar
+			|ARROW
 ;
 
 token:
@@ -339,6 +456,24 @@ token:
 			|keyword
 			|literal
 			|preprocessing_op_or_punc
+			;
+
+/* lex.pptoken, userdefined literals not supported */
+preprocessing_token:
+			header_name
+			|identifier
+			|floating_literal
+			|integer_literal
+			|character_literal
+			|string_literal
+			|preprocessing_op_or_punc
+			|PP_ANYCHAR
+			;
+
+/* lex.header */
+header_name:
+			PP_HCHARSEQUENCE
+			|PP_QCHARSEQUENCE
 			;
 
 /* basic.link */
@@ -480,6 +615,23 @@ unary_operator:
 			|'~'
 			;
 
+/* expr.new */
+/* expr.delete */
+/* expr.unary.noexcept */
+/* expr.cast */
+/* expr.mptr.oper */
+/* expr.mul */
+/* expr.add */
+/* expr.shift */
+/* expr.rel */
+/* expr.eq */
+/* expr.bit.and */
+/* expr.xor */
+/* expr.or */
+/* expr.log.and */
+/* expr.log.or */
+
+
 /* expr.cond */
 conditional_expression:
 			logical_or_expression
@@ -531,6 +683,11 @@ statement:
 			;
 
 /* stmt.label */
+labeled_statement:
+			attribute_specifier_seq? identifier ':' statement
+			|attribute_specifier_seq? CASE constant_expression ':' statement
+			|attribute_specifier_seq? DEFAULT ':' statement
+			;
 
 /* stmt.expr */
 expression_statement:
@@ -580,6 +737,7 @@ declaration:
 			|namespace_definition
 			|empty_declaration
 			|attribute_declaration
+			|preprocessing_file
 			;
 
 block_declaration:
@@ -837,6 +995,28 @@ declarator_id:
 			;
 
 /* dcl.name */
+type_id:
+			type_specifier_seq abstract_declarator?
+			;
+
+abstract_declarator:
+			ptr_abstract_declarator
+			|noptr_abstract_declarator? parameters_and_qualifiers trailing_return_type
+			;
+
+ptr_abstract_declarator:
+			noptr_abstract_declarator
+			|ptr_operator ptr_abstract_declarator?
+			;
+
+noptr_abstract_declarator:
+			noptr_abstract_declarator? parameters_and_qualifiers
+			|noptr_abstract_declarator? '[' constant_expression ']' attribute_specifier_seq?
+			|'(' ptr_abstract_declarator ')'
+			;
+
+
+
 /* dcl.fct */
 /* dcl.fct.def.general */
 
@@ -868,21 +1048,95 @@ braced_init_list:
 
 /* class */
 
+/* over.oper */
+operator_function_id:
+			OPERATOR overloadable_operator
+			|OPERATOR overloadable_operator '<' template_argument_list? '>'
+			;
 
+/* over.literal */
+/* TODO: lexer does not support this */
+literal_operator_id:
+			OPERATOR '"' '"' identifier
+			;
 
+/* temp */
 
 /* cpp  preprocessing */
+preprocessing_file:
+			group?
+			;
 
+group:
+			group_part
+			|group group_part
+			;
 
+group_part:
+			if_section
+			|control_line
+			|text_line
+			|'#' non_directive
+			;
 
+if_section:
+			if_group elif_groups? else_group? endif_line
+			;
 
+if_group:
+			'#' PP_IF constant_expression PP_NEWLINE group?
+			|'#' PP_IFDEF identifier PP_NEWLINE group?
+			|'#' PP_IFNDEF identifier PP_NEWLINE group?
+			;
 
+elif_groups:
+			elif_group
+			|elif_groups elif_group
+			;
 
+elif_group:
+			'#' PP_ELIF	constant_expression PP_NEWLINE group?
+			;
 
-/* old lex definition
-identifier_nondigit -> $1
-| identifier identifier_nondigit -> $1
-| identifier digit -> $1
-;
-*/
+else_group:
+			'#' PP_ELSE PP_NEWLINE group?
+			;
+
+endif_line:
+			'#' PP_ENDIF PP_NEWLINE
+			;
+
+/* TODO: check if we lex , and ...,*/
+control_line:
+			'#' PP_INCLUDE pp_tokens PP_NEWLINE
+			|'#' PP_DEFINE identifier replacement_list PP_NEWLINE
+			|'#' PP_DEFINE identifier PP_LPAREN identifier_list? ')' replacement_list PP_NEWLINE
+			|'#' PP_DEFINE identifier PP_LPAREN identifier_list ',' ELLIPSIS ')' replacement_list PP_NEWLINE
+			|'#' PP_UNDEF identifier PP_NEWLINE
+			|'#' PP_LINE pp_tokens PP_NEWLINE
+			|'#' PP_ERROR pp_tokens? PP_NEWLINE
+			|'#' PP_PRAGMA pp_tokens? PP_NEWLINE
+			|'#' PP_NEWLINE
+			;
+
+text_line:
+			pp_tokens? PP_NEWLINE
+			;
+
+non_directive:
+			pp_tokens PP_NEWLINE;
+
+identifier_list:
+			identifier
+			|identifier_list ',' identifier
+			;
+
+replacement_list:
+			pp_tokens?
+			;
+
+pp_tokens:
+			preprocessing_token
+			|pp_tokens preprocessing_token
+			;
 %%
