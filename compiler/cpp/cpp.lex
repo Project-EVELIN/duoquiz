@@ -112,7 +112,9 @@
 
 %option yylineno
 
-NL                      [\n]
+NL					[\n]
+CP					("u"|"U"|"L")
+SP					("u"|"u8"|"U"|"L")
 identifier [a-zA-Z_][0-9a-zA-Z_]*
 
 exponent_part [eE][-+]?[0-9]+
@@ -230,8 +232,8 @@ horizontal_white [ ]|{h_tab}
 {hex_constant}      {return parser.symbols_.HEXconstant;}
 {floating_constant} {return parser.symbols_.FLOATINGconstant;}
 
-"L"?[']{c_char}+[']     {return parser.symbols_.CHARACTERconstant;}
-"L"?["]{s_char}*["]     {return parser.symbols_.STRINGliteral;}
+{CP}?[']{c_char}+[']     {return parser.symbols_.CHARACTERconstant;}
+{SP}?["]{s_char}*["]     {return parser.symbols_.STRINGliteral;}
 
 "..."			{ return(NAMEDOP_RETURN(parser.symbols_.ELLIPSIS));}
 ">>="			{ return(NAMEDOP_RETURN(parser.symbols_.RSassign));}
