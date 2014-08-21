@@ -95,8 +95,8 @@ if_section: if_group elif_groups else_group endif_line
         ;
 
 if_group: PP_SHARP PP_IF constant_expression PP_NEWLINE group_opt
-        | PP_SHARP PP_IFDEF IDENTIFIER PP_NEWLINE group_opt
-        | PP_SHARP PP_IFNDEF IDENTIFIER PP_NEWLINE group_opt
+        | PP_SHARP PP_IFDEF identifier PP_NEWLINE group_opt
+        | PP_SHARP PP_IFNDEF identifier PP_NEWLINE group_opt
         ;
 
 elif_groups: elif_group
@@ -113,11 +113,11 @@ endif_line: PP_SHARP PP_ENDIF PP_NEWLINE
         ;
 
 control_line: PP_SHARP PP_INCLUDE pp_tokens PP_NEWLINE { $$ = [$1, $2, $3];}
-        | PP_SHARP PP_DEFINE IDENTIFIER replacement_list PP_NEWLINE { $$ = [$1, $2, $3, $4];}
-        | PP_SHARP PP_DEFINE IDENTIFIER PP_LPAREN identifier_list_opt ')' replacement_list PP_NEWLINE
+        | PP_SHARP PP_DEFINE identifier replacement_list PP_NEWLINE { $$ = [$1, $2, $3, $4];}
+        | PP_SHARP PP_DEFINE identifier PP_LPAREN identifier_list_opt ')' replacement_list PP_NEWLINE
         { $$ = yy.parser.createArrayOpt("control_line", [$1, $2, $3, $4, $5, $6, $7]);}
-        | PP_SHARP PP_DEFINE IDENTIFIER PP_LPAREN identifier_list ',' ELLIPSIS ')' replacement_list PP_NEWLINE
-        | PP_SHARP PP_UNDEF IDENTIFIER PP_NEWLINE { $$ = [$1, $2, $3];}
+        | PP_SHARP PP_DEFINE identifier PP_LPAREN identifier_list ',' ELLIPSIS ')' replacement_list PP_NEWLINE
+        | PP_SHARP PP_UNDEF identifier PP_NEWLINE { $$ = [$1, $2, $3];}
         | PP_SHARP PP_LINE pp_tokens PP_NEWLINE { $$ = [$1, $2, $3];}
         | PP_SHARP PP_ERROR pp_tokens_opt PP_NEWLINE
         { $$ = yy.parser.createArrayOpt("control_line", [$1, $2, $3]);}
@@ -134,8 +134,8 @@ non_directive: pp_tokens PP_NEWLINE {$$ = [$1, $2];}
         ;
 
 identifier_list:
-        | IDENTIFIER { $$ = yytext;}
-        | identifier_list ',' IDENTIFIER {$$ = [$1, $2, $3];}
+        | identifier { $$ = yytext; console.log("identifier_list:", yytext);}
+        | identifier_list ',' identifier {$$ = [$1, $2, $3]; console.log("identifier_list:", yytext);}
         ;
 
 identifier_list_opt:
@@ -182,6 +182,11 @@ header_name: PP_HCHARSEQUENCE { $$ = yytext;}
 
 /* EXCEPTIONS http://www.nongnu.org/hcb/#exception-specification */
 /* TODO */
+
+/* use this to return always the text and not IDENTIFIER */
+identifier:
+        IDENTIFIER {$$=yytext;}
+        ;
 
 
 /* CONSTANTS */
@@ -240,9 +245,9 @@ string_literal_list:
     lines are expressions, then *I* claim that they are wrong. */
 
 paren_identifier_declarator:
-        scope_opt_identifier
-        | scope_opt_complex_name
-        | '(' paren_identifier_declarator ')'
+        scope_opt_identifier {$$ = $1;}
+        | scope_opt_complex_name {$$ = $1;}
+        | '(' paren_identifier_declarator ')' {$$ = [$1, $2, $3];}
         ;
 
 
@@ -345,38 +350,38 @@ operator_function_ptr_opt:
 
     /* List of operators we can overload */
 any_operator:
-        '+' { $$ = "+";}
-        | '-' { $$ = "-";}
-        | '*' { $$ = $1;}
-        | '/' { $$ = $1;}
-        | '%' { $$ = $1;}
-        | '^' { $$ = $1;}
-        | '&' { $$ = $1;}
-        | '|' { $$ = $1;}
-        | '~' { $$ = $1;}
-        | '!' { $$ = $1;}
-        | '<' { $$ = $1;}
-        | '>' { $$ = $1;}
-        | LS { $$ = $1;}
-        | RS { $$ = $1;}
-        | ANDAND { $$ = $1;}
-        | OROR { $$ = $1;}
-        | ARROW { $$ = $1;}
-        | ARROWstar { $$ = $1;}
-        | '.' { $$ = $1;}
-        | DOTstar { $$ = $1;}
-        | ICR { $$ = $1;}
-        | DECR { $$ = $1;}
-        | LE { $$ = $1;}
-        | GE { $$ = $1;}
-        | EQ { $$ = $1;}
-        | NE { $$ = $1;}
-        | assignment_operator { $$ = $1;}
-        | '(' ')' { $$ = $1;}
-        | '[' ']' { $$ = $1;}
-        | NEW { $$ = $1;}
-        | DELETE { $$ = $1;}
-        | ',' { $$ = $1;}
+        '+' { $$ = yytext;}
+        | '-' { $$ = yytext;}
+        | '*' { $$ = yytext;}
+        | '/' { $$ = yytext;}
+        | '%' { $$ = yytext;}
+        | '^' { $$ = yytext;}
+        | '&' { $$ = yytext;}
+        | '|' { $$ = yytext;}
+        | '~' { $$ = yytext;}
+        | '!' { $$ = yytext;}
+        | '<' { $$ = yytext;}
+        | '>' { $$ = yytext;}
+        | LS { $$ = yytext;}
+        | RS { $$ = yytext;}
+        | ANDAND { $$ = yytext;}
+        | OROR { $$ = yytext;}
+        | ARROW { $$ = yytext;}
+        | ARROWstar { $$ = yytext;}
+        | '.' { $$ = yytext;}
+        | DOTstar { $$ = yytext;}
+        | ICR { $$ = yytext;}
+        | DECR { $$ = yytext;}
+        | LE { $$ = yytext;}
+        | GE { $$ = yytext;}
+        | EQ { $$ = yytext;}
+        | NE { $$ = yytext;}
+        | assignment_operator { $$ = yytext;}
+        | '(' ')' { $$ = yytext;}
+        | '[' ']' { $$ = yytext;}
+        | NEW { $$ = yytext;}
+        | DELETE { $$ = yytext;}
+        | ',' { $$ = yytext;}
         ;
 
 
@@ -412,7 +417,7 @@ type_qualifier_list_opt:
 
 postfix_expression:
         primary_expression { $$ = $1;}
-        | postfix_expression '[' comma_expression ']'
+        | postfix_expression '[' comma_expression ']' { $$ = [$1, $2, $3, $4];}
         | postfix_expression '(' ')' { $$ = [$1, $2, $3];}
         | postfix_expression '(' argument_expression_list ')' { $$ = [$1, $2, $3, $4];}
         | postfix_expression '.'   member_name { $$ = [$1, $2, $3];}
@@ -435,9 +440,9 @@ postfix_expression:
     */
 
 member_name:
-        scope_opt_identifier
-        | scope_opt_complex_name
-        | basic_type_name CLCL '~' basic_type_name
+        scope_opt_identifier {$$ = $1;}
+        | scope_opt_complex_name {$$ = $1;}
+        | basic_type_name CLCL '~' basic_type_name  {$$ = [$1, $2, $3, $4];}
 
         | declaration_qualifier_list  CLCL '~'   declaration_qualifier_list
         | type_qualifier_list         CLCL '~'   type_qualifier_list
@@ -506,8 +511,8 @@ operator_new_type:
                         operator_new_initializer_opt
         ;
 
-    
-    /*  Right  recursion  is critical in the following productions to 
+
+    /*  Right  recursion  is critical in the following productions to
     avoid a conflict on TYPEDEFname */
 
 operator_new_declarator_opt:
@@ -530,14 +535,14 @@ operator_new_initializer_opt:
         ;
 
 cast_expression:
-        unary_expression
-        | '(' type_name ')' cast_expression
+        unary_expression {$$ = $1;}
+        | '(' type_name ')' cast_expression {$$ = [$1, $2, $3, $4];}
         ;
 
 
     /* Following are C++, not ANSI C */
 deallocation_expression:
-        cast_expression
+        cast_expression  {$$ = $1;}
         | global_opt_scope_opt_delete deallocation_expression
         | global_opt_scope_opt_delete '[' comma_expression ']' deallocation_expression  /* archaic C++, what a concept */
         | global_opt_scope_opt_delete '[' ']' deallocation_expression
@@ -553,74 +558,74 @@ global_opt_scope_opt_delete:
 
     /* Following are C++, not ANSI C */
 point_member_expression:
-        deallocation_expression
+        deallocation_expression {$$ = $1;}
         | point_member_expression DOTstar  deallocation_expression
         | point_member_expression ARROWstar  deallocation_expression
         ;
 
 multiplicative_expression:
-        point_member_expression
-        | multiplicative_expression '*' point_member_expression
-        | multiplicative_expression '/' point_member_expression
-        | multiplicative_expression '%' point_member_expression
+        point_member_expression {$$ = $1;}
+        | multiplicative_expression '*' point_member_expression {$$ = [$1, $2, $3];}
+        | multiplicative_expression '/' point_member_expression {$$ = [$1, $2, $3];}
+        | multiplicative_expression '%' point_member_expression {$$ = [$1, $2, $3];}
         ;
 
 additive_expression:
-        multiplicative_expression
-        | additive_expression '+' multiplicative_expression
-        | additive_expression '-' multiplicative_expression
+        multiplicative_expression {$$ = $1;}
+        | additive_expression '+' multiplicative_expression {$$ = [$1, $2, $3]; console.log("additive_expression '+'")}
+        | additive_expression '-' multiplicative_expression {$$ = [$1, $2, $3];}
         ;
 
 shift_expression:
-        additive_expression
-        | shift_expression LS additive_expression
-        | shift_expression RS additive_expression
+        additive_expression {$$ = $1;}
+        | shift_expression LS additive_expression {$$ = [$1, $2, $3];}
+        | shift_expression RS additive_expression {$$ = [$1, $2, $3];}
         ;
 
 relational_expression:
-        shift_expression
-        | relational_expression '<' shift_expression
-        | relational_expression '>' shift_expression
-        | relational_expression LE  shift_expression
-        | relational_expression GE  shift_expression
+        shift_expression {$$ = $1;}
+        | relational_expression '<' shift_expression {$$ = [$1, $2, $3];}
+        | relational_expression '>' shift_expression {$$ = [$1, $2, $3];}
+        | relational_expression LE  shift_expression {$$ = [$1, $2, $3];}
+        | relational_expression GE  shift_expression {$$ = [$1, $2, $3];}
         ;
 
 equality_expression:
-        relational_expression
-        | equality_expression EQ relational_expression
-        | equality_expression NE relational_expression
+        relational_expression {$$ = $1;}
+        | equality_expression EQ relational_expression {$$ = [$1, $2, $3];}
+        | equality_expression NE relational_expression {$$ = [$1, $2, $3];}
         ;
 
 AND_expression:
-        equality_expression
-        | AND_expression '&' equality_expression
+        equality_expression {$$ = $1;}
+        | AND_expression '&' equality_expression {$$ = [$1, $2, $3];}
         ;
 
 exclusive_OR_expression:
-        AND_expression
-        | exclusive_OR_expression '^' AND_expression
+        AND_expression {$$ = $1;}
+        | exclusive_OR_expression '^' AND_expression {$$ = [$1, $2, $3];}
         ;
 
 inclusive_OR_expression:
-        exclusive_OR_expression
-        | inclusive_OR_expression '|' exclusive_OR_expression
+        exclusive_OR_expression {$$ = $1;}
+        | inclusive_OR_expression '|' exclusive_OR_expression {$$ = [$1, $2, $3];}
         ;
 
 logical_AND_expression:
-        inclusive_OR_expression
-        | logical_AND_expression ANDAND inclusive_OR_expression
+        inclusive_OR_expression {$$ = $1;}
+        | logical_AND_expression ANDAND inclusive_OR_expression {$$ = [$1, $2, $3];}
         ;
 
 logical_OR_expression:
-        logical_AND_expression
-        | logical_OR_expression OROR logical_AND_expression
+        logical_AND_expression {$$ = $1;}
+        | logical_OR_expression OROR logical_AND_expression {$$ = [$1, $2, $3];}
         ;
 
 conditional_expression:
-        logical_OR_expression
+        logical_OR_expression {$$ = $1;}
 
         | logical_OR_expression '?' comma_expression ':'
-                conditional_expression
+                conditional_expression {$$ = [$1, $2, $3, $4, $5];}
         ;
 
 assignment_expression:
@@ -630,16 +635,16 @@ assignment_expression:
 
 assignment_operator:
         '=' { $$ = "="; console.log("assignment_operator: =");}
-        | MULTassign
-        | DIVassign
-        | MODassign
-        | PLUSassign
-        | MINUSassign
-        | LSassign
-        | RSassign
-        | ANDassign
-        | ERassign
-        | ORassign
+        | MULTassign {$$ = yytext;}
+        | DIVassign {$$ = yytext;}
+        | MODassign {$$ = yytext;}
+        | PLUSassign {$$ = yytext;}
+        | MINUSassign {$$ = yytext;}
+        | LSassign {$$ = yytext;}
+        | RSassign {$$ = yytext;}
+        | ANDassign {$$ = yytext;}
+        | ERassign {$$ = yytext;}
+        | ORassign {$$ = yytext;}
         ;
 
 comma_expression:
@@ -673,7 +678,7 @@ comma_expression_opt:
     visible in the current scope). */
 
 declaration:
-        declaring_list ';' { $$ = [$1, $2]; console.log("declaration");}
+        declaring_list ';' { $$ = [$1, $2];}
         | default_declaring_list ';' { $$ = [$1, $2];}
         | sue_declaration_specifier ';' { $$ = [$1, $2];}
         | sue_type_specifier ';' { $$ = [$1, $2];}
@@ -701,13 +706,13 @@ declaration:
     between a TYPEDEFname and an IDENTIFIER. */
 
 default_declaring_list:
-        declaration_qualifier_list   identifier_declarator initializer_opt
-        | type_qualifier_list        identifier_declarator initializer_opt
-        | default_declaring_list ',' identifier_declarator initializer_opt
+        declaration_qualifier_list   identifier_declarator initializer_opt {$$ = yy.parser.createArrayOpt("translation_unit", [$1, $2, $3])}
+        | type_qualifier_list        identifier_declarator initializer_opt {$$ = yy.parser.createArrayOpt("translation_unit", [$1, $2, $3])}
+        | default_declaring_list ',' identifier_declarator initializer_opt {$$ = yy.parser.createArrayOpt("translation_unit", [$1, $2, $3, $4])}
 
-        | declaration_qualifier_list constructed_identifier_declarator
-        | type_qualifier_list        constructed_identifier_declarator
-        | default_declaring_list ',' constructed_identifier_declarator
+        | declaration_qualifier_list constructed_identifier_declarator {$$ = [$1, $2];}
+        | type_qualifier_list        constructed_identifier_declarator {$$ = [$1, $2];}
+        | default_declaring_list ',' constructed_identifier_declarator {$$ = [$1, $2, $3];}
         ;
 
 
@@ -716,19 +721,19 @@ default_declaring_list:
     typedef-names (as prescribed by the ANSI C standard).*/
 
 declaring_list:
-        declaration_specifier          declarator initializer_opt
-        | type_specifier               declarator initializer_opt
-        | basic_type_name              declarator initializer_opt
-        | TYPEDEFname                  declarator initializer_opt
-        | global_or_scoped_typedefname declarator initializer_opt
-        | declaring_list ','           declarator initializer_opt
+        declaration_specifier          declarator initializer_opt {$$ = yy.parser.createArrayOpt("translation_unit", [$1, $2, $3])}
+        | type_specifier               declarator initializer_opt {$$ = yy.parser.createArrayOpt("translation_unit", [$1, $2, $3])}
+        | basic_type_name              declarator initializer_opt {$$ = yy.parser.createArrayOpt("translation_unit", [$1, $2, $3])}
+        | TYPEDEFname                  declarator initializer_opt {$$ = yy.parser.createArrayOpt("translation_unit", [$1, $2, $3])}
+        | global_or_scoped_typedefname declarator initializer_opt {$$ = yy.parser.createArrayOpt("translation_unit", [$1, $2, $3])}
+        | declaring_list ','           declarator initializer_opt {$$ = yy.parser.createArrayOpt("translation_unit", [$1, $2, $3])}
 
-        | declaration_specifier        constructed_declarator
-        | type_specifier               constructed_declarator
-        | basic_type_name              constructed_declarator
-        | TYPEDEFname                  constructed_declarator
-        | global_or_scoped_typedefname constructed_declarator
-        | declaring_list ','           constructed_declarator
+        | declaration_specifier        constructed_declarator {$$ = yy.parser.createArrayOpt("translation_unit", [$1, $2])}
+        | type_specifier               constructed_declarator {$$ = yy.parser.createArrayOpt("translation_unit", [$1, $2])}
+        | basic_type_name              constructed_declarator {$$ = yy.parser.createArrayOpt("translation_unit", [$1, $2])}
+        | TYPEDEFname                  constructed_declarator {$$ = yy.parser.createArrayOpt("translation_unit", [$1, $2])}
+        | global_or_scoped_typedefname constructed_declarator {$$ = yy.parser.createArrayOpt("translation_unit", [$1, $2])}
+        | declaring_list ','           constructed_declarator {$$ = yy.parser.createArrayOpt("translation_unit", [$1, $2, $3])}
         ;
 
 
@@ -755,16 +760,15 @@ declaring_list:
     opening "(". ) */
 
 constructed_declarator:
-        nonunary_constructed_identifier_declarator
-        | constructed_paren_typedef_declarator
+        nonunary_constructed_identifier_declarator {$$ = $1;}
+        | constructed_paren_typedef_declarator {$$ = $1;}
         | simple_paren_typedef_declarator '(' argument_expression_list ')'
 
-        | simple_paren_typedef_declarator postfixing_abstract_declarator
-                                          '(' argument_expression_list ')'
+        | simple_paren_typedef_declarator postfixing_abstract_declarator '(' argument_expression_list ')' {$$ = [$1, $2, $3, $4, $5];}
 
-        | constructed_parameter_typedef_declarator
-        | asterisk_or_ampersand constructed_declarator
-        | unary_modifier        constructed_declarator
+        | constructed_parameter_typedef_declarator {$$ = $1;}
+        | asterisk_or_ampersand constructed_declarator {$$ = [$1, $2];}
+        | unary_modifier        constructed_declarator {$$ = [$1, $2];}
         ;
 
 constructed_paren_typedef_declarator:
@@ -783,23 +787,20 @@ constructed_paren_typedef_declarator:
 
 
 constructed_parameter_typedef_declarator:
-        TYPEDEFname    '(' argument_expression_list ')'
+        TYPEDEFname    '(' argument_expression_list ')' {$$ = [$1, $2, $3, $4];}
 
-        | TYPEDEFname  postfixing_abstract_declarator
-                       '(' argument_expression_list ')'
+        | TYPEDEFname  postfixing_abstract_declarator '(' argument_expression_list ')'  {$$ = [$1, $2, $3, $4, $5];}
 
-        | '(' clean_typedef_declarator ')'
-                       '(' argument_expression_list ')'
+        | '(' clean_typedef_declarator ')' '(' argument_expression_list ')' {$$ = [$1, $2, $3, $4, $5, $6];}
 
-        | '(' clean_typedef_declarator ')'  postfixing_abstract_declarator
-                       '(' argument_expression_list ')'
+        | '(' clean_typedef_declarator ')'  postfixing_abstract_declarator '(' argument_expression_list ')' {$$ = [$1, $2, $3, $4, $5, $6, $7];}
         ;
 
 
 constructed_identifier_declarator:
-        nonunary_constructed_identifier_declarator
-        | asterisk_or_ampersand constructed_identifier_declarator
-        | unary_modifier        constructed_identifier_declarator
+        nonunary_constructed_identifier_declarator {$$ = $1;}
+        | asterisk_or_ampersand constructed_identifier_declarator {$$ = [$1, $2];}
+        | unary_modifier        constructed_identifier_declarator {$$ = [$1, $2];}
         ;
 
 
@@ -1291,7 +1292,7 @@ enumerator_list_no_trailing_comma:
         ;
 
 enumerator_name:
-        IDENTIFIER { $$ = $1;}
+        identifier { $$ = $1;}
         | TYPEDEFname { $$ = $1;}
         ;
 
@@ -1546,7 +1547,7 @@ jump_statement:
         GOTO label                     ';'
         | CONTINUE                     ';'
         | BREAK                        ';'
-        | RETURN comma_expression_opt  ';'
+        | RETURN comma_expression_opt  ';' {$$ = ['return', $2];}
         ;
 
 
@@ -1554,8 +1555,8 @@ jump_statement:
     "label" name space */
 
 label:
-        IDENTIFIER
-        | TYPEDEFname
+        identifier {$$ = $1;}
+        | TYPEDEFname {$$ = yytext;}
         ;
 
 
@@ -1854,8 +1855,8 @@ constructor_init_list:
         ;
 
 constructor_init:
-        IDENTIFIER   '(' argument_expression_list ')'
-        | IDENTIFIER '('                          ')'
+        identifier   '(' argument_expression_list ')'
+        | identifier '('                          ')'
 
         | TYPEDEFname '(' argument_expression_list ')'
         | TYPEDEFname '('                          ')'
@@ -2080,7 +2081,7 @@ scope:
     context, is too much for an LALR parser. */
 
 tag_name:
-        IDENTIFIER
+        identifier {$$ = $1;}
         | TYPEDEFname
         ;
 
@@ -2102,8 +2103,8 @@ global_or_scope:
     TYPEDEFname is NOT.*/
 
 scope_opt_identifier:
-                IDENTIFIER
-        | scope IDENTIFIER 
+                identifier {$$ = $1;}
+        | scope identifier {$$ = [$1, $2];}
         ;
 
 scope_opt_complex_name:
@@ -2168,6 +2169,6 @@ parser.createArrayOpt = function(rule, arr) {
     for(i = 0; i < arr.length; i++) {
         if(arr[i] !== undefined) obj.push(arr[i]);
     }
-    console.log(rule, arr, obj);
+    //console.log(rule, arr, obj);
     return obj;
 };

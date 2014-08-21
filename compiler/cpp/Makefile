@@ -18,7 +18,7 @@ common:	cpp.jison cpp.lex
 	@echo "------------------------------"
 
 ebnf:	cpp0x.ebnf
-	node cli-wrapper.js -m commonjs -t true -o $(EBNF) cpp0x.ebnf
+	node cli-wrapper.js -p lr -m commonjs -t true -o $(EBNF) cpp0x.ebnf
 	@echo ""
 	@echo "------------------------------"
 	@echo "------------------------------"

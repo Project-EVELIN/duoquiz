@@ -36,7 +36,7 @@ horizontal_white [ ]|{h_tab}
 %x CPP_COMMENT
 %x C_COMMENT
 
-%options flex
+%options flex case-insensitive
 
 %%
 /* starting */
@@ -102,6 +102,7 @@ horizontal_white [ ]|{h_tab}
 "export"				return "EXPORT"
 "extern"				return "EXTERN"
 "false"					return "FALSE"
+"final"					return "FINAL"
 "float"					return "FLOAT"
 "for"						return "FOR"
 "friend"				return "FRIEND"
@@ -116,6 +117,7 @@ horizontal_white [ ]|{h_tab}
 "noexcept"			return "NOEXCEPT"
 "nullptr"				return "NULLPTR"
 "operator"			return "OPERATOR"
+"override"			return "OVERRIDE"
 "private"				return "PRIVATE"
 "protected"			return "PROTECTED"
 "public"				return "PUBLIC"
@@ -218,6 +220,7 @@ horizontal_white [ ]|{h_tab}
 ","						return ','
 "->*"					return 'ARROWstar'
 "->"					return 'ARROW'
+"0"						return '0'
 "#"						this.begin("PREPR"); return '#';
 
 
@@ -271,7 +274,8 @@ horizontal_white [ ]|{h_tab}
 /*	EBNF Grammar does not need tokens like typical bison grammar.
 		This allows us to use the 'symbols' directly from the parser.
  */
-%token<value> INT
+%nonassoc ELSE INC DEC '+' '-' '*' '&' '[' '{' '<' ':' string_literal
+%nonassoc '('
 %ebnf
 
 %start translation_unit
@@ -556,6 +560,11 @@ lambda_declarator:
 			'(' parameter_declaration_cause ')' MUTABLE? exception_specification? attribute_specifier_seq? trailing_return_type?
 			;
 
+cv_qualifier_seq:
+			cv_qualifier
+			|cv_qualifier cv_qualifier_seq
+			;
+
 /* expr.post */
 postfix_expression:
 			primary_expression
@@ -616,21 +625,126 @@ unary_operator:
 			;
 
 /* expr.new */
-/* expr.delete */
-/* expr.unary.noexcept */
-/* expr.cast */
-/* expr.mptr.oper */
-/* expr.mul */
-/* expr.add */
-/* expr.shift */
-/* expr.rel */
-/* expr.eq */
-/* expr.bit.and */
-/* expr.xor */
-/* expr.or */
-/* expr.log.and */
-/* expr.log.or */
+new_expression:
+			CLCL? NEW new_placement? new_type_id new_initializer?
+			|CLCL? new_placement? '(' type_id ')' new_initializer?
+			;
 
+new_placement:
+			'(' expression_list ')'
+			;
+
+new_type_id:
+			type_specifier_seq new_declarator?
+			;
+
+new_declarator:
+			ptr_operator new_declarator?
+			|noptr_new_declarator
+			;
+
+noptr_new_declarator:
+			'[' expression ']' attribute_specifier_seq?
+			|noptr_new_declarator '[' constant_expression ']' attribute_specifier_seq?
+			;
+
+new_initializer:
+			'(' expression_list? ')'
+			|braced_init_list
+			;
+
+/* expr.delete */
+delete_expression:
+			CLCL? DELETE cast_expression
+			|CLCL? delete '[' ']' cast_expression
+			;
+
+/* expr.unary.noexcept */
+noexcept_expression:
+			NOEXCEPT '(' expression ')'
+			;
+
+/* expr.cast */
+cast_expression:
+			unary_expression
+			|'(' type_id ')' cast_expression
+			;
+
+/* expr.mptr.oper */
+pm_expression:
+			cast_expression
+			|pm_expression DOTSTAR cast_expression
+			|pm_expression ARROWstar cast_expression
+			;
+
+/* expr.mul */
+multiplicative_expression:
+			pm_expression
+			|multiplicative_expression '*' pm_expression
+			|multiplicative_expression '/' pm_expression
+			|multiplicative_expression '%' pm_expression
+			;
+
+/* expr.add */
+additive_expression:
+			multiplicative_expression
+			|additive_expression '+' multiplicative_expression
+			|additive_expression '-' multiplicative_expression
+			;
+
+/* expr.shift */
+shift_expression:
+			additive_expression
+			|shift_expression LS additive_expression
+			|shift_expression RS additive_expression
+			;
+
+/* expr.rel */
+relational_expression:
+			shift_expression
+			|relational_expression '<' shift_expression
+			|relational_expression '>' shift_expression
+			|relational_expression LE shift_expression
+			|relational_expression GE shift_expression
+			;
+
+/* expr.eq */
+equality_expression:
+			relational_expression
+			|equality_expression EQ relational_expression
+			|equality_expression NE relational_expression
+			;
+
+
+/* expr.bit.and */
+and_expression:
+		equality_expression
+		|and_expression '&' equality_expression
+		;
+
+/* expr.xor */
+exclusive_or_expression:
+			and_expression
+			|exclusive_or_expression '^' and_expression
+			;
+
+/* expr.or */
+inclusive_or_expression:
+		exclusive_or_expression
+		|inclusive_or_expression '|' exclusive_or_expression
+		;
+
+/* expr.log.and */
+logical_and_expression:
+			inclusive_or_expression
+			|logical_and_expression ANDAND inclusive_or_expression
+			;
+
+/* expr.log.or */
+logical_or_expression:
+			logical_and_expression
+			|logical_or_expression OROR logical_and_expression
+			;
 
 /* expr.cond */
 conditional_expression:
@@ -705,7 +819,38 @@ statement_seq:
 			;
 
 /* stmt.select */
+selection_statement:
+			IF '(' condition ')' statement
+			|IF '(' condition ')' statement ELSE statement
+			|SWITCH '(' condition ')' statement
+			;
+
+condition:
+			expression
+			|attribute_specifier_seq? decl_specifier_seq declarator '=' initializer_clause
+			|attribute_specifier_seq? decl_specifier_seq declarator braced_init_list
+			;
+
 /* stmt.iter */
+iteration_statement:
+			WHILE '(' condition ')' statement
+			|DO statement WHILE '(' expression ')' ';'
+			|FOR '(' for_init_statement condition? ';' expression? ')' statement
+			|FOR '(' for_range_declaration ':' for_range_initializer ')' statement
+			;
+
+for_init_statement:
+			expression_statement
+			|simple_declaration
+			;
+
+for_range_declaration:
+			attribute_specifier_seq? type_specifier_seq declarator
+			;
+
+for_range_initializer:
+			expression braced_init_list
+			;
 
 /* stmt.jump */
 jump_statement:
@@ -729,7 +874,7 @@ declaration_seq:
 
 declaration:
 			block_declaration
-			|function_definition
+			/*|function_definition
 			|template_declaration
 			|explicit_instantiation
 			|explicit_specialization
@@ -737,7 +882,7 @@ declaration:
 			|namespace_definition
 			|empty_declaration
 			|attribute_declaration
-			|preprocessing_file
+			|preprocessing_file*/
 			;
 
 block_declaration:
@@ -864,11 +1009,110 @@ decltype_specifier:
 			;
 
 /* dcl.type.elab */
+elaborated_type_specifier:
+			class_key attribute_specifier_seq? CLCL? nested_name_specifier? identifier
+			|class_key CLCL? nested_name_specifier? TEMPLATE? simple_template_id
+			|ENUM CLCL? nested_name_specifier? identifier
+			;
+
 /* dcl.enum */
+enum_name:
+			identifier
+			;
+
+enum_specifier:
+			enum_head '{' enumerator_list? '}'
+			|enum_head '{' enumerator_list ',' '}'
+			;
+
+enum_head:
+			enum_key attribute_specifier_seq? identifier? enum_base?
+			|enum_key attribute_specifier_seq? nested_name_specifier identifier enum_base?
+			;
+
+enum_key:
+			ENUM
+			|ENUM CLASS
+			|ENUM STRUCT
+			;
+
+enum_base:
+			':' type_specifier_seq
+			;
+
+enumerator_list:
+			enumerator_definition
+			|enumerator_list ',' enumerator_definition
+			;
+
+enumerator_definition:
+			enumerator
+			|enumerator '=' constant_expression
+			;
+
+enumerator:
+			identifier
+			;
+
 /* namespace.def */
+namespace_name:
+			original_namespace_name
+			|namespace_name_alias
+			;
+
+original_namespace_name:
+			identifier
+			;
+
+namespace_definition:
+			named_namespace_definition
+			|unnamed_namespace_definition
+			;
+
+named_namespace_definition:
+			original_namespace_definition
+			|extension_namespace_definition
+			;
+
+original_namespace_definition:
+			INLINE? NAMESPACE identifier '{' namespace_body '}'
+			;
+
+extension_namespace_definition:
+			INLINE? NAMESPACE original_namespace_name '{' namespace_body '}'
+			;
+
+unnamed_namespace_definition:
+			INLINE? NAMESPACE original_namespace_name '{' namespace_body '}'
+			;
+
+namespace_body:
+			declaration_seq?
+			;
+
 /* namespace.alias */
+namespace_alias:
+			identifier
+			;
+
+namespace_alias_definition:
+			NAMESPACE identifier '=' qualified_namespace_specifier ';'
+			;
+
+qualified_namespace_specifier:
+			CLCL? nested_name_specifier? namespace_name
+			;
+
 /* namespace.udecl */
+using_declaration:
+			USING TYPENAME? CLCL? nested_name_specifier unqualified_id ';'
+			|USING CLCL unqualified_id ';'
+			;
+
 /* namespace.udir */
+using_directive:
+			attribute_specifier_seq? USING NAMESPACE CLCL? nested_name_specifier? namespace_name ';'
+			;
 
 /* dcl.asm */
 asm_definition:
@@ -876,6 +1120,11 @@ asm_definition:
 			;
 
 /* dcl.link */
+linkage_specification:
+			EXTERN string_literal '{' declaration_seq? '}'
+			| EXTERN string_literal declaration
+			;
+
 /* dcl.attr.grammar */
 attribute_specifier_seq:
 			attribute_specifier
@@ -974,10 +1223,12 @@ ptr_operator:
 			|CLCL? nested_name_specifier '*' attribute_specifier_seq? cv_qualifier_seq?
 			;
 
+/* moved before postfix_expression
 cv_qualifier_seq:
 			cv_qualifier
 			|cv_qualifier cv_qualifier_seq
 			;
+*/
 
 cv_qualifier:
 			CONST
@@ -1015,10 +1266,35 @@ noptr_abstract_declarator:
 			|'(' ptr_abstract_declarator ')'
 			;
 
-
-
 /* dcl.fct */
+parameter_declaration_clause:
+			parameter_declaration_list? ELLIPSIS?
+			|parameter_declaration_list ',' ELLIPSIS
+			;
+
+parameter_declaration_list:
+			parameter_declaration
+			|parameter_declaration_list ',' parameter_declaration
+			;
+
+parameter_declaration:
+			attribute_specifier_seq? decl_specifier_seq declarator
+			|attribute_specifier_seq? decl_specifier_seq declarator '=' initializer_clause
+			|attribute_specifier_seq? decl_specifier_seq abstract_declarator?
+			|attribute_specifier_seq? decl_specifier_seq abstract_declarator? '"' initializer_clause
+			;
+
 /* dcl.fct.def.general */
+function_definition:
+			attribute_specifier_seq? decl_specifier_seq? declarator function_body
+			|attribute_specifier_seq? decl_specifier_seq? declarator '=' DEFAULT ';'
+			|attribute_specifier_seq? decl_specifier_seq? declarator '=' DELETE ';'
+			;
+
+function_body:
+			ctor_initializer? compound_statement
+			|function_try_block
+			;
 
 /* dcl.init */
 initializer:
@@ -1047,6 +1323,145 @@ braced_init_list:
 			;
 
 /* class */
+class_name:
+			identifier
+			|simple_template_id
+			;
+
+class_specifier:
+			class_head '{' member_specification? '}'
+			;
+
+class_head:
+			class_key attribute_specifier_seq? class_head_name class_virt_specifier_seq? base_clause?
+			|class_key attribute_specifier_seq? base_clause?
+			;
+
+class_head_name:
+			nested_name_specifier? class_name
+			;
+
+class_virt_specifier_seq:
+			class_virt_specifier
+			|class_virt_specifier_seq class_virt_specifier
+			;
+
+class_virt_specifier:
+			FINAL
+			|EXPLICIT
+			;
+
+class_key:
+			CLASS
+			|STRUCT
+			|UNION
+			;
+
+/* class.mem */
+member_specification:
+			member_declaration member_specification?
+			|access_specifier ':' member_specification?
+			;
+
+member_declaration:
+			attribute_specifier_seq? decl_specifier_seq? member_declarator_list? ';'
+			|function_definition ';'?
+			|using_declaration
+			|static_assert_declaration
+			|template_declaration
+			|alias_declaration
+			;
+
+member_declarator_list:
+			member_declarator
+			|member_declarator_list ',' member_declarator
+			;
+
+member_declarator:
+			declarator virt_specifier_seq? pure_specifier?
+			|declarator virt_specifier_seq? brace_or_equal_initializer?
+			|identifier? attribute_specifier_seq? virt_specifier_seq? ':' constant_expression
+			;
+
+virt_specifier_seq:
+			virt_specifier
+			|virt_specifier_seq virt_specifier
+			;
+
+virt_specifier:
+			OVERRIDE
+			|FINAL
+			|NEW
+			;
+
+/* TODO check if lexer suuports this */
+pure_specifier:
+			'=' '0'
+			;
+
+/* class.derived */
+base_clause:
+			':' base_specifier_list
+			;
+
+base_specifier_list:
+			base_specifier ELLIPSIS?
+			|base_specifier_list ',' base_specifier ELLIPSIS?
+			;
+
+base_specifier:
+			attribute_specifier_seq? base_type_specifier
+			|attribute_specifier_seq? VIRTUAL access_specifier? base_type_specifier
+			|attribute_specifier_seq= access_specifier VIRTUAL? base_type_specifier
+			;
+
+class_or_decltype:
+			CLCL? nested_name_specifier? class_name
+			decltype_specifier
+			;
+
+base_type_specifier:
+			class_or_decltype
+			;
+
+access_specifier:
+			PRIVATE
+			|PROTECTED
+			|PUBLIC
+			;
+
+/* class.conv.fct */
+conversion_fuction_id:
+			OPERATOR converion_type_id
+			;
+
+converion_type_id:
+			type_specifier_seq converion_declarator?
+			;
+
+converion_declarator:
+			ptr_operator converion_declarator?
+			;
+
+/* class.base.init */
+ctor_initializer:
+			':' mem_initializer_list
+			;
+
+mem_initializer_list:
+			mem_initializer ELLIPSIS?
+			|mem_initializer ',' mem_initializer_list ELLIPSIS?
+			;
+
+mem_initializer:
+			mem_initializer_id '(' expression_list? ')'
+			|mem_initializer_id braced_init_list
+			;
+
+mem_initializer_id:
+			class_or_decltype
+			|identifier
+			;
 
 /* over.oper */
 operator_function_id:
@@ -1061,6 +1476,119 @@ literal_operator_id:
 			;
 
 /* temp */
+template_declaration:
+			TEMPLATE '<' template_parameter_list > declaration
+			;
+
+template_parameter_list:
+			template_parameter
+			|template_parameter_list ',' template_parameter
+			;
+
+/* temp.param */
+template_parameter:
+			type_parameter
+			|parameter_declaration
+			;
+
+type_parameter:
+			CLASS ELLIPSIS? identifier?
+			|CLASS identifier? '=' type_id
+			|TYPENAME ELLIPSIS? identifier?
+			|TYPENAME identifier? '=' type_id
+			|TEMPLATE '<' template_parameter_list '>' CLASS ELLIPSIS? identifier?
+			|TEMPLATE '<' template_parameter_list '>' CLASS identifier? '=' id_expression
+			;
+
+/* temp.names */
+simple_template_id:
+			template_name '<' template_argument_list? '>'
+			;
+
+template_id:
+			simple_template_id
+			|operator_function_id '<' template_argument_list? '>'
+			|literal_operator_id '<' template_argument_list? '>'
+			;
+
+template_name:
+			identifier
+			;
+
+template_argument_list:
+			template_argument ELLIPSIS?
+			|template_argument_list ',' template_argument ELLIPSIS?
+			;
+
+template_argument:
+			constant_expression
+			|type_id
+			|id_expression
+			;
+
+/* temp.res */
+typename_specifier:
+			TYPENAME CLCL? nested_name_specifier identifier
+			|TYPENAME CLCL? nested_name_specifier TEMPLATE? simple_template_id
+			;
+
+/* temp.explicit */
+explicit_instantiation:
+			EXTERN? TEMPLATE declaration
+			;
+
+/* temp.expl.spec */
+explicit_specialization:
+			TEMPLATE '<' '>' declaration
+			;
+
+/* except */
+try_block:
+			TRY compound_statement handler_seq
+			;
+
+function_try_block:
+			TRY ctor_initializer? compound_statement handler_seq
+			;
+
+handler_seq:
+			handler
+			|handler handler_seq
+			;
+
+handler:
+			CATCH '(' exception_declaration ')' compound_statement
+			;
+
+exception_declaration:
+			attribute_specifier_seq? type_specifier_seq declarator
+			|attribute_specifier_seq? type_specifier_seq abstract_declarator?
+			|ELLIPSIS
+			;
+
+throw_expression:
+			THROW assignment_expression?
+			;
+
+/* except.spec */
+exception_specification:
+			dynmaic_exception_specification
+			|noexcept_specification
+			;
+
+dynmaic_exception_specification:
+			THROW '(' type_id_list? ')'
+			;
+
+type_id_list:
+		type_id ELLIPSIS?
+		|type_id_list ',' type_id ELLIPSIS?
+		;
+
+noexcept_specification:
+			NOEXCEPT '(' constant_expression ')'
+			|NOEXCEPT
+			;
 
 /* cpp  preprocessing */
 preprocessing_file:
