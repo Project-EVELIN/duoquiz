@@ -161,10 +161,6 @@ horizontal_white [ ]|{h_tab}
 
 {CP}?{SQ}(\\.|[^\\{SQ}])+{SQ}	return "CHARACTER_LITERAL"
 {SP}?\"(\\.|[^\\"])*\"					return "STRING_LITERAL"
-/*
-"L"?[']?{c_char}+[']			return "CHARACTER_LITERAL"
-"L"?["]{s_char}*["]				return "STRING_LITERAL"
-*/
 
 /* lex.token.operator */
 
@@ -248,7 +244,7 @@ horizontal_white [ ]|{h_tab}
 <PREPR>"else"											return "PP_ELSE"
 <PREPR>"endif"										return "PP_ENDIF"
 <PREPR>"elif"											return "PP_ELIF"
-<PREPR>"error"											return "PP_ERROR"
+<PREPR>"error"										return "PP_ERROR"
 <PREPR>{identifier}								return "IDENTIFIER"
 <PREPR>{decimal_constant}					return "DECIMAL_LITERAL"
 <PREPR>{octal_constant}						return "OCTAL_LITERAL"
