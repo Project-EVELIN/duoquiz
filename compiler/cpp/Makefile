@@ -7,7 +7,7 @@
 SHELL=C:/Windows/System32/cmd.exe
 COMMON		= ./cpp.js
 EBNF			= ./ebnf.js
-EBNF_LEX	= ./ebnf_lex.js
+EBNF_LEX	= ./ebnf_lexer.js
 
 all:	cpp ebnf ebnf-lex
 
@@ -25,7 +25,7 @@ ebnf:	cpp0x.ebnf cpp0x.lex
 	@echo "------------------------------"
 
 ebnf-lex:	cpp0x.lex
-	node cli-wrapper.js -p lr -m commonjs -t true -o $(EBNF_LEX) cpp0x.lex
+	node ../../lib/jison-lex.git/cli.js cpp0x.lex -t commonjs -o $(EBNF)
 	@echo ""
 	@echo "------------------------------"
 	@echo "------------------------------"
