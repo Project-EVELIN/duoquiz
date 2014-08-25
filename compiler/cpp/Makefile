@@ -7,18 +7,25 @@
 SHELL=C:/Windows/System32/cmd.exe
 COMMON		= ./cpp.js
 EBNF			= ./ebnf.js
+EBNF_LEX	= ./ebnf_lex.js
 
-all:	common
+all:	cpp ebnf ebnf-lex
 
-common:	cpp.jison cpp.lex
+cpp:	cpp.jison cpp.lex
 	node cli-wrapper.js -m commonjs -t true -o $(COMMON) cpp.jison cpp.lex
 	@echo ""
 	@echo "------------------------------"
 	@echo "For testing, run 'nodejs ./cpp.js FILE.c'."
 	@echo "------------------------------"
 
-ebnf:	cpp0x.ebnf
-	node cli-wrapper.js -p lr -m commonjs -t true -o $(EBNF) cpp0x.ebnf
+ebnf:	cpp0x.ebnf cpp0x.lex
+	node cli-wrapper.js -p lr -m commonjs -t true -o $(EBNF) cpp0x.ebnf cpp0x.lex
+	@echo ""
+	@echo "------------------------------"
+	@echo "------------------------------"
+
+ebnf-lex:	cpp0x.lex
+	node cli-wrapper.js -p lr -m commonjs -t true -o $(EBNF_LEX) cpp0x.lex
 	@echo ""
 	@echo "------------------------------"
 	@echo "------------------------------"
@@ -26,3 +33,4 @@ ebnf:	cpp0x.ebnf
 clean:
 	rm -f $(COMMON)
 	rm -f $(EBNF)
+	rm -f $(EBNF_LEX)
