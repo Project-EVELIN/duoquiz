@@ -8,6 +8,7 @@
 %token DEFAULT         GOTO            SIZEOF          VOLATILE
 %token DO              IF              STATIC          WHILE
 %token BOOL            WCHAR_T          CHAR16_T         CHAR32_T
+%token NAMESPACE
 
 /* The following are used in C++ only.  ANSI C would call these IDENTIFIERs */
 %token NEW             DELETE
@@ -74,7 +75,7 @@ start_sym: translation_unit { return $1;}
 
 /* PREPROCESSING see http://www.nongnu.org/hcb/#group */
 preprocessing_file:
-
+/* nothing */
         | group { $$ = $1;}
         ;
 
@@ -134,13 +135,13 @@ non_directive: pp_tokens PP_NEWLINE {$$ = [$1, $2];}
         ;
 
 identifier_list:
-        | identifier { $$ = yytext; console.log("identifier_list:", yytext);}
-        | identifier_list ',' identifier {$$ = [$1, $2, $3]; console.log("identifier_list:", yytext);}
+        | identifier { $$ = yytext; yy.parser.logRule("identifier_list:", yytext);}
+        | identifier_list ',' identifier {$$ = [$1, $2, $3]; yy.parser.logRule("identifier_list:", yytext);}
         ;
 
 identifier_list_opt:
 
-        | identifier_list { $$ = $1;}
+        | identifier_list { $$ = $1; yy.parser.logRule("identifier_list_opt:", yytext);}
         ;
 
 pp_tokens: preprocessing_token { $$ = $1;}
@@ -185,7 +186,7 @@ header_name: PP_HCHARSEQUENCE { $$ = yytext;}
 
 /* use this to return always the text and not IDENTIFIER */
 identifier:
-        IDENTIFIER {$$=yytext;}
+        IDENTIFIER {$$=yytext; yy.parser.logRule("identifier:", yytext);}
         ;
 
 
@@ -245,9 +246,9 @@ string_literal_list:
     lines are expressions, then *I* claim that they are wrong. */
 
 paren_identifier_declarator:
-        scope_opt_identifier {$$ = $1;}
-        | scope_opt_complex_name {$$ = $1;}
-        | '(' paren_identifier_declarator ')' {$$ = [$1, $2, $3];}
+        scope_opt_identifier {$$ = $1; yy.parser.logRule("paren_identifier_declarator");}
+        | scope_opt_complex_name {$$ = $1; yy.parser.logRule("paren_identifier_declarator");}
+        | '(' paren_identifier_declarator ')' {$$ = [$1, $2, $3]; yy.parser.logRule("paren_identifier_declarator");}
         ;
 
 
@@ -274,12 +275,12 @@ paren_identifier_declarator:
         */
 
 primary_expression:
-        global_opt_scope_opt_identifier { $$ = $1;}
-        | global_opt_scope_opt_complex_name { $$ = $1;}
-        | THIS { $$ = $1;}
-        | constant { $$ = $1;}
-        | string_literal_list { $$ = $1;}
-        | '(' comma_expression ')' { $$ = [$1, $2, $3];}
+        global_opt_scope_opt_identifier { $$ = $1; yy.parser.logRule("primary_expression");}
+        | global_opt_scope_opt_complex_name { $$ = $1; yy.parser.logRule("primary_expression");}
+        | THIS { $$ = $1; yy.parser.logRule("primary_expression");}
+        | constant { $$ = $1; yy.parser.logRule("primary_expression");}
+        | string_literal_list { $$ = $1; yy.parser.logRule("primary_expression");}
+        | '(' comma_expression ')' { $$ = [$1, $2, $3]; yy.parser.logRule("primary_expression");}
         ;
 
 
@@ -311,13 +312,13 @@ primary_expression:
     */
 
 non_elaborating_type_specifier:
-        sue_type_specifier { $$ = $1;}
-        | basic_type_specifier { $$ = $1;}
+        sue_type_specifier { $$ = $1; yy.parser.logRule("non_elaborating_type_specifier");}
+        | basic_type_specifier { $$ = $1; yy.parser.logRule("non_elaborating_type_specifier");}
         | typedef_type_specifier { $$ = $1;}
 
-        | basic_type_name { $$ = $1;}
-        | TYPEDEFname { $$ = $1;}
-        | global_or_scoped_typedefname { $$ = $1;}
+        | basic_type_name { $$ = $1; yy.parser.logRule("non_elaborating_type_specifier");}
+        | TYPEDEFname { $$ = $1; yy.parser.logRule("non_elaborating_type_specifier");}
+        | global_or_scoped_typedefname { $$ = $1; yy.parser.logRule("non_elaborating_type_specifier");}
         ;
 
 
@@ -343,45 +344,45 @@ operator_function_name:
     effectively make a second pass! */
 
 operator_function_ptr_opt:
-        | unary_modifier        operator_function_ptr_opt { $$ = [$1, $2];}
-        | asterisk_or_ampersand operator_function_ptr_opt { $$ = [$1, $2];}
+        | unary_modifier        operator_function_ptr_opt { $$ = [$1, $2]; yy.parser.logRule("operator_function_ptr_opt");}
+        | asterisk_or_ampersand operator_function_ptr_opt { $$ = [$1, $2]; yy.parser.logRule("operator_function_ptr_opt");}
         ;
 
 
     /* List of operators we can overload */
 any_operator:
-        '+' { $$ = yytext;}
-        | '-' { $$ = yytext;}
-        | '*' { $$ = yytext;}
-        | '/' { $$ = yytext;}
-        | '%' { $$ = yytext;}
-        | '^' { $$ = yytext;}
-        | '&' { $$ = yytext;}
-        | '|' { $$ = yytext;}
-        | '~' { $$ = yytext;}
-        | '!' { $$ = yytext;}
-        | '<' { $$ = yytext;}
-        | '>' { $$ = yytext;}
-        | LS { $$ = yytext;}
-        | RS { $$ = yytext;}
-        | ANDAND { $$ = yytext;}
-        | OROR { $$ = yytext;}
-        | ARROW { $$ = yytext;}
-        | ARROWstar { $$ = yytext;}
-        | '.' { $$ = yytext;}
-        | DOTstar { $$ = yytext;}
-        | ICR { $$ = yytext;}
-        | DECR { $$ = yytext;}
-        | LE { $$ = yytext;}
-        | GE { $$ = yytext;}
-        | EQ { $$ = yytext;}
-        | NE { $$ = yytext;}
+        '+'             { $$ = yytext;}
+        | '-'           { $$ = yytext;}
+        | '*'           { $$ = yytext;}
+        | '/'           { $$ = yytext;}
+        | '%'           { $$ = yytext;}
+        | '^'           { $$ = yytext;}
+        | '&'           { $$ = yytext;}
+        | '|'           { $$ = yytext;}
+        | '~'           { $$ = yytext;}
+        | '!'           { $$ = yytext;}
+        | '<'           { $$ = yytext;}
+        | '>'           { $$ = yytext;}
+        | LS            { $$ = yytext;}
+        | RS            { $$ = yytext;}
+        | ANDAND        { $$ = yytext;}
+        | OROR          { $$ = yytext;}
+        | ARROW         { $$ = yytext;}
+        | ARROWstar     { $$ = yytext;}
+        | '.'           { $$ = yytext;}
+        | DOTstar       { $$ = yytext;}
+        | ICR           { $$ = yytext;}
+        | DECR          { $$ = yytext;}
+        | LE            { $$ = yytext;}
+        | GE            { $$ = yytext;}
+        | EQ            { $$ = yytext;}
+        | NE            { $$ = yytext;}
         | assignment_operator { $$ = yytext;}
-        | '(' ')' { $$ = yytext;}
-        | '[' ']' { $$ = yytext;}
-        | NEW { $$ = yytext;}
-        | DELETE { $$ = yytext;}
-        | ',' { $$ = yytext;}
+        | '(' ')'       { $$ = yytext;}
+        | '[' ']'       { $$ = yytext;}
+        | NEW           { $$ = yytext;}
+        | DELETE        { $$ = yytext;}
+        | ','           { $$ = yytext;}
         ;
 
 
@@ -395,8 +396,8 @@ any_operator:
     the following productions */
 
 type_qualifier_list_opt:
-
-        | type_qualifier_list { $$ = $1;}
+/*nothing */
+        | type_qualifier_list { $$ = $1; yy.parser.logRule("type_qualifier_list_opt");}
         ;
 
 
@@ -416,19 +417,19 @@ type_qualifier_list_opt:
     much the way the CLCL operator works.*/
 
 postfix_expression:
-        primary_expression { $$ = $1;}
-        | postfix_expression '[' comma_expression ']' { $$ = [$1, $2, $3, $4];}
-        | postfix_expression '(' ')' { $$ = [$1, $2, $3];}
-        | postfix_expression '(' argument_expression_list ')' { $$ = [$1, $2, $3, $4];}
-        | postfix_expression '.'   member_name { $$ = [$1, $2, $3];}
-        | postfix_expression ARROW member_name { $$ = [$1, $2, $3];}
-        | postfix_expression ICR { $$ = [$1, $2];}
-        | postfix_expression DECR { $$ = [$1, $2];}
-        | TYPEDEFname                  '(' ')' { $$ = [$1, $2, $3];}
-        | global_or_scoped_typedefname '(' ')' { $$ = [$1, $2, $3];}
-        | TYPEDEFname                  '(' argument_expression_list ')' { $$ = [$1, $2, $3, $4];}
-        | global_or_scoped_typedefname '(' argument_expression_list ')' { $$ = [$1, $2, $3, $4];}
-        | basic_type_name '(' assignment_expression ')' { $$ = [$1, $2, $3, $4];}
+        primary_expression { $$ = $1; yy.parser.logRule("postfix_expression");}
+        | postfix_expression '[' comma_expression ']' { $$ = [$1, $2, $3, $4]; yy.parser.logRule("postfix_expression");}
+        | postfix_expression '(' ')' { $$ = [$1, $2, $3]; yy.parser.logRule("postfix_expression");}
+        | postfix_expression '(' argument_expression_list ')' { $$ = [$1, $2, $3, $4]; yy.parser.logRule("postfix_expression");}
+        | postfix_expression '.'   member_name { $$ = [$1, $2, $3]; yy.parser.logRule("postfix_expression");}
+        | postfix_expression ARROW member_name { $$ = [$1, $2, $3]; yy.parser.logRule("postfix_expression");}
+        | postfix_expression ICR { $$ = [$1, $2]; yy.parser.logRule("postfix_expression");}
+        | postfix_expression DECR { $$ = [$1, $2]; yy.parser.logRule("postfix_expression");}
+        | TYPEDEFname                  '(' ')' { $$ = [$1, $2, $3]; yy.parser.logRule("postfix_expression");}
+        | global_or_scoped_typedefname '(' ')' { $$ = [$1, $2, $3]; yy.parser.logRule("postfix_expression");}
+        | TYPEDEFname                  '(' argument_expression_list ')' { $$ = [$1, $2, $3, $4]; yy.parser.logRule("postfix_expression");}
+        | global_or_scoped_typedefname '(' argument_expression_list ')' { $$ = [$1, $2, $3, $4]; yy.parser.logRule("postfix_expression");}
+        | basic_type_name '(' assignment_expression ')' { $$ = [$1, $2, $3, $4]; yy.parser.logRule("postfix_expression");}
         ;
 
 
@@ -454,17 +455,17 @@ argument_expression_list:
         ;
 
 unary_expression:
-        postfix_expression { $$ = $1;}
-        | ICR  unary_expression { $$ = [$1, $2];}
-        | DECR unary_expression { $$ = [$1, $2];}
-        | asterisk_or_ampersand cast_expression { $$ = [$1, $2];}
-        | '-'                   cast_expression { $$ = [$1, $2];}
-        | '+'                   cast_expression { $$ = [$1, $2];}
-        | '~'                   cast_expression { $$ = [$1, $2];}
-        | '!'                   cast_expression { $$ = [$1, $2];}
-        | SIZEOF unary_expression { $$ = [$1, $2];}
-        | SIZEOF '(' type_name ')' { $$ = [$1, $2, $3, $4];}
-        | allocation_expression { $$ = $1;}
+        postfix_expression { $$ = $1; yy.parser.logRule("unary_expression");}
+        | ICR  unary_expression { $$ = [$1, $2]; yy.parser.logRule("unary_expression");}
+        | DECR unary_expression { $$ = [$1, $2]; yy.parser.logRule("unary_expression");}
+        | asterisk_or_ampersand cast_expression { $$ = [$1, $2]; yy.parser.logRule("unary_expression");}
+        | '-'                   cast_expression { $$ = [$1, $2]; yy.parser.logRule("unary_expression");}
+        | '+'                   cast_expression { $$ = [$1, $2]; yy.parser.logRule("unary_expression");}
+        | '~'                   cast_expression { $$ = [$1, $2]; yy.parser.logRule("unary_expression");}
+        | '!'                   cast_expression { $$ = [$1, $2]; yy.parser.logRule("unary_expression");}
+        | SIZEOF unary_expression { $$ = [$1, $2]; yy.parser.logRule("unary_expression");}
+        | SIZEOF '(' type_name ')' { $$ = [$1, $2, $3, $4]; yy.parser.logRule("unary_expression");}
+        | allocation_expression { $$ = $1; yy.parser.logRule("unary_expression");}
         ;
 
 
@@ -530,22 +531,22 @@ operator_new_array_declarator:
 
 operator_new_initializer_opt:
 
-        | '('                          ')'
-        | '(' argument_expression_list ')'
+        | '('                          ')' {$$ = [$1, $2];}
+        | '(' argument_expression_list ')' {$$ = [$1, $2, $3];}
         ;
 
 cast_expression:
-        unary_expression {$$ = $1;}
-        | '(' type_name ')' cast_expression {$$ = [$1, $2, $3, $4];}
+        unary_expression {$$ = $1; yy.parser.logRule("cast_expression");}
+        | '(' type_name ')' cast_expression {$$ = [$1, $2, $3, $4]; yy.parser.logRule("cast_expression");}
         ;
 
 
     /* Following are C++, not ANSI C */
 deallocation_expression:
-        cast_expression  {$$ = $1;}
-        | global_opt_scope_opt_delete deallocation_expression
-        | global_opt_scope_opt_delete '[' comma_expression ']' deallocation_expression  /* archaic C++, what a concept */
-        | global_opt_scope_opt_delete '[' ']' deallocation_expression
+        cast_expression  {$$ = $1; yy.parser.logRule("deallocation_expression");}
+        | global_opt_scope_opt_delete deallocation_expression {$$ = [$1, $2]; yy.parser.logRule("deallocation_expression");}
+        | global_opt_scope_opt_delete '[' comma_expression ']' deallocation_expression  {$$ = [$1, $2, $3, $4, $5]; yy.parser.logRule("deallocation_expression");}
+        | global_opt_scope_opt_delete '[' ']' deallocation_expression {$$ = [$1, $2, $3, $4]; yy.parser.logRule("deallocation_expression");}
         ;
 
 
@@ -564,103 +565,103 @@ point_member_expression:
         ;
 
 multiplicative_expression:
-        point_member_expression {$$ = $1;}
-        | multiplicative_expression '*' point_member_expression {$$ = [$1, $2, $3];}
-        | multiplicative_expression '/' point_member_expression {$$ = [$1, $2, $3];}
-        | multiplicative_expression '%' point_member_expression {$$ = [$1, $2, $3];}
+        point_member_expression {$$ = $1; yy.parser.logRule("multiplicative_expression");}
+        | multiplicative_expression '*' point_member_expression {$$ = [$1, $2, $3]; yy.parser.logRule("multiplicative_expression");}
+        | multiplicative_expression '/' point_member_expression {$$ = [$1, $2, $3]; yy.parser.logRule("multiplicative_expression");}
+        | multiplicative_expression '%' point_member_expression {$$ = [$1, $2, $3]; yy.parser.logRule("multiplicative_expression");}
         ;
 
 additive_expression:
-        multiplicative_expression {$$ = $1;}
-        | additive_expression '+' multiplicative_expression {$$ = [$1, $2, $3]; console.log("additive_expression '+'")}
-        | additive_expression '-' multiplicative_expression {$$ = [$1, $2, $3];}
+        multiplicative_expression {$$ = $1; yy.parser.logRule("additive_expression");}
+        | additive_expression '+' multiplicative_expression {$$ = [$1, $2, $3]; yy.parser.logRule("additive_expression");}
+        | additive_expression '-' multiplicative_expression {$$ = [$1, $2, $3]; yy.parser.logRule("additive_expression");}
         ;
 
 shift_expression:
-        additive_expression {$$ = $1;}
-        | shift_expression LS additive_expression {$$ = [$1, $2, $3];}
-        | shift_expression RS additive_expression {$$ = [$1, $2, $3];}
+        additive_expression {$$ = $1; yy.parser.logRule("shift_expression");}
+        | shift_expression LS additive_expression {$$ = [$1, $2, $3]; yy.parser.logRule("shift_expression");}
+        | shift_expression RS additive_expression {$$ = [$1, $2, $3]; yy.parser.logRule("shift_expression");}
         ;
 
 relational_expression:
-        shift_expression {$$ = $1;}
-        | relational_expression '<' shift_expression {$$ = [$1, $2, $3];}
-        | relational_expression '>' shift_expression {$$ = [$1, $2, $3];}
-        | relational_expression LE  shift_expression {$$ = [$1, $2, $3];}
-        | relational_expression GE  shift_expression {$$ = [$1, $2, $3];}
+        shift_expression {$$ = $1; yy.parser.logRule("relational_expression");}
+        | relational_expression '<' shift_expression {$$ = [$1, $2, $3];yy.parser.logRule("relational_expression");}
+        | relational_expression '>' shift_expression {$$ = [$1, $2, $3];yy.parser.logRule("relational_expression");}
+        | relational_expression LE  shift_expression {$$ = [$1, $2, $3]; yy.parser.logRule("relational_expression");}
+        | relational_expression GE  shift_expression {$$ = [$1, $2, $3]; yy.parser.logRule("relational_expression");}
         ;
 
 equality_expression:
-        relational_expression {$$ = $1;}
-        | equality_expression EQ relational_expression {$$ = [$1, $2, $3];}
-        | equality_expression NE relational_expression {$$ = [$1, $2, $3];}
+        relational_expression {$$ = $1; yy.parser.logRule("equality_expression");}
+        | equality_expression EQ relational_expression {$$ = [$1, $2, $3]; yy.parser.logRule("equality_expression");}
+        | equality_expression NE relational_expression {$$ = [$1, $2, $3]; yy.parser.logRule("equality_expression");}
         ;
 
 AND_expression:
-        equality_expression {$$ = $1;}
-        | AND_expression '&' equality_expression {$$ = [$1, $2, $3];}
+        equality_expression {$$ = $1; yy.parser.logRule("AND_expression");}
+        | AND_expression '&' equality_expression {$$ = [$1, $2, $3]; yy.parser.logRule("AND_expression");}
         ;
 
 exclusive_OR_expression:
-        AND_expression {$$ = $1;}
-        | exclusive_OR_expression '^' AND_expression {$$ = [$1, $2, $3];}
+        AND_expression {$$ = $1; yy.parser.logRule("exclusive_OR_expression");}
+        | exclusive_OR_expression '^' AND_expression {$$ = [$1, $2, $3]; yy.parser.logRule("exclusive_OR_expression");}
         ;
 
 inclusive_OR_expression:
-        exclusive_OR_expression {$$ = $1;}
-        | inclusive_OR_expression '|' exclusive_OR_expression {$$ = [$1, $2, $3];}
+        exclusive_OR_expression {$$ = $1; yy.parser.logRule("inclusive_OR_expression");}
+        | inclusive_OR_expression '|' exclusive_OR_expression {$$ = [$1, $2, $3]; yy.parser.logRule("inclusive_OR_expression");}
         ;
 
 logical_AND_expression:
-        inclusive_OR_expression {$$ = $1;}
-        | logical_AND_expression ANDAND inclusive_OR_expression {$$ = [$1, $2, $3];}
+        inclusive_OR_expression {$$ = $1; yy.parser.logRule("logical_AND_expression");}
+        | logical_AND_expression ANDAND inclusive_OR_expression {$$ = [$1, $2, $3]; yy.parser.logRule("logical_AND_expression");}
         ;
 
 logical_OR_expression:
-        logical_AND_expression {$$ = $1;}
-        | logical_OR_expression OROR logical_AND_expression {$$ = [$1, $2, $3];}
+        logical_AND_expression {$$ = $1; yy.parser.logRule("logical_OR_expression");}
+        | logical_OR_expression OROR logical_AND_expression {$$ = [$1, $2, $3]; yy.parser.logRule("logical_OR_expression");}
         ;
 
 conditional_expression:
-        logical_OR_expression {$$ = $1;}
+        logical_OR_expression {$$ = $1; yy.parser.logRule("conditional_expression");}
 
         | logical_OR_expression '?' comma_expression ':'
-                conditional_expression {$$ = [$1, $2, $3, $4, $5];}
+                conditional_expression {$$ = [$1, $2, $3, $4, $5]; yy.parser.logRule("conditional_expression");}
         ;
 
 assignment_expression:
-        conditional_expression { $$ = $1;}
-        | unary_expression assignment_operator assignment_expression { $$ = [$1, $2, $3];}
+        conditional_expression { $$ = $1; yy.parser.logRule("assignment_expression");}
+        | unary_expression assignment_operator assignment_expression { $$ = [$1, $2, $3]; yy.parser.logRule("assignment_expression");}
         ;
 
 assignment_operator:
-        '=' { $$ = "="; console.log("assignment_operator: =");}
-        | MULTassign {$$ = yytext;}
-        | DIVassign {$$ = yytext;}
-        | MODassign {$$ = yytext;}
-        | PLUSassign {$$ = yytext;}
-        | MINUSassign {$$ = yytext;}
-        | LSassign {$$ = yytext;}
-        | RSassign {$$ = yytext;}
-        | ANDassign {$$ = yytext;}
-        | ERassign {$$ = yytext;}
-        | ORassign {$$ = yytext;}
+        '='             { $$ = "="; yy.parser.logRule("assignment_operator");}
+        | MULTassign    {$$ = yytext; yy.parser.logRule("assignment_operator");}
+        | DIVassign     {$$ = yytext; yy.parser.logRule("assignment_operator");}
+        | MODassign     {$$ = yytext; yy.parser.logRule("assignment_operator");}
+        | PLUSassign    {$$ = yytext; yy.parser.logRule("assignment_operator");}
+        | MINUSassign   {$$ = yytext; yy.parser.logRule("assignment_operator");}
+        | LSassign      {$$ = yytext; yy.parser.logRule("assignment_operator");}
+        | RSassign      {$$ = yytext; yy.parser.logRule("assignment_operator");}
+        | ANDassign     {$$ = yytext; yy.parser.logRule("assignment_operator");}
+        | ERassign      {$$ = yytext; yy.parser.logRule("assignment_operator");}
+        | ORassign      {$$ = yytext; yy.parser.logRule("assignment_operator");}
         ;
 
 comma_expression:
-        assignment_expression { $$ = $1;}
-        | comma_expression ',' assignment_expression { $$ = [$1, $2, $3];}
+        assignment_expression { $$ = $1; yy.parser.logRule("comma_expression");}
+        | comma_expression ',' assignment_expression { $$ = [$1, $2, $3]; yy.parser.logRule("comma_expression");}
         ;
 
 constant_expression:
-        conditional_expression { $$ = $1;}
+        conditional_expression { $$ = $1; yy.parser.logRule("constant_expression");}
         ;
 
 
     /* The following was used for clarity */
 comma_expression_opt:
 
-        | comma_expression { $$ = $1;}
+        | comma_expression { $$ = $1; yy.parser.logRule("comma_expression_opt");}
         ;
 
 
@@ -678,11 +679,11 @@ comma_expression_opt:
     visible in the current scope). */
 
 declaration:
-        declaring_list ';' { $$ = [$1, $2];}
-        | default_declaring_list ';' { $$ = [$1, $2];}
-        | sue_declaration_specifier ';' { $$ = [$1, $2];}
-        | sue_type_specifier ';' { $$ = [$1, $2];}
-        | sue_type_specifier_elaboration ';' { $$ = [$1, $2];}
+        declaring_list ';' { $$ = [$1, $2]; yy.parser.logRule("declaration");}
+        | default_declaring_list ';' { $$ = [$1, $2]; yy.parser.logRule("declaration");}
+        | sue_declaration_specifier ';' { $$ = [$1, $2]; yy.parser.logRule("declaration");}
+        | sue_type_specifier ';' { $$ = [$1, $2]; yy.parser.logRule("declaration");}
+        | sue_type_specifier_elaboration ';' { $$ = [$1, $2]; yy.parser.logRule("declaration");}
         ;
 
 
@@ -2169,6 +2170,10 @@ parser.createArrayOpt = function(rule, arr) {
     for(i = 0; i < arr.length; i++) {
         if(arr[i] !== undefined) obj.push(arr[i]);
     }
-    //console.log(rule, arr, obj);
+    console.log(rule);
     return obj;
+};
+
+parser.logRule = function(rule) {
+    console.log(rule);
 };

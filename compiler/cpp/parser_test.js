@@ -1,5 +1,7 @@
 document.body.onload = function() {
-	var DEBUG_CPP = true;
+	'use strict';
+
+	var DEBUG_CPP = false;
 	var DEBUG_EBNF = false;
 	var EBNF = false;
 
@@ -27,13 +29,19 @@ document.body.onload = function() {
 		"using N::d;",
 	];
 
+	var cin_variations = [
+		"cin = cin + 1;",
+		"cin >> b;",
+		"std::cin >> b;",
+	];
+
 	var input_decl = "static char c = 's';";
 	var input_prepmain = "#include <stdio.h>\nint main(){}";
 	var input_main = "int main(){return 0;}";
 	var input_prep = "#include <stdio.h>\n#define MAX 32\n";
 	var input_empty_declaration = ";";
 	var input_extern_linkage_specification = "extern \"string-literal\" {}";
-	var input = input_definitions;
+	var input = cin_variations;
 
 	/* 	Tokenizes the given input and pushes each token in an array
 	 * 	@argument grammar:	jison generated javascript, must include lexer
@@ -59,7 +67,7 @@ document.body.onload = function() {
 			} else if (rule === 1) {
 				// do nothing, EOF
 			} else if (rule === "IDENTIFIER" || rule === "DECIMAL_LITERAL" || rule === "OCTAL_LITERAL" || rule === "HEXADECIMAL_LITERAL" || rule === "FLOATING_LITERAL" || rule === "CHARACTER_LITERAL" || rule === "STRING_LITERAL") {
-				arr.push([rule, lexer.yytext]);
+				arr.push({'rule': rule, 'value': lexer.yytext});
 			} else {
 				arr.push(rule);
 			}
@@ -78,9 +86,9 @@ document.body.onload = function() {
 		console.log(lexToFlatArray(ebnf, input));
 	}
 
-	if (!Array.isArray(input)) {
-		// initialize lexer
-		if (DEBUG_CPP) {
+	if (DEBUG_CPP) {
+		if (!Array.isArray(input)) {
+			// initialize lexer
 			var lexer = cpp.lexer.setInput(input);
 			lexer.yy = cpp.yy;
 			lexer.yy.lexer = lexer;
@@ -94,26 +102,28 @@ document.body.onload = function() {
 				rule = lexer.lex();
 				console.log(rule, cpp.terminals_[rule], "\n" + lexer.showPosition(), "\n");
 			} while (rule != 1);
-		}
 
-		// try parsing
-		try {
-			var parse_result = cpp.parse(input);
-			console.log("\n\nParsing cpp.js result: ", parse_result);
-		} catch (e) {
-			console.log(e);
-		}
-	} else {
-		var i;
-		for (i = 0; i < input.length; i++) {
+
+			// try parsing
 			try {
-				var parse_result = cpp.parse(input[i]);
-				console.log("\n\nParsing cpp.js result: ", parse_result, "input: " + input[i]);
+				var parse_result = cpp.parse(input);
+				console.log("\n\nParsing cpp.js result: ", parse_result);
 			} catch (e) {
 				console.log(e);
 			}
+		} else {
+			var i;
+			for (i = 0; i < input.length; i++) {
+				try {
+					var parse_result = cpp.parse(input[i]);
+					console.log("\n\nParsing cpp.js result: ", parse_result, "input: " + input[i]);
+				} catch (e) {
+					console.log(e);
+				}
+			}
 		}
 	}
+
 
 	if (EBNF) {
 		console.log("\n**** ENBF TEST ***\n");

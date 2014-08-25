@@ -45,11 +45,11 @@ case 31: this.$ = yy.parser.createArrayOpt("control_line", [$$[$0-1], $$[$0]]);
 break;
 case 32:this.$ = [$$[$0-1], $$[$0]];
 break;
-case 34: this.$ = yytext; console.log("identifier_list:", yytext);
+case 34: this.$ = yytext; yy.parser.logRule("identifier_list:", yytext);
 break;
-case 35:this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; console.log("identifier_list:", yytext);
+case 35:this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("identifier_list:", yytext);
 break;
-case 37: this.$ = $$[$0];
+case 37: this.$ = $$[$0]; yy.parser.logRule("identifier_list_opt:", yytext);
 break;
 case 38: this.$ = $$[$0];
 break;
@@ -85,7 +85,7 @@ case 55: this.$ = yytext;
 break;
 case 56: this.$ = yytext;
 break;
-case 57:this.$=yytext;
+case 57:this.$=yytext; yy.parser.logRule("identifier:", yytext);
 break;
 case 58: this.$ = yytext;
 break;
@@ -107,39 +107,39 @@ case 66: this.$ = yytext;
 break;
 case 67: this.$ = [$$[$0-1], $$[$0]];
 break;
-case 68:this.$ = $$[$0];
+case 68:this.$ = $$[$0]; yy.parser.logRule("paren_identifier_declarator");
 break;
-case 69:this.$ = $$[$0];
+case 69:this.$ = $$[$0]; yy.parser.logRule("paren_identifier_declarator");
 break;
-case 70:this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
+case 70:this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("paren_identifier_declarator");
 break;
-case 71: this.$ = $$[$0];
+case 71: this.$ = $$[$0]; yy.parser.logRule("primary_expression");
 break;
-case 72: this.$ = $$[$0];
+case 72: this.$ = $$[$0]; yy.parser.logRule("primary_expression");
 break;
-case 73: this.$ = $$[$0];
+case 73: this.$ = $$[$0]; yy.parser.logRule("primary_expression");
 break;
-case 74: this.$ = $$[$0];
+case 74: this.$ = $$[$0]; yy.parser.logRule("primary_expression");
 break;
-case 75: this.$ = $$[$0];
+case 75: this.$ = $$[$0]; yy.parser.logRule("primary_expression");
 break;
-case 76: this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
+case 76: this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("primary_expression");
 break;
-case 77: this.$ = $$[$0];
+case 77: this.$ = $$[$0]; yy.parser.logRule("non_elaborating_type_specifier");
 break;
-case 78: this.$ = $$[$0];
+case 78: this.$ = $$[$0]; yy.parser.logRule("non_elaborating_type_specifier");
 break;
 case 79: this.$ = $$[$0];
 break;
-case 80: this.$ = $$[$0];
+case 80: this.$ = $$[$0]; yy.parser.logRule("non_elaborating_type_specifier");
 break;
-case 81: this.$ = $$[$0];
+case 81: this.$ = $$[$0]; yy.parser.logRule("non_elaborating_type_specifier");
 break;
-case 82: this.$ = $$[$0];
+case 82: this.$ = $$[$0]; yy.parser.logRule("non_elaborating_type_specifier");
 break;
-case 87: this.$ = [$$[$0-1], $$[$0]];
+case 87: this.$ = [$$[$0-1], $$[$0]]; yy.parser.logRule("operator_function_ptr_opt");
 break;
-case 88: this.$ = [$$[$0-1], $$[$0]];
+case 88: this.$ = [$$[$0-1], $$[$0]]; yy.parser.logRule("operator_function_ptr_opt");
 break;
 case 89: this.$ = yytext;
 break;
@@ -205,33 +205,33 @@ case 119: this.$ = yytext;
 break;
 case 120: this.$ = yytext;
 break;
-case 122: this.$ = $$[$0];
+case 122: this.$ = $$[$0]; yy.parser.logRule("type_qualifier_list_opt");
 break;
-case 123: this.$ = $$[$0];
+case 123: this.$ = $$[$0]; yy.parser.logRule("postfix_expression");
 break;
-case 124: this.$ = [$$[$0-3], $$[$0-2], $$[$0-1], $$[$0]];
+case 124: this.$ = [$$[$0-3], $$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("postfix_expression");
 break;
-case 125: this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
+case 125: this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("postfix_expression");
 break;
-case 126: this.$ = [$$[$0-3], $$[$0-2], $$[$0-1], $$[$0]];
+case 126: this.$ = [$$[$0-3], $$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("postfix_expression");
 break;
-case 127: this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
+case 127: this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("postfix_expression");
 break;
-case 128: this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
+case 128: this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("postfix_expression");
 break;
-case 129: this.$ = [$$[$0-1], $$[$0]];
+case 129: this.$ = [$$[$0-1], $$[$0]]; yy.parser.logRule("postfix_expression");
 break;
-case 130: this.$ = [$$[$0-1], $$[$0]];
+case 130: this.$ = [$$[$0-1], $$[$0]]; yy.parser.logRule("postfix_expression");
 break;
-case 131: this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
+case 131: this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("postfix_expression");
 break;
-case 132: this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
+case 132: this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("postfix_expression");
 break;
-case 133: this.$ = [$$[$0-3], $$[$0-2], $$[$0-1], $$[$0]];
+case 133: this.$ = [$$[$0-3], $$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("postfix_expression");
 break;
-case 134: this.$ = [$$[$0-3], $$[$0-2], $$[$0-1], $$[$0]];
+case 134: this.$ = [$$[$0-3], $$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("postfix_expression");
 break;
-case 135: this.$ = [$$[$0-3], $$[$0-2], $$[$0-1], $$[$0]];
+case 135: this.$ = [$$[$0-3], $$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("postfix_expression");
 break;
 case 136:this.$ = $$[$0];
 break;
@@ -243,139 +243,149 @@ case 141: this.$ = $$[$0];
 break;
 case 142: this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
 break;
-case 143: this.$ = $$[$0];
+case 143: this.$ = $$[$0]; yy.parser.logRule("unary_expression");
 break;
-case 144: this.$ = [$$[$0-1], $$[$0]];
+case 144: this.$ = [$$[$0-1], $$[$0]]; yy.parser.logRule("unary_expression");
 break;
-case 145: this.$ = [$$[$0-1], $$[$0]];
+case 145: this.$ = [$$[$0-1], $$[$0]]; yy.parser.logRule("unary_expression");
 break;
-case 146: this.$ = [$$[$0-1], $$[$0]];
+case 146: this.$ = [$$[$0-1], $$[$0]]; yy.parser.logRule("unary_expression");
 break;
-case 147: this.$ = [$$[$0-1], $$[$0]];
+case 147: this.$ = [$$[$0-1], $$[$0]]; yy.parser.logRule("unary_expression");
 break;
-case 148: this.$ = [$$[$0-1], $$[$0]];
+case 148: this.$ = [$$[$0-1], $$[$0]]; yy.parser.logRule("unary_expression");
 break;
-case 149: this.$ = [$$[$0-1], $$[$0]];
+case 149: this.$ = [$$[$0-1], $$[$0]]; yy.parser.logRule("unary_expression");
 break;
-case 150: this.$ = [$$[$0-1], $$[$0]];
+case 150: this.$ = [$$[$0-1], $$[$0]]; yy.parser.logRule("unary_expression");
 break;
-case 151: this.$ = [$$[$0-1], $$[$0]];
+case 151: this.$ = [$$[$0-1], $$[$0]]; yy.parser.logRule("unary_expression");
 break;
-case 152: this.$ = [$$[$0-3], $$[$0-2], $$[$0-1], $$[$0]];
+case 152: this.$ = [$$[$0-3], $$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("unary_expression");
 break;
-case 153: this.$ = $$[$0];
+case 153: this.$ = $$[$0]; yy.parser.logRule("unary_expression");
 break;
-case 172:this.$ = $$[$0];
+case 170:this.$ = [$$[$0-1], $$[$0]];
 break;
-case 173:this.$ = [$$[$0-3], $$[$0-2], $$[$0-1], $$[$0]];
+case 171:this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
 break;
-case 174:this.$ = $$[$0];
+case 172:this.$ = $$[$0]; yy.parser.logRule("cast_expression");
+break;
+case 173:this.$ = [$$[$0-3], $$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("cast_expression");
+break;
+case 174:this.$ = $$[$0]; yy.parser.logRule("deallocation_expression");
+break;
+case 175:this.$ = [$$[$0-1], $$[$0]]; yy.parser.logRule("deallocation_expression");
+break;
+case 176:this.$ = [$$[$0-4], $$[$0-3], $$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("deallocation_expression");
+break;
+case 177:this.$ = [$$[$0-3], $$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("deallocation_expression");
 break;
 case 180:this.$ = $$[$0];
 break;
-case 183:this.$ = $$[$0];
+case 183:this.$ = $$[$0]; yy.parser.logRule("multiplicative_expression");
 break;
-case 184:this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
+case 184:this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("multiplicative_expression");
 break;
-case 185:this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
+case 185:this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("multiplicative_expression");
 break;
-case 186:this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
+case 186:this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("multiplicative_expression");
 break;
-case 187:this.$ = $$[$0];
+case 187:this.$ = $$[$0]; yy.parser.logRule("additive_expression");
 break;
-case 188:this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; console.log("additive_expression '+'")
+case 188:this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("additive_expression");
 break;
-case 189:this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
+case 189:this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("additive_expression");
 break;
-case 190:this.$ = $$[$0];
+case 190:this.$ = $$[$0]; yy.parser.logRule("shift_expression");
 break;
-case 191:this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
+case 191:this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("shift_expression");
 break;
-case 192:this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
+case 192:this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("shift_expression");
 break;
-case 193:this.$ = $$[$0];
+case 193:this.$ = $$[$0]; yy.parser.logRule("relational_expression");
 break;
-case 194:this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
+case 194:this.$ = [$$[$0-2], $$[$0-1], $$[$0]];yy.parser.logRule("relational_expression");
 break;
-case 195:this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
+case 195:this.$ = [$$[$0-2], $$[$0-1], $$[$0]];yy.parser.logRule("relational_expression");
 break;
-case 196:this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
+case 196:this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("relational_expression");
 break;
-case 197:this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
+case 197:this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("relational_expression");
 break;
-case 198:this.$ = $$[$0];
+case 198:this.$ = $$[$0]; yy.parser.logRule("equality_expression");
 break;
-case 199:this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
+case 199:this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("equality_expression");
 break;
-case 200:this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
+case 200:this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("equality_expression");
 break;
-case 201:this.$ = $$[$0];
+case 201:this.$ = $$[$0]; yy.parser.logRule("AND_expression");
 break;
-case 202:this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
+case 202:this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("AND_expression");
 break;
-case 203:this.$ = $$[$0];
+case 203:this.$ = $$[$0]; yy.parser.logRule("exclusive_OR_expression");
 break;
-case 204:this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
+case 204:this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("exclusive_OR_expression");
 break;
-case 205:this.$ = $$[$0];
+case 205:this.$ = $$[$0]; yy.parser.logRule("inclusive_OR_expression");
 break;
-case 206:this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
+case 206:this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("inclusive_OR_expression");
 break;
-case 207:this.$ = $$[$0];
+case 207:this.$ = $$[$0]; yy.parser.logRule("logical_AND_expression");
 break;
-case 208:this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
+case 208:this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("logical_AND_expression");
 break;
-case 209:this.$ = $$[$0];
+case 209:this.$ = $$[$0]; yy.parser.logRule("logical_OR_expression");
 break;
-case 210:this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
+case 210:this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("logical_OR_expression");
 break;
-case 211:this.$ = $$[$0];
+case 211:this.$ = $$[$0]; yy.parser.logRule("conditional_expression");
 break;
-case 212:this.$ = [$$[$0-4], $$[$0-3], $$[$0-2], $$[$0-1], $$[$0]];
+case 212:this.$ = [$$[$0-4], $$[$0-3], $$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("conditional_expression");
 break;
-case 213: this.$ = $$[$0];
+case 213: this.$ = $$[$0]; yy.parser.logRule("assignment_expression");
 break;
-case 214: this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
+case 214: this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("assignment_expression");
 break;
-case 215: this.$ = "="; console.log("assignment_operator: =");
+case 215: this.$ = "="; yy.parser.logRule("assignment_operator");
 break;
-case 216:this.$ = yytext;
+case 216:this.$ = yytext; yy.parser.logRule("assignment_operator");
 break;
-case 217:this.$ = yytext;
+case 217:this.$ = yytext; yy.parser.logRule("assignment_operator");
 break;
-case 218:this.$ = yytext;
+case 218:this.$ = yytext; yy.parser.logRule("assignment_operator");
 break;
-case 219:this.$ = yytext;
+case 219:this.$ = yytext; yy.parser.logRule("assignment_operator");
 break;
-case 220:this.$ = yytext;
+case 220:this.$ = yytext; yy.parser.logRule("assignment_operator");
 break;
-case 221:this.$ = yytext;
+case 221:this.$ = yytext; yy.parser.logRule("assignment_operator");
 break;
-case 222:this.$ = yytext;
+case 222:this.$ = yytext; yy.parser.logRule("assignment_operator");
 break;
-case 223:this.$ = yytext;
+case 223:this.$ = yytext; yy.parser.logRule("assignment_operator");
 break;
-case 224:this.$ = yytext;
+case 224:this.$ = yytext; yy.parser.logRule("assignment_operator");
 break;
-case 225:this.$ = yytext;
+case 225:this.$ = yytext; yy.parser.logRule("assignment_operator");
 break;
-case 226: this.$ = $$[$0];
+case 226: this.$ = $$[$0]; yy.parser.logRule("comma_expression");
 break;
-case 227: this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
+case 227: this.$ = [$$[$0-2], $$[$0-1], $$[$0]]; yy.parser.logRule("comma_expression");
 break;
-case 228: this.$ = $$[$0];
+case 228: this.$ = $$[$0]; yy.parser.logRule("constant_expression");
 break;
-case 230: this.$ = $$[$0];
+case 230: this.$ = $$[$0]; yy.parser.logRule("comma_expression_opt");
 break;
-case 231: this.$ = [$$[$0-1], $$[$0]];
+case 231: this.$ = [$$[$0-1], $$[$0]]; yy.parser.logRule("declaration");
 break;
-case 232: this.$ = [$$[$0-1], $$[$0]];
+case 232: this.$ = [$$[$0-1], $$[$0]]; yy.parser.logRule("declaration");
 break;
-case 233: this.$ = [$$[$0-1], $$[$0]];
+case 233: this.$ = [$$[$0-1], $$[$0]]; yy.parser.logRule("declaration");
 break;
-case 234: this.$ = [$$[$0-1], $$[$0]];
+case 234: this.$ = [$$[$0-1], $$[$0]]; yy.parser.logRule("declaration");
 break;
-case 235: this.$ = [$$[$0-1], $$[$0]];
+case 235: this.$ = [$$[$0-1], $$[$0]]; yy.parser.logRule("declaration");
 break;
 case 236:this.$ = yy.parser.createArrayOpt("translation_unit", [$$[$0-2], $$[$0-1], $$[$0]])
 break;
@@ -1184,8 +1194,12 @@ parser.createArrayOpt = function(rule, arr) {
     for(i = 0; i < arr.length; i++) {
         if(arr[i] !== undefined) obj.push(arr[i]);
     }
-    //console.log(rule, arr, obj);
+    console.log(rule);
     return obj;
+};
+
+parser.logRule = function(rule) {
+    console.log(rule);
 };/* Jison generated lexer */
 var lexer = (function(){
 var lexer = ({EOF:1,
@@ -1357,35 +1371,35 @@ pushState:function begin(condition) {
 lexer.options = {};
 lexer.performAction = function anonymous(yy,yy_,$avoiding_name_collisions,YY_START) {
 
-	var cl_scope_lval;
-	var cl_var_lval;
-	var cl_func_lval;
-	var cl_typedef_lval;
+	yy.cl_scope_lval = undefined;
+	yy.cl_var_lval = undefined;
+	yy.cl_func_lval = undefined;
+	yy.cl_typedef_lval = undefined;
 
-	var currentScope;
+	yy.currentScope = undefined;
 
-	var g_symbols = {};
-	var g_macros = {};
-	var g_ignoreList = {};
-	var gs_useMacroIgnore = false;
+	yy.g_symbols = {};
+	yy.g_macros = {};
+	yy.g_ignoreList = {};
+	yy.gs_useMacroIgnore = true;
 
-	var defineFound = false;
+	yy.defineFound = false;
 
 	function isaTYPE(str) {
-	return g_symbols.hasOwnProperty(str);
+		return yy.g_symbols.hasOwnProperty(str);
 	}
 
 	function isignoredToken(str) {
-		if(g_ignoreList.hasOwnProperty(str)) {
+		if(yy.g_ignoreList.hasOwnProperty(str)) {
 			return false;
 		} else {
-			return g_ignoreList[str] === "";
+			return yy.g_ignoreList[str] === "";
 		}
 	}
 
 	function isaMACRO(str) {
-		if(gs_useMacroIgnore) {
-			return g_macros.hasOwnProperty(str);
+		if(yy.gs_useMacroIgnore) {
+			return yy.g_macros.hasOwnProperty(str);
 		} else {
 			return false;
 		}
@@ -1395,10 +1409,10 @@ lexer.performAction = function anonymous(yy,yy_,$avoiding_name_collisions,YY_STA
 	function WHITE_RETURN(x) {};
 
 	function RETURN_VAL(x) {
-		cl_scope_lval = yy_.yytext;
-		cl_var_lval = yy_.yytext;
-		cl_func_lval = yy_.yytext;
-		cl_typedef_lval = yy_.yytext;
+		yy.cl_scope_lval = yy_.yytext;
+		yy.cl_var_lval = yy_.yytext;
+		yy.cl_func_lval = yy_.yytext;
+		yy.cl_typedef_lval = yy_.yytext;
 		return(x);
 	}
 
@@ -1721,7 +1735,7 @@ case 124: return(ASCIIOP_RETURN('?'));
 break;
 case 125: this.begin("PREPR"); return PPOP_RETURN(parser.symbols_.PP_SHARP); 
 break;
-case 126: this.begin("INITIAL"); return PPOP_RETURN(parser.symbols_.PP_NEWLINE); 
+case 126: this.begin("INITIAL"); yy.defineFound = false; return PPOP_RETURN(parser.symbols_.PP_NEWLINE); 
 break;
 case 127: this.begin("WRAP_PREP");
 break;
@@ -1739,7 +1753,7 @@ case 133: return(PPOP_RETURN(parser.symbols_.PP_LINE));
 break;
 case 134: return(PPOP_RETURN(parser.symbols_.PP_PRAGMA));
 break;
-case 135: return(PPOP_RETURN(parser.symbols_.PP_DEFINE));
+case 135: yy.defineFound = true; return(PPOP_RETURN(parser.symbols_.PP_DEFINE));
 break;
 case 136: return(PPOP_RETURN(parser.symbols_.PP_DEFINED));
 break;
@@ -1755,7 +1769,13 @@ case 141: return(PPOP_RETURN(parser.symbols_.PP_ENDIF));
 break;
 case 142: return(PPOP_RETURN(parser.symbols_.PP_ELIF));
 break;
-case 143:	return IDENTIFIER_RETURN()
+case 143:
+	if(yy.defineFound) {
+		yy.defineFound = false;
+		yy.g_macros[yy_.yytext] = true;
+	}
+	return IDENTIFIER_RETURN()
+
 break;
 case 144:return parser.symbols_.INTEGERconstant;
 break;
@@ -1777,7 +1797,13 @@ case 152: return(PPOP_RETURN(parser.symbols_.PP_ANYCHAR));
 break;
 case 153: this.begin("PREPR");
 break;
-case 154:return IDENTIFIER_RETURN()
+case 154:
+	if(yy.defineFound) {
+		yy.defineFound = false;
+		yy.g_macros[yy_.yytext] = true;
+	}
+	return IDENTIFIER_RETURN()
+
 break;
 case 155:this.begin("INITIAL");
 break;
@@ -1789,7 +1815,7 @@ case 158:return("");
 break;
 }
 };
-lexer.rules = [/^(?:\/\*)/,/^(?:\/\/)/,/^(?:([ ]|([\011]))+)/,/^(?:(([\013])|([\015])|([\014]))+)/,/^(?:(([ ]|([\011]))|([\013])|([\015])|([\014]))*\\n\b)/,/^(?:auto\b)/,/^(?:break\b)/,/^(?:case\b)/,/^(?:char\b)/,/^(?:const\b)/,/^(?:continue\b)/,/^(?:default\b)/,/^(?:do\b)/,/^(?:double\b)/,/^(?:else\b)/,/^(?:error\b)/,/^(?:enum\b)/,/^(?:extern\b)/,/^(?:float\b)/,/^(?:for\b)/,/^(?:goto\b)/,/^(?:if\b)/,/^(?:int\b)/,/^(?:long\b)/,/^(?:bool\b)/,/^(?:char16_t\b)/,/^(?:char32_t\b)/,/^(?:wchar_t\b)/,/^(?:register\b)/,/^(?:return\b)/,/^(?:short\b)/,/^(?:signed\b)/,/^(?:sizeof\b)/,/^(?:static\b)/,/^(?:struct\b)/,/^(?:switch\b)/,/^(?:typedef\b)/,/^(?:union\b)/,/^(?:unsigned\b)/,/^(?:void\b)/,/^(?:volatile\b)/,/^(?:while\b)/,/^(?:class\b)/,/^(?:namespace\b)/,/^(?:delete\b)/,/^(?:friend\b)/,/^(?:inline\b)/,/^(?:new\b)/,/^(?:operator\b)/,/^(?:overload\b)/,/^(?:protected\b)/,/^(?:private\b)/,/^(?:public\b)/,/^(?:this\b)/,/^(?:virtual\b)/,/^(?:template\b)/,/^(?:typename\b)/,/^(?:dynamic_cast\b)/,/^(?:static_cast\b)/,/^(?:const_cast\b)/,/^(?:reinterpret_cast\b)/,/^(?:using\b)/,/^(?:throw\b)/,/^(?:catch\b)/,/^(?:__declspec\b)/,/^(?:dllimport\b)/,/^(?:dllexport\b)/,/^(?:true\b)/,/^(?:false\b)/,/^(?:([a-zA-Z_][0-9a-zA-Z_]*))/,/^(?:([1-9][0-9]*(([uU]?[lL]{0,2})|([lL]{1,2}[uU]))))/,/^(?:(0[0-7]*(([uU]?[lL]{0,2})|([lL]{1,2}[uU]))))/,/^(?:(0[xX][0-9a-fA-F]+(([uU]?[lL]{0,2})|([lL]{1,2}[uU]))))/,/^(?:((((([0-9]*\.[0-9]+)|([0-9]+\.))([eE][-+]?[0-9]+)?)|([0-9]+([eE][-+]?[0-9]+)))[FfLl]?))/,/^(?:L?[']([^'\\\n]|([\\](([abfnrtv'"?\\])|([0-7]{1,3})|(x[0-9a-fA-F]+))))+['])/,/^(?:L?["]([^"\\\n]|([\\](([abfnrtv'"?\\])|([0-7]{1,3})|(x[0-9a-fA-F]+))))*["])/,/^(?:\.\.\.)/,/^(?:>>=)/,/^(?:<<=)/,/^(?:\+=)/,/^(?:-=)/,/^(?:\*=)/,/^(?:\/=)/,/^(?:%=)/,/^(?:&=)/,/^(?:\^=)/,/^(?:\|=)/,/^(?:>>)/,/^(?:<<)/,/^(?:\+\+)/,/^(?:--)/,/^(?:->)/,/^(?:->\*)/,/^(?:&&)/,/^(?:\|\|)/,/^(?:<=)/,/^(?:>=)/,/^(?:==)/,/^(?:!=)/,/^(?:\.\*)/,/^(?:::)/,/^(?:;)/,/^(?:\{)/,/^(?:\})/,/^(?:,)/,/^(?::)/,/^(?:=)/,/^(?:\()/,/^(?:\))/,/^(?:\[)/,/^(?:\])/,/^(?:\.)/,/^(?:&)/,/^(?:!)/,/^(?:~)/,/^(?:-)/,/^(?:\+)/,/^(?:\*)/,/^(?:\/)/,/^(?:%)/,/^(?:<)/,/^(?:>)/,/^(?:\^)/,/^(?:\|)/,/^(?:\?)/,/^(?:^(([ ]|([\011])))*#)/,/^(?:([\n]))/,/^(?:\\)/,/^(?:(([ ]|([\011]))))/,/^(?:(([ ]|([\011])))*\()/,/^(?:["])/,/^(?:include\b)/,/^(?:undef\b)/,/^(?:line\b)/,/^(?:pragma\b)/,/^(?:define\b)/,/^(?:defined\b)/,/^(?:ifdef\b)/,/^(?:ifndef\b)/,/^(?:if\b)/,/^(?:else\b)/,/^(?:endif\b)/,/^(?:elif\b)/,/^(?:([a-zA-Z_][0-9a-zA-Z_]*))/,/^(?:([1-9][0-9]*(([uU]?[lL]{0,2})|([lL]{1,2}[uU]))))/,/^(?:(0[0-7]*(([uU]?[lL]{0,2})|([lL]{1,2}[uU]))))/,/^(?:(0[xX][0-9a-fA-F]+(([uU]?[lL]{0,2})|([lL]{1,2}[uU]))))/,/^(?:((((([0-9]*\.[0-9]+)|([0-9]+\.))([eE][-+]?[0-9]+)?)|([0-9]+([eE][-+]?[0-9]+)))[FfLl]?))/,/^(?:L?[']([^'\\\n]|([\\](([abfnrtv'"?\\])|([0-7]{1,3})|(x[0-9a-fA-F]+))))+['])/,/^(?:L?["]([^"\\\n]|([\\](([abfnrtv'"?\\])|([0-7]{1,3})|(x[0-9a-fA-F]+))))*["])/,/^(?:["][^\n]*["])/,/^(?:<[^\n]*>)/,/^(?:.)/,/^(?:\n\b)/,/^(?:([a-zA-Z_][0-9a-zA-Z_]*))/,/^(?:\n\b)/,/^(?:.)/,/^(?:\*\/)/,/^(?:.)/];
+lexer.rules = [/^(?:\/\*)/,/^(?:\/\/)/,/^(?:([ ]|([\011]))+)/,/^(?:(([\013])|([\015])|([\014]))+)/,/^(?:(([ ]|([\011]))|([\013])|([\015])|([\014]))*\\n\b)/,/^(?:auto\b)/,/^(?:break\b)/,/^(?:case\b)/,/^(?:char\b)/,/^(?:const\b)/,/^(?:continue\b)/,/^(?:default\b)/,/^(?:do\b)/,/^(?:double\b)/,/^(?:else\b)/,/^(?:error\b)/,/^(?:enum\b)/,/^(?:extern\b)/,/^(?:float\b)/,/^(?:for\b)/,/^(?:goto\b)/,/^(?:if\b)/,/^(?:int\b)/,/^(?:long\b)/,/^(?:bool\b)/,/^(?:char16_t\b)/,/^(?:char32_t\b)/,/^(?:wchar_t\b)/,/^(?:register\b)/,/^(?:return\b)/,/^(?:short\b)/,/^(?:signed\b)/,/^(?:sizeof\b)/,/^(?:static\b)/,/^(?:struct\b)/,/^(?:switch\b)/,/^(?:typedef\b)/,/^(?:union\b)/,/^(?:unsigned\b)/,/^(?:void\b)/,/^(?:volatile\b)/,/^(?:while\b)/,/^(?:class\b)/,/^(?:namespace\b)/,/^(?:delete\b)/,/^(?:friend\b)/,/^(?:inline\b)/,/^(?:new\b)/,/^(?:operator\b)/,/^(?:overload\b)/,/^(?:protected\b)/,/^(?:private\b)/,/^(?:public\b)/,/^(?:this\b)/,/^(?:virtual\b)/,/^(?:template\b)/,/^(?:typename\b)/,/^(?:dynamic_cast\b)/,/^(?:static_cast\b)/,/^(?:const_cast\b)/,/^(?:reinterpret_cast\b)/,/^(?:using\b)/,/^(?:throw\b)/,/^(?:catch\b)/,/^(?:__declspec\b)/,/^(?:dllimport\b)/,/^(?:dllexport\b)/,/^(?:true\b)/,/^(?:false\b)/,/^(?:([a-zA-Z_][0-9a-zA-Z_]*))/,/^(?:([1-9][0-9]*(([uU]?[lL]{0,2})|([lL]{1,2}[uU]))))/,/^(?:(0[0-7]*(([uU]?[lL]{0,2})|([lL]{1,2}[uU]))))/,/^(?:(0[xX][0-9a-fA-F]+(([uU]?[lL]{0,2})|([lL]{1,2}[uU]))))/,/^(?:((((([0-9]*\.[0-9]+)|([0-9]+\.))([eE][-+]?[0-9]+)?)|([0-9]+([eE][-+]?[0-9]+)))[FfLl]?))/,/^(?:((u|U|L))?[']([^'\\\n]|([\\](([abfnrtv'"?\\])|([0-7]{1,3})|(x[0-9a-fA-F]+))))+['])/,/^(?:((u|u8|U|L))?["]([^"\\\n]|([\\](([abfnrtv'"?\\])|([0-7]{1,3})|(x[0-9a-fA-F]+))))*["])/,/^(?:\.\.\.)/,/^(?:>>=)/,/^(?:<<=)/,/^(?:\+=)/,/^(?:-=)/,/^(?:\*=)/,/^(?:\/=)/,/^(?:%=)/,/^(?:&=)/,/^(?:\^=)/,/^(?:\|=)/,/^(?:>>)/,/^(?:<<)/,/^(?:\+\+)/,/^(?:--)/,/^(?:->)/,/^(?:->\*)/,/^(?:&&)/,/^(?:\|\|)/,/^(?:<=)/,/^(?:>=)/,/^(?:==)/,/^(?:!=)/,/^(?:\.\*)/,/^(?:::)/,/^(?:;)/,/^(?:\{)/,/^(?:\})/,/^(?:,)/,/^(?::)/,/^(?:=)/,/^(?:\()/,/^(?:\))/,/^(?:\[)/,/^(?:\])/,/^(?:\.)/,/^(?:&)/,/^(?:!)/,/^(?:~)/,/^(?:-)/,/^(?:\+)/,/^(?:\*)/,/^(?:\/)/,/^(?:%)/,/^(?:<)/,/^(?:>)/,/^(?:\^)/,/^(?:\|)/,/^(?:\?)/,/^(?:^(([ ]|([\011])))*#)/,/^(?:([\n]))/,/^(?:\\)/,/^(?:(([ ]|([\011]))))/,/^(?:(([ ]|([\011])))*\()/,/^(?:["])/,/^(?:include\b)/,/^(?:undef\b)/,/^(?:line\b)/,/^(?:pragma\b)/,/^(?:define\b)/,/^(?:defined\b)/,/^(?:ifdef\b)/,/^(?:ifndef\b)/,/^(?:if\b)/,/^(?:else\b)/,/^(?:endif\b)/,/^(?:elif\b)/,/^(?:([a-zA-Z_][0-9a-zA-Z_]*))/,/^(?:([1-9][0-9]*(([uU]?[lL]{0,2})|([lL]{1,2}[uU]))))/,/^(?:(0[0-7]*(([uU]?[lL]{0,2})|([lL]{1,2}[uU]))))/,/^(?:(0[xX][0-9a-fA-F]+(([uU]?[lL]{0,2})|([lL]{1,2}[uU]))))/,/^(?:((((([0-9]*\.[0-9]+)|([0-9]+\.))([eE][-+]?[0-9]+)?)|([0-9]+([eE][-+]?[0-9]+)))[FfLl]?))/,/^(?:L?[']([^'\\\n]|([\\](([abfnrtv'"?\\])|([0-7]{1,3})|(x[0-9a-fA-F]+))))+['])/,/^(?:L?["]([^"\\\n]|([\\](([abfnrtv'"?\\])|([0-7]{1,3})|(x[0-9a-fA-F]+))))*["])/,/^(?:["][^\n]*["])/,/^(?:<[^\n]*>)/,/^(?:.)/,/^(?:\n\b)/,/^(?:([a-zA-Z_][0-9a-zA-Z_]*))/,/^(?:\n\b)/,/^(?:.)/,/^(?:\*\/)/,/^(?:.)/];
 lexer.conditions = {"C_COMMENT":{"rules":[157,158],"inclusive":false},"CPP_COMMENT":{"rules":[155,156],"inclusive":false},"WRAP_PREP":{"rules":[153,154],"inclusive":false},"PREPR":{"rules":[126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152],"inclusive":false},"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125],"inclusive":true}};
 return lexer;})();
 parser.lexer = lexer;

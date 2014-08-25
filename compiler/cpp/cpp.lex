@@ -1,33 +1,33 @@
 %{
-	var cl_scope_lval;
-	var cl_var_lval;
-	var cl_func_lval;
-	var cl_typedef_lval;
+	yy.cl_scope_lval = undefined;
+	yy.cl_var_lval = undefined;
+	yy.cl_func_lval = undefined;
+	yy.cl_typedef_lval = undefined;
 
-	var currentScope;
+	yy.currentScope = undefined;
 
-	var g_symbols = {};
-	var g_macros = {};
-	var g_ignoreList = {};
-	var gs_useMacroIgnore = false;
+	yy.g_symbols = {};
+	yy.g_macros = {};
+	yy.g_ignoreList = {};
+	yy.gs_useMacroIgnore = true;
 
-	var defineFound = false;
+	yy.defineFound = false;
 
 	function isaTYPE(str) {
-	return g_symbols.hasOwnProperty(str);
+		return yy.g_symbols.hasOwnProperty(str);
 	}
 
 	function isignoredToken(str) {
-		if(g_ignoreList.hasOwnProperty(str)) {
+		if(yy.g_ignoreList.hasOwnProperty(str)) {
 			return false;
 		} else {
-			return g_ignoreList[str] === "";
+			return yy.g_ignoreList[str] === "";
 		}
 	}
 
 	function isaMACRO(str) {
-		if(gs_useMacroIgnore) {
-			return g_macros.hasOwnProperty(str);
+		if(yy.gs_useMacroIgnore) {
+			return yy.g_macros.hasOwnProperty(str);
 		} else {
 			return false;
 		}
@@ -37,10 +37,10 @@
 	function WHITE_RETURN(x) {};
 
 	function RETURN_VAL(x) {
-		cl_scope_lval = yytext;
-		cl_var_lval = yytext;
-		cl_func_lval = yytext;
-		cl_typedef_lval = yytext;
+		yy.cl_scope_lval = yytext;
+		yy.cl_var_lval = yytext;
+		yy.cl_func_lval = yytext;
+		yy.cl_typedef_lval = yytext;
 		return(x);
 	}
 
@@ -286,7 +286,7 @@ horizontal_white [ ]|{h_tab}
 "?"				{ return(ASCIIOP_RETURN('?'));}
 ^({horizontal_white})*"#"		%{ this.begin("PREPR"); return PPOP_RETURN(parser.symbols_.PP_SHARP); %}
 
-<PREPR>{NL}												%{ this.begin("INITIAL"); return PPOP_RETURN(parser.symbols_.PP_NEWLINE); %}
+<PREPR>{NL}												%{ this.begin("INITIAL"); yy.defineFound = false; return PPOP_RETURN(parser.symbols_.PP_NEWLINE); %}
 <PREPR>\\													{ this.begin("WRAP_PREP");}
 <PREPR>({horizontal_white})				{ return WHITE_RETURN(" ");}
 <PREPR>({horizontal_white})*"("		{ return PPOP_RETURN(parser.symbols_.PP_LPAREN);}
@@ -296,7 +296,7 @@ horizontal_white [ ]|{h_tab}
 <PREPR>"undef"										{ return(PPOP_RETURN(parser.symbols_.PP_UNDEF));}
 <PREPR>"line"											{ return(PPOP_RETURN(parser.symbols_.PP_LINE));}
 <PREPR>"pragma"										{ return(PPOP_RETURN(parser.symbols_.PP_PRAGMA));}
-<PREPR>"define"  									{ return(PPOP_RETURN(parser.symbols_.PP_DEFINE));}
+<PREPR>"define"  									{ yy.defineFound = true; return(PPOP_RETURN(parser.symbols_.PP_DEFINE));}
 <PREPR>"defined"									{ return(PPOP_RETURN(parser.symbols_.PP_DEFINED));}
 <PREPR>"ifdef"										{ return(PPOP_RETURN(parser.symbols_.PP_IFDEF));}
 <PREPR>"ifndef"										{ return(PPOP_RETURN(parser.symbols_.PP_IFNDEF));}
@@ -304,19 +304,31 @@ horizontal_white [ ]|{h_tab}
 <PREPR>"else"											{ return(PPOP_RETURN(parser.symbols_.PP_ELSE));}
 <PREPR>"endif"										{ return(PPOP_RETURN(parser.symbols_.PP_ENDIF));}
 <PREPR>"elif"											{ return(PPOP_RETURN(parser.symbols_.PP_ELIF));}
-<PREPR>{identifier}								{	return IDENTIFIER_RETURN()}
-<PREPR>{decimal_constant}  {return parser.symbols_.INTEGERconstant;}
-<PREPR>{octal_constant}    {return parser.symbols_.OCTALconstant;}
-<PREPR>{hex_constant}      {return parser.symbols_.HEXconstant;}
-<PREPR>{floating_constant} {return parser.symbols_.FLOATINGconstant;}
-<PREPR>"L"?[']{c_char}+[']     {return parser.symbols_.CHARACTERconstant;}
-<PREPR>"L"?["]{s_char}*["]     {return parser.symbols_.STRINGliteral;}
-<PREPR>["][^\n]*["]							{ return(PPOP_RETURN(parser.symbols_.PP_QCHARSEQUENCE));}
-<PREPR>"<"[^\n]*">"							{ return(PPOP_RETURN(parser.symbols_.PP_HCHARSEQUENCE));}
+<PREPR>{identifier}								{
+	if(yy.defineFound) {
+		yy.defineFound = false;
+		yy.g_macros[yytext] = true;
+	}
+	return IDENTIFIER_RETURN()
+}
+<PREPR>{decimal_constant} 				{return parser.symbols_.INTEGERconstant;}
+<PREPR>{octal_constant} 					{return parser.symbols_.OCTALconstant;}
+<PREPR>{hex_constant} 						{return parser.symbols_.HEXconstant;}
+<PREPR>{floating_constant} 				{return parser.symbols_.FLOATINGconstant;}
+<PREPR>"L"?[']{c_char}+['] 				{return parser.symbols_.CHARACTERconstant;}
+<PREPR>"L"?["]{s_char}*["] 				{return parser.symbols_.STRINGliteral;}
+<PREPR>["][^\n]*["]								{ return(PPOP_RETURN(parser.symbols_.PP_QCHARSEQUENCE));}
+<PREPR>"<"[^\n]*">"								{ return(PPOP_RETURN(parser.symbols_.PP_HCHARSEQUENCE));}
 <PREPR>.													{ return(PPOP_RETURN(parser.symbols_.PP_ANYCHAR));}
 
 <WRAP_PREP>\n											{ this.begin("PREPR");}
-<WRAP_PREP>{identifier}						{return IDENTIFIER_RETURN()}
+<WRAP_PREP>{identifier}						{
+	if(yy.defineFound) {
+		yy.defineFound = false;
+		yy.g_macros[yytext] = true;
+	}
+	return IDENTIFIER_RETURN()
+}
 <CPP_COMMENT>\n 									{this.begin("INITIAL");}
 <CPP_COMMENT>.										{return("");}
 <C_COMMENT>"*/"										{this.begin("INITIAL");}
