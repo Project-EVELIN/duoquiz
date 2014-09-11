@@ -1,12 +1,13 @@
 document.body.onload = function() {
 	'use strict';
-
+	var grammar = ebnf || cpp0x;
+	var USE_OBJECTS = false;
 	var input_definitions = [
 		"int a;",
 		"extern const int c = 1;",
 		"int f(int x) { return x+a; }",
 		"struct S { int a; int b; }; ",
-		"struct X {int x;static int y;X(): x(0) { }\};",
+		"struct X {int x;static int y;X(): x(0) { }};",
 		"int X::y = 1;",
 		"enum { up, down };",
 		"namespace N { int d; }",
@@ -27,8 +28,19 @@ document.body.onload = function() {
 
 	var cin_variations = [
 		"cin = cin + 1;",
+		"cout << computed_result;",
 		"cin >> b;",
 		"std::cin >> b;",
+	];
+
+	var decl_init_question = [
+		"int b = 4;",
+		"signed char kk = 'h'",
+		"float ff = 4E-2;",
+		"long double ff = 222;",
+		"unsigned long ul = 76;",
+		"int b[4];",
+		"int i;\nint b;"
 	];
 
 	var input_decl = "static char c = 's';";
@@ -37,7 +49,7 @@ document.body.onload = function() {
 	var input_prep = "#include <stdio.h>\n#define MAX 32\n";
 	var input_empty_declaration = ";";
 	var input_extern_linkage_specification = "extern \"string-literal\" {}";
-	var input = cin_variations;
+	var input = decl_init_question;
 
 	/* 	Tokenizes the given input and pushes each token in an array
 	 * 	@argument grammar:	jison generated javascript, must include lexer
@@ -63,10 +75,14 @@ document.body.onload = function() {
 			} else if (rule === 1) {
 				// do nothing, EOF
 			} else if (rule === "IDENTIFIER" || rule === "DECIMAL_LITERAL" || rule === "OCTAL_LITERAL" || rule === "HEXADECIMAL_LITERAL" || rule === "FLOATING_LITERAL" || rule === "CHARACTER_LITERAL" || rule === "STRING_LITERAL") {
-				arr.push({
-					'rule': rule,
-					'value': lexer.yytext
-				});
+				if(USE_OBJECTS) {
+					arr.push({
+						'rule': rule,
+						'value': lexer.yytext
+					});
+				} else {
+					arr.push(lexer.yytext);
+				}
 			} else {
 				arr.push(rule);
 			}
@@ -79,9 +95,9 @@ document.body.onload = function() {
 	if (Array.isArray(input)) {
 		var i;
 		for (i = 0; i < input.length; i++) {
-			console.log(lexToFlatArray(cpp0x, input[i]));
+			console.log(lexToFlatArray(grammar, input[i]));
 		}
 	} else {
-		console.log(lexToFlatArray(cpp0x, input));
+		console.log(lexToFlatArray(grammar, input));
 	}
 };

@@ -1,0 +1,157 @@
+keyword:
+			ALIGNAS
+			|ALIGNOF
+			|ASM
+			|AUTO
+			|BOOL
+			|BREAK
+			|CASE
+			|CATCH
+			|CHAR
+			|"CHAR16_T"
+			|"CHAR32_T"
+			|CLASS
+			|CONST
+			|CONSTEXPR
+			|CONST_CAST
+			|CONTINUE
+			|DECLTYPE
+			|DEFAULT
+			|DELETE
+			|DO
+			|DOUBLE
+			|DYNAMIC_CAST
+			|ELSE
+			|ENUM
+			|EXPLICIT
+			|EXPORT
+			|EXTERN
+			|FALSE
+			|FLOAT
+			|FOR
+			|FRIEND
+			|GOTO
+			|IF
+			|INLINE
+			|INT
+			|LONG
+			|MUTABLE
+			|NAMESPACE
+			|NEW
+			|NOEXCEPT
+			|NULLPTR
+			|OPERATOR
+			|PRIVATE
+			|PROTECTED
+			|PUBLIC
+			|REGISTER
+			|REINTERPRET_CAST
+			|RETURN
+			|SHORT
+			|SIGNED
+			|SIZEOF
+			|STATIC
+			|STATIC_ASSERT
+			|STATIC_CAST
+			|STRUCT
+			|SWITCH
+			|TEMPLATE
+			|THIS
+			|THREAD_LOCAL
+			|THROW
+			|TRUE
+			|TRY
+			|TYPEDEF
+			|TYPEID
+			|TYPENAME
+			|UNION
+			|UNSIGNED
+			|USING
+			|VIRTUAL
+			|VOID
+			|VOLATILE
+			|WCHAR_T
+			|WHILE
+;
+
+/* currently missing user-defined-literal */
+literal:
+			integer_literal
+			|character_literal
+			|floating_literal
+			|string_literal
+			|boolean_literal
+			|pointer_literal
+			;
+
+
+preprocessing_op_or_punc:
+			'{'
+			|'}'
+			|'['
+			|']'
+			|'#'
+			|'##'
+			|'('
+			|')'
+			|';'
+			|':'
+			|ELLIPSIS
+			|NEW
+			|DELETE
+			|'?'
+			|CLCL
+			|'.'
+			|DOTSTAR
+			|'+'
+			|'-'
+			|'*'
+			|'/'
+			|'%'
+			|'^'
+			|'&'
+			|'|'
+			|'~'
+			|'!'
+			|assignment_operator
+			|'<'
+			|'>'
+			|LS
+			|RS
+			|EQ
+			|NE
+			|LE
+			|GE
+			|ANDAND
+			|OROR
+			|INC
+			|DEC
+			|','
+			|ARROWstar
+			|ARROW
+;
+
+token:
+			identifier
+			|keyword
+			|literal
+			|preprocessing_op_or_punc
+			;
+
+/* lex.pptoken, userdefined literals not supported */
+preprocessing_token:
+			header_name
+			|identifier
+			|floating_literal
+			|integer_literal
+			|character_literal
+			|string_literal
+			|preprocessing_op_or_punc
+			|PP_ANYCHAR
+			;
+
+/* lex.header */
+header_name:
+			PP_HCHARSEQUENCE
+			|PP_QCHARSEQUENCE
+			;

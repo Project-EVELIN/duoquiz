@@ -2,8 +2,8 @@ document.body.onload = function() {
 	'use strict';
 
 	var DEBUG_CPP = false;
-	var DEBUG_EBNF = false;
-	var EBNF = false;
+	var DEBUG_EBNF = true;
+	var EBNF = true;
 
 	var input_definitions = [
 		"int a;",
@@ -25,14 +25,13 @@ document.body.onload = function() {
 		"struct S;",
 		"typedef int Int;",
 		"extern X anotherX;",
-		"typedef int Int;",
 		"using N::d;",
 	];
 
 	var cin_variations = [
 		"cin = cin + 1;",
-		"cin >> b;",
-		"std::cin >> b;",
+		/*"cin >> b;",
+		"std::cin >> b;",*/
 	];
 
 	var input_decl = "static char c = 's';";
@@ -41,50 +40,7 @@ document.body.onload = function() {
 	var input_prep = "#include <stdio.h>\n#define MAX 32\n";
 	var input_empty_declaration = ";";
 	var input_extern_linkage_specification = "extern \"string-literal\" {}";
-	var input = cin_variations;
-
-	/* 	Tokenizes the given input and pushes each token in an array
-	 * 	@argument grammar:	jison generated javascript, must include lexer
-	 *		@argument input: 		string
-	 */
-	function lexToFlatArray(grammar, input) {
-		var arr = [];
-
-		var lexer = grammar.lexer.setInput(input);
-		lexer.yy = grammar.yy;
-		lexer.yy.lexer = lexer;
-		lexer.yy.parser = grammar;
-		if (typeof lexer.yylloc == 'undefined')
-			lexer.yylloc = {};
-
-		// tokenize and show rules and positions
-		var rule;
-		do {
-			rule = lexer.lex();
-			//console.log(rule, grammar.terminals_[rule], "\n" + lexer.showPosition(), "\n");
-			if (grammar.terminals_[rule] !== undefined) {
-				arr.push(grammar.terminals_[rule]);
-			} else if (rule === 1) {
-				// do nothing, EOF
-			} else if (rule === "IDENTIFIER" || rule === "DECIMAL_LITERAL" || rule === "OCTAL_LITERAL" || rule === "HEXADECIMAL_LITERAL" || rule === "FLOATING_LITERAL" || rule === "CHARACTER_LITERAL" || rule === "STRING_LITERAL") {
-				arr.push({'rule': rule, 'value': lexer.yytext});
-			} else {
-				arr.push(rule);
-			}
-		} while (rule != lexer.EOF);
-
-		return arr;
-	}
-
-	// this is only lexing and only with enhanced ebnf lexer
-	if (Array.isArray(input)) {
-		var i;
-		for (i = 0; i < input.length; i++) {
-			console.log(lexToFlatArray(ebnf, input[i]));
-		}
-	} else {
-		console.log(lexToFlatArray(ebnf, input));
-	}
+	var input = input_definitions;
 
 	if (DEBUG_CPP) {
 		if (!Array.isArray(input)) {
