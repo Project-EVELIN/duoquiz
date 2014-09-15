@@ -1033,7 +1033,7 @@ abstract_declarator
   | direct_abstract_declarator
   {
     parser.yy.R("abstract_declarator : direct_abstract_declarator");
-    $$ = $1;;
+    $$ = $1;
   }
   | pointer direct_abstract_declarator
   {
@@ -1293,12 +1293,7 @@ iteration_statement
     parser.yy.R("iteration_statement : " +
       "FOR '(' expression_statement expression_statement expression ')' " +
       "statement");
-    $$ = ['for', '(',
-          $3,           // initialization
-          $5,           // while condition
-          $6,           // after each iteration
-          $7            // statement block
-        ];
+    $$ = ['for', '(',  $3,  $5, $6, $7 ];
   }
   ;
 
@@ -1339,7 +1334,7 @@ translation_unit
   | translation_unit external_declaration
     {
       parser.yy.R("translation_unit : translation_unit external_declaration");
-      $$ = [$1, $2]
+      $$ = [$1, $2];
     }
   ;
 
@@ -1400,9 +1395,7 @@ identifier
       parser.yy.R("identifier : TYPE_DEFINITION (" + yytext + ")");
       $$ = yytext;
       parser.yy.types[yytext] = 'TYPE_DEFINITION';
-    }
-    else
-    {
+    } else {
       parser.yy.R("identifier : IDENTIFIER (" + yytext + ")");
       $$ = yytext;
     }
@@ -1448,6 +1441,7 @@ constant
   }
   ;
 
+
 string_literal
   : STRING_LITERAL
   {
@@ -1484,7 +1478,7 @@ lbrace
   : LBRACE
   {
     parser.yy.R("lbrace : LBRACE");
-    $$ = "{"
+    $$ =  $1;
   }
   ;
 
@@ -1492,16 +1486,17 @@ rbrace
   : RBRACE
   {
     parser.yy.R("rbrace : RBRACE");
-    $$ = "}";
+    $$ = $1;
   }
   ;
 
 %%
-/* helper functions for bidirectional data exchagne between lexer and parser */
+
 parser.yy.R = function(entry) {
   console.log(entry);
 };
-// default
+
+
 parser.yy.bSawStruct = false;
 
 parser.yy.typedefMode = 0;
@@ -1513,4 +1508,4 @@ parser.yy.isType = function(type) {
   }
 
   return parser.yy.types.hasOwnProperty(type);
-}
+};
