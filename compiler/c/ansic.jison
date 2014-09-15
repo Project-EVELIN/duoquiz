@@ -747,9 +747,7 @@ struct_declaration
   {
     parser.yy.R("struct_declaration : " +
       "specifier_qualifier_list struct_declarator_list ';'");
-    $$ = new playground.c.lib.Node("struct_declaration", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($2);
+    $$ = [$1, $2, ';'];
   }
   ;
 
@@ -757,28 +755,22 @@ specifier_qualifier_list
   : type_specifier specifier_qualifier_list
   {
     parser.yy.R("specifier_qualifier_list : type_specifier specifier_qualifier_list");
-    $$ = $2;
-    $$.children.unshift($1);
+    $$ = [$1, $2];
   }
   | type_specifier
   {
     parser.yy.R("specifier_qualifier_list : type_specifier");
-    $$ =
-      new playground.c.lib.Node("specifier_qualifier_list", yytext, yylineno);
-    $$.children.unshift($1);
+    $$ = $1;
   }
   | type_qualifier specifier_qualifier_list
   {
     parser.yy.R("specifier_qualifier_list : type_qualifier specifier_qualifier_list");
-    $$ = $2;
-    $$.children.unshift($1);
+    $$ = [$1, $2];
   }
   | type_qualifier
   {
     parser.yy.R("specifier_qualifier_list : type_qualifier");
-    $$ =
-      new layground.c.lib.Node("specifier_qualifier_list", yytext, yylineno);
-    $$.children.unshift($1);
+    $$ = $1;
   }
   ;
 
@@ -786,14 +778,12 @@ struct_declarator_list
   : struct_declarator
   {
     parser.yy.R("struct_declarator_list : struct_declarator");
-    $$ = new playground.c.lib.Node("struct_declarator_list", yytext, yylineno);
-    $$.children.push($1);
+    $$ = $1;
   }
   | struct_declarator_list ',' struct_declarator
   {
     parser.yy.R("struct_declarator_list : struct_declarator_list ',' struct_declarator");
-    $$ = $1;
-    $$.children.push($3);
+    $$ = [$1, ',', $3];
   }
   ;
 
@@ -801,23 +791,17 @@ struct_declarator
   : declarator
   {
     parser.yy.R("struct_declarator : declarator");
-    $$ = new playground.c.lib.Node("struct_declarator", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push(playground.c.lib.Node.getNull(yylineno)); // no bitfield
+    $$ = $1;
   }
   | ':' constant_expression
   {
     parser.yy.R("struct_declarator : ':' constant_expression");
-    $$ = new playground.c.lib.Node("struct_declarator", yytext, yylineno);
-    $$.children.push(playground.c.lib.Node.getNull(yylineno)); // no declarator
-    $$.children.push($2);
+    $$ = [':', $2];
   }
   | declarator ':' constant_expression
   {
     parser.yy.R("struct_declarator : declarator ':' constant_expression");
-    $$ = new playground.c.lib.Node("struct_declarator", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($3);
+    $$ = [$1, ':', $3];
   }
   ;
 
@@ -825,40 +809,23 @@ enum_specifier
   : ENUM ns_struct identifier ns_normal lbrace enumerator_list rbrace
   {
     parser.yy.R("enum : ENUM identifier lbrace enumerator_list rbrace");
-    $$ = new playground.c.lib.Node("enum", yytext, yylineno);
-    $$.children.push($6);
-    $$.children.push($3);
+    $$ = ['enum', $3, '{', $6,'}'];
 
     // Add a symbol table entry for this enum (a type)
-    playground.c.lib.Symtab.getCurrent().add($3.value, yylineno, true);
+    parser.yy.types[$3.value] = $1.value;
   }
   | ENUM ns_struct ns_normal lbrace enumerator_list rbrace
   {
-    var             identifier;
-
     parser.yy.R("enum : ENUM lbrace enumerator_list rbrace");
-    $$ = new playground.c.lib.Node("enum", yytext, yylineno);
-    $$.children.push($5);
-
-    // Create an identifier node
-    identifier = new playground.c.lib.Node("identifier", yytext, yylineno);
-    identifier.value = "struct#" + playground.c.lib.Symtab.getUniqueId();
-
-    // Add a symbol table entry for this struct (a type)
-    playground.c.lib.Symtab.getCurrent().add(identifier.value, yylineno, true);
-
-    // Add the identifier
-    $$.children.push(identifier);
+    $$ = ['enum','{', $5,'}'];
   }
   | ENUM ns_struct identifier ns_normal
   {
     parser.yy.R("enum : ENUM identifier");
-    $$ = new playground.c.lib.Node("enum", yytext, yylineno);
-    $$.children.push(playground.c.lib.Node.getNull(yylineno)); // no enumerator_list
-    $$.children.push($3);
+    $$ = ['enum', $3,];
 
     // Add a symbol table entry for this struct
-    playground.c.lib.Symtab.getCurrent().add($3.value, yylineno, true);
+    parser.yy.types[$3.value] = $1.value;
   }
   ;
 
@@ -866,14 +833,12 @@ enumerator_list
   : enumerator
   {
     parser.yy.R("enumerator_list : enumerator");
-    $$ = new playground.c.lib.Node("enumerator_list", yytext, yylineno);
-    $$.children.push($1);
+    $$ = $1;
   }
   | enumerator_list ',' enumerator
   {
     parser.yy.R("enumerator_list : enumerator_list ',' enumerator");
-    $$ = $1;
-    $$.children.push($3);
+    $$ = [$1, ',', $3];
   }
   ;
 
@@ -881,16 +846,12 @@ enumerator
   : identifier
   {
     parser.yy.R("enumerator : identifier");
-    $$ = new playground.c.lib.Node("enumerator", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push(playground.c.lib.Node.getNull(yylineno)); // no initializer
+    $$ = $1; // no initializer
   }
   | identifier '=' constant_expression
   {
     parser.yy.R("enumerator : identifier '=' constant_expression");
-    $$ = new playground.c.lib.Node("enumerator", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($3);
+    $$ = [$1, '=', $3];
   }
   ;
 
@@ -1618,8 +1579,6 @@ function_definition
 function_scope
   :
   {
-    new playground.c.lib.Symtab(
-      playground.c.lib.Symtab.getCurrent(), null, yylineno + 1);
     $$ = $1;
   }
   ;
@@ -1630,15 +1589,14 @@ identifier
     if (playground.c.lib.Node.typedefMode === 2)
     {
       parser.yy.R("identifier : TYPE_DEFINITION (" + yytext + ")");
-      $$ = new playground.c.lib.Node("identifier", yytext, yylineno);
-      $$.value = playground.c.lib.Node.namespace + yytext;
+      $$ = yytext;
       playground.c.lib.Symtab.getCurrent().add(yytext, yylineno, true);
+      parser.yy.types[yytext] = 'TYPE_DEFINITION';
     }
     else
     {
       parser.yy.R("identifier : IDENTIFIER (" + yytext + ")");
-      $$ = new playground.c.lib.Node("identifier", yytext, yylineno);
-      $$.value = playground.c.lib.Node.namespace + yytext;
+      $$ = yytext;
     }
   }
   ;
@@ -1647,8 +1605,7 @@ type_name_token
   : TYPE_NAME
   {
     parser.yy.R("identifier : TYPE_NAME (" + yytext + ")");
-    $$ = new playground.c.lib.Node("type_name_token", yytext, yylineno);
-    $$.value = yytext;
+    $$ = yytext;
   }
   ;
 
