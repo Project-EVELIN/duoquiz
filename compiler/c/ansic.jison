@@ -1473,30 +1473,27 @@ jump_statement
   : GOTO identifier ';'
   {
     parser.yy.R("jump_statement : GOTO identifier ';'");
-    $$ = new playground.c.lib.Node("goto", yytext, yylineno);
-    $$.children.push($2);
+    $$ = ['goto', $2, ';'];
   }
   | CONTINUE ';'
   {
     parser.yy.R("jump_statement : CONTINUE ';'");
-    $$ = new playground.c.lib.Node("continue", yytext, yylineno);
+    $$ = ['continue', ';'];
   }
   | BREAK ';'
   {
     parser.yy.R("jump_statement : BREAK ';'");
-    $$ = new playground.c.lib.Node("break", yytext, yylineno);
+    $$ = ['break', ';'];
   }
   | RETURN ';'
   {
     parser.yy.R("jump_statement : RETURN ';'");
-    $$ = new playground.c.lib.Node("return", yytext, yylineno);
-    $$.children.push(playground.c.lib.Node.getNull(yylineno));
+    $$ = ['return', ';'];
   }
   | RETURN expression ';'
   {
     parser.yy.R("jump_statement : RETURN expression ';'");
-    $$ = new playground.c.lib.Node("return", yytext, yylineno);
-    $$.children.push($2);
+    $$ = ['return', $2, ';'];
   }
   ;
 
@@ -1504,14 +1501,12 @@ translation_unit
   : external_declaration
     {
       parser.yy.R("translation_unit : external_declaration");
-      $$ = new playground.c.lib.Node("translation_unit", yytext, yylineno);
-      $$.children.push($1);
+      $$ = $1;
     }
   | translation_unit external_declaration
     {
       parser.yy.R("translation_unit : translation_unit external_declaration");
-      $$ = $1;
-      $$.children.push($2);
+      $$ = [$1, $2]
     }
   ;
 
@@ -1537,42 +1532,26 @@ function_definition
   {
     parser.yy.R("function_definition : " +
       "declaration_specifiers declarator declaration_list compound_statement");
-    $$ = new playground.c.lib.Node("function_definition", yytext, yylineno);
-    $$.children.push($1);       // declaration_specifiers
-    $$.children.push($3);       // declarator
-    $$.children.push($4);       // declaration_list
-    $$.children.push($5);       // compound_statement
+    $$ = [$1, $3, $4, $5];
   }
 */
   : declaration_specifiers maybe_typedef_mode declarator compound_statement
   {
     parser.yy.R("function_definition : " +
       "declaration_specifiers declarator compound_statement");
-    $$ = new playground.c.lib.Node("function_definition", yytext, yylineno);
-    $$.children.push($1);       // declaration_specifiers
-    $$.children.push($3);       // declarator
-    $$.children.push(playground.c.lib.Node.getNull(yylineno));     // declaration_list
-    $$.children.push($4);       // compound_statement
+    $$ = [$1, $3, $4];
   }
 /* Don't support K&R-style declarations...
   | declarator declaration_list compound_statement
   {
     parser.yy.R("function_definition : declarator declaration_list compound_statement");
-    $$ = new playground.c.lib.Node("function_definition", yytext, yylineno);
-    $$.children.push(playground.c.lib.Node.getNull(yylineno));     // declaration_specifiers
-    $$.children.push($1);       // declarator
-    $$.children.push($2);       // declaration_list
-    $$.children.push($3);       // compound_statement
+    $$ = [$1, $2, $3];
   }
 */
   | declarator compound_statement
   {
     parser.yy.R("function_definition : declarator compound_statement");
-    $$ = new playground.c.lib.Node("function_definition", yytext, yylineno);
-    $$.children.push(playground.c.lib.Node.getNull(yylineno));     // declaration_specifiers
-    $$.children.push($1);       // declarator
-    $$.children.push(playground.c.lib.Node.getNull(yylineno));     // declaration_list
-    $$.children.push($2);       // compound_statement
+    $$ = [$1, $2];
   }
   ;
 
