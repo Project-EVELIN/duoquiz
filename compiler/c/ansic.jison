@@ -690,9 +690,7 @@ struct_or_union_specifier
   | struct_or_union ns_struct identifier ns_normal
   {
     parser.yy.R("struct_or_union_specifier : struct_or_union identifier");
-    $$ = $1;
-    $$.children.push(playground.c.lib.Node.getNull(yylineno)); // no declaration list
-    $$.children.push($3);
+    $$ = [$1, $3];
 
     // Add a symbol table entry for this struct
     parser.yy.types[$3.value] = $1.value;
@@ -872,16 +870,12 @@ declarator
   : pointer direct_declarator
   {
     parser.yy.R("declarator : pointer direct_declarator");
-    $$ = new playground.c.lib.Node("declarator", yytext, yylineno);
-    $$.children.push($2);
-    $$.children.push($1);
+    $$ = [$1, $2];
   }
   | direct_declarator
   {
     parser.yy.R("declarator : direct_declarator");
-    $$ = new playground.c.lib.Node("declarator", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push(playground.c.lib.Node.getNull(yylineno));
+    $$ = $1;
   }
   ;
 
@@ -894,59 +888,36 @@ direct_declarator
   | '(' declarator ')'
   {
     parser.yy.R("direct_declarator : '(' declarator ')'");
-    $$ = $2;
+    $$ = ['(', $2, ')'];
   }
   | direct_declarator '[' constant_expression ']'
   {
     parser.yy.R("direct_declarator : direct_declarator '[' constant_expression ']'");
-
-    var             array_decl;
-
-    $$ = $1;
-    array_decl = new playground.c.lib.Node("array_decl", yytext, yylineno);
-    array_decl.children.push($3);
-    $$.children.push(array_decl);
+    $$ = [$1, '[', $3, ']'];
   }
   | direct_declarator '[' ']'
   {
     parser.yy.R("direct_declarator : direct_declarator '[' ']'");
-
-    var             array_decl;
-
-    $$ = $1;
-    array_decl = new playground.c.lib.Node("array_decl", yytext, yylineno);
-    $$.children.push(array_decl);
+    $$ = [$1, '[', ']'];
   }
   | direct_declarator function_scope '(' parameter_type_list ')'
   {
     parser.yy.R("direct_declarator : " +
       "direct_declarator '(' parameter_type_list ')'");
-
-    $$ = new playground.c.lib.Node("function_decl", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($4);
-    $$.children.push(playground.c.lib.Node.getNull(yylineno));     // no identifier_list
+    $$ = [$1, $2, '(', $4, ')'];
   }
 /* Don't support K&R-style declarations...
   | direct_declarator function_scope '(' identifier_list ')'
   {
     parser.yy.R("direct_declarator : " +
       "direct_declarator '(' identifier_list ')'");
-
-    $$ = new playground.c.lib.Node("function_decl", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push(playground.c.lib.Node.getNull(yylineno));     // no parameter_type_list
-    $$.children.push($4);
+    $$ = [$1, $2, '(', $4, ')'];
   }
 // ... and require 'void' for parameter list if no formal parameters
   | direct_declarator function_scope '(' ')'
   {
     parser.yy.R("direct_declarator : direct_declarator '(' ')'");
-
-    $$ = new playground.c.lib.Node("function_decl", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push(playground.c.lib.Node.getNull(yylineno));     // no parameter_type_list
-    $$.children.push(playground.c.lib.Node.getNull(yylineno));     // no identifier_list
+    $$ = [$1, $2, '(', ')'];
   }
 */
   ;
@@ -978,14 +949,12 @@ type_qualifier_list
   : type_qualifier
   {
     parser.yy.R("type_qualifier_list : type_qualifier");
-    $$ = new playground.c.lib.Node("type_qualifier_list", yytext, yylineno);
-    $$.children.push($1);
+    $$ = $1;
   }
   | type_qualifier_list type_qualifier
   {
     parser.yy.R("type_qualifier_list : type_qualifier_list type_qualifier");
-    $$ = $1;
-    $$.children.push($2);
+    $$ = [$1, $2];
   }
   ;
 
@@ -999,8 +968,7 @@ parameter_type_list
   | parameter_list ',' ellipsis
   {
     parser.yy.R("parameter_type_list : parameter_list ',' ellipsis");
-    $$ = $1;
-    $$.children.push($3);
+    $$ = [$1, ',', $3];
   }
   ;
 
@@ -1008,14 +976,12 @@ parameter_list
   : parameter_declaration
   {
     parser.yy.R("parameter_list : parameter_declaration");
-    $$ = new playground.c.lib.Node("parameter_list", yytext, yylineno);
-    $$.children.push($1);
+    $$ = $1;
   }
   | parameter_list ',' parameter_declaration
   {
     parser.yy.R("parameter_list : parameter_list ',' parameter_declaration");
-    $$ = $1;
-    $$.children.push($3);
+    $$ = [$1, ',', $3];
   }
   ;
 
@@ -1023,26 +989,17 @@ parameter_declaration
   : declaration_specifiers declarator
   {
     parser.yy.R("parameter_declaration : declaration_specifiers declarator");
-    $$ = new playground.c.lib.Node("parameter_declaration", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($2);
-    $$.children.push(playground.c.lib.Node.getNull(yylineno));     // no abstract declarator
+    $$ = [$1, $2];
   }
   | declaration_specifiers abstract_declarator
   {
     parser.yy.R("parameter_declaration : declaration_specifiers abstract_declarator");
-    $$ = new playground.c.lib.Node("parameter_declaration", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push(playground.c.lib.Node.getNull(yylineno));     // no declarator
-    $$.children.push($2);
+    $$ = [$1, $2];
   }
   | declaration_specifiers
   {
     parser.yy.R("parameter_declaration : declaration_specifiers");
-    $$ = new playground.c.lib.Node("parameter_declaration", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push(playground.c.lib.Node.getNull(yylineno));     // no declarator
-    $$.children.push(playground.c.lib.Node.getNull(yylineno));     // no abstract declarator
+    $$ = $1;
   }
   ;
 
@@ -1050,14 +1007,12 @@ identifier_list
   : identifier
   {
     parser.yy.R("identifier_list : identifier");
-    $$ = new playground.c.lib.Node("identifier_list", yytext, yylineno);
-    $$.children.push($1);
+    $$ = $1;
   }
   | identifier_list ',' identifier
   {
     parser.yy.R("identifier_list : identifier_list ',' identifier");
-    $$ = $1;
-    $$.children.push($3);
+    $$ = [$1, ',', $3];
   }
   ;
 
@@ -1065,16 +1020,12 @@ type_name
   : specifier_qualifier_list
   {
     parser.yy.R("type_name : specifier_qualifier_list");
-    $$ = new playground.c.lib.Node("type_name", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push(playground.c.lib.Node.getNull(yylineno));     // no abstract declarator
+    $$ = $1;
   }
   | specifier_qualifier_list abstract_declarator
   {
     parser.yy.R("type_name : specifier_qualifier_list abstract_declarator");
-    $$ = new playground.c.lib.Node("type_name", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($2);
+    $$ = [$1, $2];
   }
   ;
 
@@ -1082,23 +1033,17 @@ abstract_declarator
   : pointer
   {
     parser.yy.R("abstract_declarator : pointer");
-    $$ = new playground.c.lib.Node("abstract_declarator", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push(playground.c.lib.Node.getNull(yylineno));     // no abstract_declarator
+    $$ = $1;
   }
   | direct_abstract_declarator
   {
     parser.yy.R("abstract_declarator : direct_abstract_declarator");
-    $$ = new playground.c.lib.Node("abstract_declarator", yytext, yylineno);
-    $$.children.push(playground.c.lib.Node.getNull(yylineno));     // no pointer
-    $$.children.push($1);
+    $$ = $1;;
   }
   | pointer direct_abstract_declarator
   {
     parser.yy.R("abstract_declarator : pointer direct_abstract_declarator");
-    $$ = new playground.c.lib.Node("abstract_declarator", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($2);
+    $$ = [$1, $2];
   }
   ;
 
@@ -1106,99 +1051,49 @@ direct_abstract_declarator
   : '(' abstract_declarator ')'
   {
     parser.yy.R("direct_abstract_declarator : '(' abstract_declarator ')'");
-    $$ =
-      new playground.c.lib.Node("direct_abstract_declarator", yytext, yylineno);
-    $$.children.push($2);
+    $$ = ['(', $2, ')'];
   }
   | '[' ']'
   {
     parser.yy.R("direct_abstract_declarator : '[' ']'");
-
-    var             array_decl;
-
-    $$ =
-      new playground.c.lib.Node("direct_abstract_declarator", yytext, yylineno);
-    array_decl = new playground.c.lib.Node("array_decl", yytext, yylineno);
-    $$.children.push(array_decl);
+    $$ = ['[', ']'];
   }
   | '[' constant_expression ']'
   {
     parser.yy.R("direct_abstract_declarator : '[' constant_expression ']'");
-
-    var             array_decl;
-
-    $$ =
-      new playground.c.lib.Node("direct_abstract_declarator", yytext, yylineno);
-    array_decl = new playground.c.lib.Node("array_decl", yytext, yylineno);
-    array_decl.children.push($2);
-    $$.children.push(array_decl);
+    $$ = ['[', $2, ']'];
   }
   | direct_abstract_declarator '[' ']'
   {
     parser.yy.R("direct_abstract_declarator : direct_abstract_declarator '[' ']'");
-
-    var             array_decl;
-    var             child;
-
-    $$ = $1;
-    child =
-      new playground.c.lib.Node("direct_abstract_declarator", yytext, yylineno);
-    array_decl = new playground.c.lib.Node("array_decl", yytext, yylineno);
-    child.children.push(array_decl);
-    $$.children.push(child);
+    $$ = [$1, '[', ']'];
   }
   | direct_abstract_declarator '[' constant_expression ']'
   {
     parser.yy.R("direct_abstract_declarator : " +
       "direct_abstract_declarator '[' constant_expression ']'");
-
-    var             array_decl;
-    var             child;
-
-    $$ = $1;
-    child =
-      new playground.c.lib.Node("direct_abstract_declarator", yytext, yylineno);
-    array_decl = new playground.c.lib.Node("array_decl", yytext, yylineno);
-    array_decl.children.push($3);
-    child.children.push(array_decl);
-    $$.children.push(child);
+    $$ = [$1, '[', $3, ']'];
   }
   | '(' ')'
   {
     parser.yy.R("direct_abstract_declarator : '(' ')'");
-    $$ =
-      new playground.c.lib.Node("direct_abstract_declarator", yytext, yylineno);
+    $$ = ['(', ')'];
   }
   | '(' parameter_type_list ')'
   {
     parser.yy.R("direct_abstract_declarator : '(' parameter_type_list ')'");
-    $$ =
-      new playground.c.lib.Node("direct_abstract_declarator", yytext, yylineno);
-    $$.children.push($2);
+    $$ = ['(', $3, ')'];
   }
   | direct_abstract_declarator '(' ')'
   {
     parser.yy.R("direct_abstract_declarator : direct_abstract_declarator '(' ')'");
-
-    var             child;
-
-    $$ = $1;
-    child =
-      new playground.c.lib.Node("direct_abstract_declarator", yytext, yylineno);
-    $$.children.push(child);
+    $$ = [$1, '(', ')'];
   }
   | direct_abstract_declarator '(' parameter_type_list ')'
   {
     parser.yy.R("direct_abstract_declarator : " +
       "direct_abstract_declarator '(' parameter_type_list ')'");
-
-    var             child;
-
-    $$ = $1;
-    child =
-      new playground.c.lib.Node("direct_abstract_declarator", yytext, yylineno);
-    child.children.push($2);
-    $$.children.push(child);
+    $$ = [$1, '(', $3, ')'];
   }
   ;
 
@@ -1230,8 +1125,7 @@ initializer_list
   | initializer_list ',' initializer
   {
     parser.yy.R("initializer_list : initializer_list ',' initializer");
-    $$ = $1;
-    $$.children.push($3);
+    $$ = [$1, ',', $3];
   }
   ;
 
@@ -1294,30 +1188,22 @@ compound_statement
   : lbrace_scope rbrace_scope
   {
     parser.yy.R("compound_statement : lbrace_scope rbrace_scope");
-    $$ = new playground.c.lib.Node("compound_statement", yytext, yylineno);
-    $$.children.push(playground.c.lib.Node.getNull(yylineno));     // no declaration list
-    $$.children.push(playground.c.lib.Node.getNull(yylineno));     // no statement list
+    $$ = [$1, $2];
   }
   | lbrace_scope statement_list rbrace_scope
   {
     parser.yy.R("compound_statement : lbrace_scope statement_list rbrace_scope");
-    $$ = new playground.c.lib.Node("compound_statement", yytext, yylineno);
-    $$.children.push(playground.c.lib.Node.getNull(yylineno));     // no declaration_list
-    $$.children.push($2);
+    $$ = [$1, $2, $3];
   }
   | lbrace_scope declaration_list rbrace_scope
   {
     parser.yy.R("compound_statement : lbrace_scope declaration_list rbrace_scope");
-    $$ = new playground.c.lib.Node("compound_statement", yytext, yylineno);
-    $$.children.push($2);
-    $$.children.push(playground.c.lib.Node.getNull(yylineno));     // no statement list
+    $$ = [$1, $2, $3];
   }
   | lbrace_scope declaration_list statement_list rbrace_scope
   {
     parser.yy.R("compound_statement : lbrace_scope declaration_list statement_list rbrace_scope");
-    $$ = new playground.c.lib.Node("compound_statement", yytext, yylineno);
-    $$.children.push($2);
-    $$.children.push($3);
+    $$ = [$1, $2, $3, $4];
   }
   ;
 
@@ -1325,14 +1211,12 @@ declaration_list
   : declaration
   {
     parser.yy.R("declaration_list : declaration");
-    $$ = new playground.c.lib.Node("declaration_list", yytext, yylineno);
-    $$.children.push($1);
+    $$ = $1;
   }
   | declaration_list declaration
   {
     parser.yy.R("declaration_list : declaration_list declaration");
-    $$ = $1;
-    $$.children.push($2);
+    $$ = [$1, $2];
   }
   ;
 
@@ -1345,39 +1229,11 @@ statement_list
   | statement_list statement
   {
     parser.yy.R("statement_list : statement_list statement");
-    $$ = $1;
-    $$.children.push($2);
-
-    // Recursively move the statement portion of 'case n : statement' up to
-    // the statement list
-    (function(thisNode, listNode)
-    {
-      switch(thisNode.type)
-      {
-        case "case" :
-          index = 1;
-          break;
-
-        case "default" :
-          index = 0;
-          break;
-
-        default :
-          // Not case nor default, so we have nothing to do
-          return;
-      }
-
-      // Move this case's statement to the statement list
-      listNode.children.push(thisNode.children[index]);
-      thisNode.children.length = 1;
-
-      // It's a case. Call recursively, to handle child being another case.
-      arguments.callee(thisNode.children[index], listNode);
-    })($2, $$);
+    $$ = [$1, $2];
   }
   | statement_list save_position declaration
   {
-    playground.c.lib.Node.getError().parseError(
+    parser.parseError(
       "Declarations must precede executable statements.",
       { line : yylineno },
       $2);
