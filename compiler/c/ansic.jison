@@ -86,36 +86,22 @@ postfix_expression
   | postfix_expression '.' identifier
     {
       parser.yy.R("postfix_expression : postfix_expression '.' identifier");
-
-      $$ = new playground.c.lib.Node("structure_reference", yytext, yylineno);
-      $$.children.push($1);
-      $$.children.push($3);
+      $$ = [$1, '.', $3];
     }
   | postfix_expression PTR_OP identifier
     {
       parser.yy.R("postfix_expression : postfix_expression PTR_OP identifier");
-
-      var             deref;
-
-      $$ = new playground.c.lib.Node("structure_reference", yytext, yylineno);
-
-      deref = new playground.c.lib.Node("dereference", yytext, yylineno);
-      deref.children.push($1);
-
-      $$.children.push(deref);
-      $$.children.push($3);
+      $$ = [$1, '->', $3];
     }
   | postfix_expression INC_OP
     {
       parser.yy.R("postfix_expression : postfix_expression INC_OP");
-      $$ = new playground.c.lib.Node("post_increment_op", yytext, yylineno);
-      $$.children.push($1);
+      $$ = [$1, '++'];
     }
   | postfix_expression DEC_OP
     {
       parser.yy.R("postfix_expression : postfix_expression DEC_OP");
-      $$ = new playground.c.lib.Node("post_decrement_op", yytext, yylineno);
-      $$.children.push($1);
+      $$ = [$1, '--'];
     }
   ;
 
@@ -123,16 +109,13 @@ argument_expression_list
   : assignment_expression
   {
     parser.yy.R("argument_expression_list : assignment_expression");
-    $$ =
-      new playground.c.lib.Node("argument_expression_list", yytext, yylineno);
-    $$.children.push($1);
+    $$ = $1;
   }
   | argument_expression_list ',' assignment_expression
   {
     parser.yy.R("argument_expression_list : " +
       "argument_expression_list ',' assignment_expression");
-    $$ = $1;
-    $$.children.push($3);
+    $$ = [$1, ',', $3];
   }
   ;
 
@@ -145,32 +128,27 @@ unary_expression
   | INC_OP unary_expression
   {
     parser.yy.R("unary_expression : INC_OP unary_expression");
-    $$ = new playground.c.lib.Node("pre_increment_op", yytext, yylineno);
-    $$.children.push($2);
+    $$ =  ['++', $2];
   }
   | DEC_OP unary_expression
   {
     parser.yy.R("unary_expression : DEC_OP unary_expression");
-    $$ = new playground.c.lib.Node("pre_decrement_op", yytext, yylineno);
-    $$.children.push($2);
+    $$ =  ['--', $2];
   }
   | unary_operator cast_expression
   {
     parser.yy.R("unary_expression : unary_operator cast_expression");
-    $$ = $1;
-    $$.children.push($2);
+    $$ =  [$1, $2];
   }
   | SIZEOF unary_expression
   {
     parser.yy.R("unary_expression : SIZEOF unary_expression");
-    $$ = new playground.c.lib.Node("sizeof", yytext, yylineno);
-    $$.children.push($2);
+    $$ =  ['sizeof', $2];
   }
   | SIZEOF '(' type_name ')'
   {
     parser.yy.R("unary_expression : SIZEOF '(' type_name ')'");
-    $$ = new playground.c.lib.Node("sizeof", yytext, yylineno);
-    $$.children.push($3);
+    $$ = ['sizeof', '(', $3, ')'];
   }
   ;
 
