@@ -1408,25 +1408,17 @@ selection_statement
   : IF '(' expression ')' statement %prec IF_WITHOUT_ELSE
   {
     parser.yy.R("selection_statement : IF '(' expression ')' statement");
-    $$ = new playground.c.lib.Node("if", yytext, yylineno);
-    $$.children.push($3);
-    $$.children.push($5);
-    $$.children.push(playground.c.lib.Node.getNull(yylineno)); // else statement
+    $$ = ['if', '(', $3, ')', $5];
   }
   | IF '(' expression ')' statement ELSE statement
   {
     parser.yy.R("selection_statement : IF '(' expression ')' statement ELSE statement");
-    $$ = new playground.c.lib.Node("if", yytext, yylineno);
-    $$.children.push($3);
-    $$.children.push($5);
-    $$.children.push($7);
+    $$ = ['if', '(', $3, ')', $5, 'else', $7];
   }
   | SWITCH '(' expression ')' statement
   {
     parser.yy.R("selection_statement : SWITCH '(' expression ')' statement");
-    $$ = new playground.c.lib.Node("switch", yytext, yylineno);
-    $$.children.push($3);
-    $$.children.push($5);
+    $$ = ['switch', '(', $3, ')', $5];
   }
   ;
 
@@ -1434,38 +1426,29 @@ iteration_statement
   : WHILE '(' expression ')' statement
   {
     parser.yy.R("iteration_statement : WHILE '(' expression ')' statement");
-    $$ = new playground.c.lib.Node("for", yytext, yylineno);
-    $$.children.push(playground.c.lib.Node.getNull(yylineno));     // initialization
-    $$.children.push($3);       // while condition
-    $$.children.push($5);       // statement block
-    $$.children.push(playground.c.lib.Node.getNull(yylineno));     // after each iteration
+    $$ = ['while', '(', $3, ')', $5];
   }
   | DO statement WHILE '(' expression ')' ';'
   {
     parser.yy.R("iteration_statement : DO statement WHILE '(' expression ')' ';'");
-    $$ = new playground.c.lib.Node("do-while", yytext, yylineno);
-    $$.children.push($2);       // statement
-    $$.children.push($5);       // while condition
+    $$ = ['do', $2, 'while', '(', $5, ')', ';'];
   }
   | FOR '(' expression_statement expression_statement ')' statement
   {
     parser.yy.R("iteration_statement : FOR '(' expression_statement expression_statement ')' statement");
-    $$ = new playground.c.lib.Node("for", yytext, yylineno);
-    $$.children.push($3);       // initialization
-    $$.children.push($4);       // while condition
-    $$.children.push($6);       // statement block
-    $$.children.push(playground.c.lib.Node.getNull(yylineno));     // after each iteration
+    $$ = ['for', $3, $4, ')', $6];
   }
   | FOR '(' expression_statement expression_statement expression ')' statement
   {
     parser.yy.R("iteration_statement : " +
       "FOR '(' expression_statement expression_statement expression ')' " +
       "statement");
-    $$ = new playground.c.lib.Node("for", yytext, yylineno);
-    $$.children.push($3);       // initialization
-    $$.children.push($4);       // while condition
-    $$.children.push($7);       // statement block
-    $$.children.push($5);       // after each iteration
+    $$ = ['for', '(',
+          $3,           // initialization
+          $5,           // while condition
+          $6,           // after each iteration
+          $7            // statement block
+        ];
   }
   ;
 
