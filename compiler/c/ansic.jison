@@ -680,11 +680,6 @@ struct_or_union_specifier
   {
     parser.yy.R("struct_or_union_specifier : " +
       "struct_or_union lbrace struct_declaration_list rbrace");
-
-        // Create an identifier node
-    //identifier = new playground.c.lib.Node("identifier", yytext, yylineno);
-    //identifier.value = "struct#" + playground.c.lib.Symtab.getUniqueId();
-
     $$ = [$1, '{', $5, '}'];
   }
   | struct_or_union ns_struct identifier ns_normal
@@ -1119,8 +1114,7 @@ initializer_list
   : initializer
   {
     parser.yy.R("initializer_list : initializer");
-    $$ = new playground.c.lib.Node("initializer_list", yytext, yylineno);
-    $$.children.push($1);
+    $$ = $1;
   }
   | initializer_list ',' initializer
   {
@@ -1354,9 +1348,6 @@ external_declaration
   {
     parser.yy.R("external_declaration : function_definition");
     $$ = $1;
-
-    // Pop the symtab created by function_scope from the stack
-    playground.c.lib.Symtab.popStack();
   }
   | declaration
   {
@@ -1404,11 +1395,10 @@ function_scope
 identifier
   : IDENTIFIER
   {
-    if (playground.c.lib.Node.typedefMode === 2)
+    if (parser.yy.typedefMode === 2)
     {
       parser.yy.R("identifier : TYPE_DEFINITION (" + yytext + ")");
       $$ = yytext;
-      playground.c.lib.Symtab.getCurrent().add(yytext, yylineno, true);
       parser.yy.types[yytext] = 'TYPE_DEFINITION';
     }
     else
