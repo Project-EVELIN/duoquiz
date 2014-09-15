@@ -518,39 +518,33 @@ declaration_specifiers
   : storage_class_specifier
   {
     parser.yy.R("declaration_specifiers : storage_class_specifier");
-    $$ = new playground.c.lib.Node("declaration_specifiers", yytext, yylineno);
-    $$.children.unshift($1);
+    $$ = $1;
   }
   | storage_class_specifier declaration_specifiers
   {
     parser.yy.R("declaration_specifiers : " +
       "storage_class_specifier declaration_specifiers");
-    $$ = $2;
-    $$.children.unshift($1);
+    $$ = [$1, $2];
   }
   | type_specifier
   {
     parser.yy.R("declaration_specifiers : type_specifier");
-    $$ = new playground.c.lib.Node("declaration_specifiers", yytext, yylineno);
-    $$.children.unshift($1);
+    $$ = $1;
   }
   | type_specifier declaration_specifiers
   {
     parser.yy.R("declaration_specifiers : type_specifier declaration_specifiers");
-    $$ = $2;
-    $$.children.unshift($1);
+    $$ = [$1, $2];
   }
   | type_qualifier
   {
     parser.yy.R("declaration_specifiers : type_qualifier");
-    $$ = new playground.c.lib.Node("declaration_specifiers", yytext, yylineno);
-    $$.children.unshift($1);
+    $$ = $1;
   }
   | type_qualifier declaration_specifiers
   {
     parser.yy.R("declaration_specifiers : type_qualifier declaration_specifiers");
-    $$ = $2;
-    $$.children.unshift($1);
+    $$ = [$1, $2];
   }
   ;
 
@@ -558,14 +552,12 @@ init_declarator_list
   : init_declarator
   {
     parser.yy.R("init_declarator_list : init_declarator");
-    $$ = new playground.c.lib.Node("init_declarator_list", yytext, yylineno);
-    $$.children.push($1);
+    $$ = $1;
   }
   | init_declarator_list ',' init_declarator
   {
     parser.yy.R("init_declarator_list : init_declarator_list ',' init_declarator");
-    $$ = $1;
-    $$.children.push($3);
+    $$ = [$1, ',', $3];
   }
   ;
 
@@ -573,16 +565,12 @@ init_declarator
   : declarator
   {
     parser.yy.R("init_declarator : declarator");
-    $$ = new playground.c.lib.Node("init_declarator", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push(playground.c.lib.Node.getNull(yylineno));     // no initializer
+    $$ = $1;     // no initializer
   }
   | declarator '=' initializer
   {
     parser.yy.R("init_declarator : declarator '=' initializer");
-    $$ = new playground.c.lib.Node("init_declarator", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($3);
+    $$ = [$1, '=', $3];
   }
   ;
 
@@ -683,7 +671,7 @@ struct_or_union_specifier
   {
     parser.yy.R("struct_or_union_specifier : " +
       "struct_or_union identifier lbrace struct_declaration_list rbrace");
-    $$ = [$1, $2, $3, $4, '{', $6, '}'];
+    $$ = [$1, $3, '{', $6, '}'];
 
     // Add a symbol table entry for this struct (a type)
     parser.yy.types[$3.value] = $1.value;
@@ -697,7 +685,7 @@ struct_or_union_specifier
     //identifier = new playground.c.lib.Node("identifier", yytext, yylineno);
     //identifier.value = "struct#" + playground.c.lib.Symtab.getUniqueId();
 
-    $$ = [$1, $2, $3, '{', $5, '}'];
+    $$ = [$1, '{', $5, '}'];
   }
   | struct_or_union ns_struct identifier ns_normal
   {
@@ -707,7 +695,7 @@ struct_or_union_specifier
     $$.children.push($3);
 
     // Add a symbol table entry for this struct
-    playground.c.lib.Symtab.getCurrent().add($3.value, yylineno, true);
+    parser.yy.types[$3.value] = $1.value;
   }
   ;
 
@@ -745,14 +733,12 @@ struct_declaration_list
   : struct_declaration
   {
     parser.yy.R("struct_declaration_list : struct_declaration");
-    $$ = new playground.c.lib.Node("struct_declaration_list", yytext, yylineno);
-    $$.children.push($1);
+    $$ = $1;
   }
   | struct_declaration_list struct_declaration
   {
     parser.yy.R("struct_declaration_list : struct_declaration_list struct_declaration");
-    $$ = $1;
-    $$.children.push($2);
+    $$ = [$1, $2];
   }
   ;
 
