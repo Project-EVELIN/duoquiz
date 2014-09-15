@@ -41,6 +41,10 @@ horizontal_white [ ]|{h_tab}
 
 %s typedef_mode
 %x inc
+%x PREPR
+%x WRAP_PREP
+%x CPP_COMMENT
+%x C_COMMENT
 
 %%
 "/*" {this.begin("C_COMMENT");}
@@ -74,22 +78,22 @@ horizontal_white [ ]|{h_tab}
 "signed"		{ return(parser.symbols_.SIGNED); }
 "sizeof"		{ return(parser.symbols_.SIZEOF); }
 "static"		{ return(parser.symbols_.STATIC); }
-"struct"		{%
+"struct"		{
               parser.yy.bSawStruct = true;
               return(parser.symbols_.STRUCT);
-            %}
+            }
 "switch"		{ return(parser.symbols_.SWITCH); }
 "typedef"		{ return(parser.symbols_.TYPEDEF); }
-"union" 		{%
+"union" 		{
               parser.yy.bSawStruct = true;
               return(parser.symbols_.UNION);
-            %}
+            }
 "unsigned"	{ return(parser.symbols_.UNSIGNED); }
 "void"			{ return(parser.symbols_.VOID); }
 "volatile"	{ return(parser.symbols_.VOLATILE); }
 "while"			{ return(parser.symbols_.WHILE); }
 
-{identifier}	{%
+{identifier}	{
                 var isType;
 
                 isType = parser.yy.isType(yytext);
@@ -97,7 +101,7 @@ horizontal_white [ ]|{h_tab}
                         ! parser.yy.bSawStruct
                         ? parser.symbols_.TYPE_NAME
                         : parser.symbols_.IDENTIFIER);
-                        %}
+              }
 
 {floating_constant}		        { return(parser.symbols_.CONSTANT_FLOAT); }
 {hex_constant}			          { return(parser.symbols_.CONSTANT_HEX); }
@@ -152,7 +156,7 @@ horizontal_white [ ]|{h_tab}
 "^"			  { return('^'); }
 "|"			  { return('|'); }
 "?"			  { return('?'); }
-"#"			  {% this.begin("PREPR"); return('#'); %}
+"#"			  { this.begin("PREPR"); return('#');}
 
 /* lex.digraph */
 /* is this realy necessary? */
@@ -160,7 +164,7 @@ horizontal_white [ ]|{h_tab}
 "%>"						{ return(parser.symbols_.RBRACE); }
 "<:"						{ return('['); }
 ":>"						{ return(']'); }
-"%:"						{% this.begin("PREPR"); return('#'); %}
+"%:"						{ this.begin("PREPR"); return('#');}
 "and"						{ return(parser.symbols_.AND_OP); }
 "bitor"					{ return('|'); }
 "or"						{ return(parser.symbols_.OR_OP); }
@@ -174,7 +178,7 @@ horizontal_white [ ]|{h_tab}
 "not_eq"				{ return(parser.symbols_.NE_OP); }
 
 /* lex.preprocessor */
-<PREPR>{NL}												{% this.begin("INITIAL"); return "PP_NEWLINE";%}
+<PREPR>{NL}												{this.begin("INITIAL"); return "PP_NEWLINE";}
 <PREPR>\\													{this.begin("WRAP_PREP");}
 <PREPR>({horizontal_white})				{ }
 <PREPR>({horizontal_white})*"("		{return "PP_LPAREN";}
