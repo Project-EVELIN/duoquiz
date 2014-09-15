@@ -781,17 +781,17 @@ struct_or_union_specifier
 ns_struct
   :
   {
-    playground.c.lib.Node.namespace = "struct#";
+    //playground.c.lib.Node.namespace = "struct#";
   }
   ;
 
 ns_normal
   :
   {
-    playground.c.lib.Node.namespace = "";
+    //playground.c.lib.Node.namespace = "";
 
     // set to true by lexer
-    playground.c.lib.Node.bSawStruct = false;
+    parser.yy.bSawStruct = false;
   }
   ;
 
@@ -979,12 +979,12 @@ type_qualifier
   : CONST
   {
     parser.yy.R("type_qualifier : CONST");
-    $$ = new playground.c.lib.Node("const", yytext, yylineno);
+    $$ = 'const';
   }
   | VOLATILE
   {
     parser.yy.R("type_qualifier : VOLATILE");
-    $$ = new playground.c.lib.Node("volatile", yytext, yylineno);
+    $$ = 'volatile';
   }
   ;
 
@@ -1075,26 +1075,22 @@ pointer
   : '*'
   {
     parser.yy.R("pointer : '*'");
-    $$ = new playground.c.lib.Node("pointer", yytext, yylineno);
+    $$ = '*';
   }
   | '*' type_qualifier_list
   {
     parser.yy.R("pointer : '*' type_qualifier_list");
-    $$ = new playground.c.lib.Node("pointer", yytext, yylineno);
-    $$.children.push($2);
+    $$ = ['*', $2];
   }
   | '*' pointer
   {
     parser.yy.R("pointer : '*' pointer");
-    $$ = new playground.c.lib.Node("pointer", yytext, yylineno);
-    $$.children.push($2);
+    $$ = ['*', $2];
   }
   | '*' type_qualifier_list pointer
   {
     parser.yy.R("pointer : '*' type_qualifier_list pointer");
-    $$ = new playground.c.lib.Node("pointer", yytext, yylineno);
-    $$.children.push($2);
-    $$.children.push($3);
+    $$ = ['*', $2, $3];
   }
   ;
 
@@ -1400,22 +1396,17 @@ labeled_statement
   : identifier ':' statement
   {
     parser.yy.R("labeled_statement : identifier ':' statement");
-    $$ = new playground.c.lib.Node("label", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($3);
+    $$ = [$1, ':', $3];
   }
   | CASE constant_expression ':' statement
   {
     parser.yy.R("labeled_statement : CASE constant_expression ':' statement");
-    $$ = new playground.c.lib.Node("case", yytext, yylineno);
-    $$.children.push($2);
-    $$.children.push($4);       // this child is moved in statement_list
+    $$ = ['case', $2, ':', $4];
   }
   | DEFAULT ':' statement
   {
     parser.yy.R("labeled_statement : DEFAULT ':' statement");
-    $$ = new playground.c.lib.Node("default", yytext, yylineno);
-    $$.children.push($3);       // this child is moved in statement_list
+      $$ = ['default', ':', $3];
   }
   ;
 
@@ -1469,37 +1460,7 @@ statement_list
   : statement
   {
     parser.yy.R("statement_list : statement");
-    $$ = new playground.c.lib.Node("statement_list", yytext, yylineno);
-    $$.children.push($1);
-
-    // Recursively move the statement portion of 'case n : statement' up to
-    // the statement list
-    (function(thisNode, listNode)
-    {
-      var             index;
-
-      switch(thisNode.type)
-      {
-        case "case" :
-          index = 1;
-          break;
-
-        case "default" :
-          index = 0;
-          break;
-
-        default :
-          // Not case nor default, so we have nothing to do
-          return;
-      }
-
-      // Move this case's statement to the statement list
-      listNode.children.push(thisNode.children[index]);
-      thisNode.children.length = 1;
-
-      // It's a case. Call recursively, to handle child being another case.
-      arguments.callee(thisNode.children[index], listNode);
-    })($1, $$);
+    $$ = $1;
   }
   | statement_list statement
   {
@@ -1554,12 +1515,12 @@ expression_statement
   : ';'
   {
     parser.yy.R("expression_statement : ';'");
-    $$ = playground.c.lib.Node.getNull(yylineno);
+    $$ = ';';
   }
   | expression ';'
   {
     parser.yy.R("expression_statement : expression ';'");
-    $$ = $1;
+    $$ = [$1, ';'];
   }
   ;
 
@@ -1775,203 +1736,26 @@ type_name_token
 constant
   : CONSTANT_HEX
   {
-    var bUnsigned;
-    var bLong;
-
     parser.yy.R("constant : CONSTANT_HEX (" + yytext + ")");
 
-    $$ = new playground.c.lib.Node("constant", yytext, yylineno);
-
-    bUnsigned = yytext.toLowerCase().indexOf("u") != -1;
-    bLong     = yytext.toLowerCase().indexOf("l") != -1;
-    if (bUnsigned && bLong)
-    {
-      $$.numberType = playground.c.lib.Node.NumberType.ULong;
-    }
-    else if (bUnsigned)
-    {
-      $$.numberType = playground.c.lib.Node.NumberType.ULong;
-    }
-    else if (bLong)
-    {
-      $$.numberType = playground.c.lib.Node.NumberType.Long;
-    }
-    else
-    {
-      $$.numberType = playground.c.lib.Node.NumberType.Int;
-    }
-
-    $$.value = parseInt(yytext, 16);
+    $$ = $1;
   }
   | CONSTANT_OCTAL
   {
-    var             bUnsigned;
-    var             bLong;
-
     parser.yy.R("constant : CONSTANT_OCTAL (" + yytext + ")");
 
-    $$ = new playground.c.lib.Node("constant", yytext, yylineno);
-
-    bUnsigned = yytext.toLowerCase().indexOf("u") != -1;
-    bLong     = yytext.toLowerCase().indexOf("l") != -1;
-    if (bUnsigned && bLong)
-    {
-      $$.numberType = playground.c.lib.Node.NumberType.ULong;
-    }
-    else if (bUnsigned)
-    {
-      $$.numberType = playground.c.lib.Node.NumberType.ULong;
-    }
-    else if (bLong)
-    {
-      $$.numberType = playground.c.lib.Node.NumberType.Long;
-    }
-    else
-    {
-      $$.numberType = playground.c.lib.Node.NumberType.Int;
-    }
-
-    $$.value = parseInt(yytext, 8);
+    $$ = $1;
   }
   | CONSTANT_DECIMAL
   {
-    var             bUnsigned;
-    var             bLong;
-
     parser.yy.R("constant : CONSTANT_DECIMAL (" + yytext + ")");
 
-    $$ = new playground.c.lib.Node("constant", yytext, yylineno);
-
-    bUnsigned = yytext.toLowerCase().indexOf("u") != -1;
-    bLong     = yytext.toLowerCase().indexOf("l") != -1;
-    if (bUnsigned && bLong)
-    {
-      $$.numberType = playground.c.lib.Node.NumberType.ULong;
-    }
-    else if (bUnsigned)
-    {
-      $$.numberType = playground.c.lib.Node.NumberType.ULong;
-    }
-    else if (bLong)
-    {
-      $$.numberType = playground.c.lib.Node.NumberType.Long;
-    }
-    else
-    {
-      $$.numberType = playground.c.lib.Node.NumberType.Int;
-    }
-
-    $$.value = parseInt(yytext, 10);
+    $$ = $1;
   }
   | CONSTANT_CHAR
   {
-    var             value;
-    var             match;
-
     parser.yy.R("constant : CONSTANT_CHAR (" + yytext + ")");
-
-    // We don't support long characters, at present
-    if (yytext.charAt(0) == "L")
-    {
-      throw new Error("Line " + yylineno + ": " +
-                      "Long characters (characters of the form L'x') " +
-                      "are not currently supported.");
-    }
-
-    $$ = new playground.c.lib.Node("constant", yytext, yylineno);
-
-    // If the length is exactly 3, it's a single quote, simple character, and
-    // another single quote.
-    if (yytext.length == 3)
-    {
-      value = yytext.charCodeAt(1);
-    }
-
-    // Try to match against the possible special escape sequences
-    if (typeof value == "undefined")
-    {
-      [
-        [ /^'\\0'$/,   0 ],                    // null
-        [ /^'\\a'$/,   7 ],                    // bell (alert)
-        [ /^'\\b'$/,   8 ],                    // backspace
-        [ /^'\\f'$/,  12 ],                    // formfeed
-        [ /^'\\n'$/,  10 ],                    // newline
-        [ /^'\\r'$/,  13 ],                    // carriage return
-        [ /^'\\t'$/,   9 ],                    // tab
-        [ /^'\\v'$/,  11 ],                    // vertical tab
-        [ /^'\\''$/,  39 ],                    // single quote
-        [ /^'\\"'$/,  34 ],                    // double quote
-        [ /^'\\\\'$/, 92 ],                    // backslash
-        [ /^'\\\?'$/, 63 ]                     // literal question mark
-      ].forEach(
-        function(escape)
-        {
-          if (typeof value != "undefined")
-          {
-            return;
-          }
-
-          if (escape[0].test(yytext))
-          {
-            value = escape[1];
-          }
-        });
-    }
-
-    // If it wasn't special, then see if it's an octal character
-    if (typeof value == "undefined" &&
-        (match = /'\\([0-7]{3})'/.exec(yytext)))
-    {
-      value = parseInt(match[1], 8);
-    }
-
-    // If it wasn't special or octal, see if it's a hex character
-    if (typeof value == "undefined" &&
-        (match = /'\\([0-9a-fA-F]{2})'/.exec(yytext)))
-    {
-      value = parseInt(match[1], 16);
-    }
-
-    // If it wasn't special or octal or hex, see if it's a long hex character
-    // NOT IMPLEMENTED
-    if (false &&
-        typeof value == "undefined" &&
-        (match = /'\\([0-9a-fA-F]{4})'/.exec(yytext)))
-    {
-      value = parseInt(match[1], 16);
-    }
-
-    // If it's none of those, and the length is exactly 4, (a single quote, a
-    // backslash, some character, and another single quote), then convert the
-    // "some character" to its ASCII value.
-    if (typeof value == "undefined" &&
-        yytext.length === 4 &&
-        yytext[1] == '\\')
-    {
-      value = yytext.charCodeAt(2);
-    }
-
-    // If we still haven't converted it, there's something wrong
-    if (typeof value != "undefined")
-    {
-      // Save the converted value
-      $$.numberType = playground.c.lib.Node.NumberType.Int;
-      $$.value = value;
-    }
-    else if (yytext.length > 3 &&
-             yytext[1] == '/')
-    {
-      playground.c.lib.Node.getError().parseError(
-        "Unrecognized single-quoted character (" + yytext + "). " +
-        "Maybe the forward slash (/) is supposed to be a backslash (\\)?",
-        { line : yylineno });
-    }
-    else
-    {
-      playground.c.lib.Node.getError().parseError(
-        "Unrecognized single-quoted character (" + yytext + ")",
-        { line : yylineno });
-    }
+    $$ = $1;
   }
   | CONSTANT_FLOAT
   {
@@ -1992,7 +1776,7 @@ ellipsis
   : ELLIPSIS
   {
     parser.yy.R("ellipsis : ELLIPSIS");
-    $$ = new playground.c.lib.Node("ellipsis", yytext, yylineno);
+    $$ = '...';
   }
   ;
 
@@ -2000,10 +1784,7 @@ lbrace_scope
   : lbrace
   {
     parser.yy.R("lbrace_scope : lbrace");
-
-    // Create a symbol table with an arbitrary (for now) name.
-    new playground.c.lib.Symtab(
-      playground.c.lib.Symtab.getCurrent(), null, yylineno + 1);
+    $$ = $1;
   }
   ;
 
@@ -2011,9 +1792,7 @@ rbrace_scope
   : rbrace
   {
     parser.yy.R("rbrace_scope : rbrace");
-
-    // Pop this block's symbol table from the stack
-    playground.c.lib.Symtab.popStack();
+    $$ = $1;
   }
   ;
 
