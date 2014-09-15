@@ -194,9 +194,7 @@ cast_expression
   | '(' type_name ')' cast_expression
   {
     parser.yy.R("cast_expression : '(' type_name ')' cast_expression");
-    $$ = new playground.c.lib.Node("cast_expression", yytext, yylineno);
-    $$.children.push($2);
-    $$.children.push($4);
+    $$ = ['(', $2, ')', $4];
   }
   ;
 
@@ -210,25 +208,19 @@ multiplicative_expression
   {
     parser.yy.R("multiplicative_expression : " +
       "multiplicative_expression '*' cast_expression");
-    $$ = new playground.c.lib.Node("multiply", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($3);
+    $$ = [$1, '*', $3];
   }
   | multiplicative_expression '/' cast_expression
   {
     parser.yy.R("multiplicative_expression : " +
       "multiplicative_expression '/' cast_expression");
-    $$ = new playground.c.lib.Node("divide", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($3);
+    $$ = [$1, '/', $3];
   }
   | multiplicative_expression '%' cast_expression
   {
     parser.yy.R("multiplicative_expression : " +
       "multiplicative_expression '%' cast_expression");
-    $$ = new playground.c.lib.Node("mod", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($3);
+    $$ = [$1, '%', $3];
   }
   ;
 
@@ -242,17 +234,13 @@ additive_expression
   {
     parser.yy.R("additive_expression : " +
       "additive_expression '+' multiplicative_expression");
-    $$ = new playground.c.lib.Node("add", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($3);
+    $$ = [$1, '+', $3];
   }
   | additive_expression '-' multiplicative_expression
   {
     parser.yy.R("additive_expression : " +
       "additive_expression '-' multiplicative_expression");
-    $$ = new playground.c.lib.Node("subtract", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($3);
+    $$ = [$1, '-', $3];
   }
   ;
 
@@ -265,16 +253,12 @@ shift_expression
   | shift_expression LEFT_OP additive_expression
   {
     parser.yy.R("shift_expression : shift_expression LEFT_OP additive_expression");
-    $$ = new playground.c.lib.Node("left-shift", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($3);
+    $$ = [$1, '<<', $3];
   }
   | shift_expression RIGHT_OP additive_expression
   {
     parser.yy.R("shift_expression : shift_expression RIGHT_OP additive_expression");
-    $$ = new playground.c.lib.Node("right-shift", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($3);
+    $$ = [$1, '>>', $3];
   }
   ;
 
@@ -287,30 +271,22 @@ relational_expression
   | relational_expression '<' shift_expression
   {
     parser.yy.R("relational_expression : relational_expression '<' shift_expression");
-    $$ = new playground.c.lib.Node("less-than", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($3);
+    $$ = [$1, '<', $3];
   }
   | relational_expression '>' shift_expression
   {
     parser.yy.R("relational_expression : relational_expression '>' shift_expression");
-    $$ = new playground.c.lib.Node("greater-than", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($3);
+    $$ = [$1, '>', $3];
   }
   | relational_expression LE_OP shift_expression
   {
     parser.yy.R("relational_expression : relational_expression LE_OP shift_expression");
-    $$ = new playground.c.lib.Node("less-equal", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($3);
+    $$ = [$1, '<=', $3];
   }
   | relational_expression GE_OP shift_expression
   {
     parser.yy.R("relational_expression : relational_expression GE_OP shift_expression");
-    $$ = new playground.c.lib.Node("greater-equal", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($3);
+    $$ = [$1, '>=', $3];
   }
   ;
 
@@ -323,16 +299,12 @@ equality_expression
   | equality_expression EQ_OP relational_expression
   {
     parser.yy.R("equality_expression : equality_expression EQ_OP relational_expression");
-    $$ = new playground.c.lib.Node("equal", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($3);
+    $$ = [$1, '==', $3];
   }
   | equality_expression NE_OP relational_expression
   {
     parser.yy.R("equality_expression : equality_expression NE_OP relational_expression");
-    $$ = new playground.c.lib.Node("not-equal", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($3);
+    $$ = [$1, '!=', $3];
   }
   ;
 
@@ -345,9 +317,7 @@ and_expression
   | and_expression '&' equality_expression
   {
     parser.yy.R("and_expression : and_expression '&' equality_expression");
-    $$ = new playground.c.lib.Node("bit-and", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($3);
+    $$ = [$1, '&', $3];
   }
   ;
 
@@ -360,9 +330,7 @@ exclusive_or_expression
   | exclusive_or_expression '^' and_expression
   {
     parser.yy.R("exclusive_or_expression : exclusive_or_expression '^' and_expression");
-    $$ = new playground.c.lib.Node("exclusive-or", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($3);
+    $$ = [$1, '^', $3];
   }
   ;
 
@@ -376,9 +344,7 @@ inclusive_or_expression
   {
     parser.yy.R("inclusive_or_expression : " +
       "inclusive_or_expression '|' exclusive_or_expression");
-    $$ = new playground.c.lib.Node("bit-or", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($3);
+    $$ = [$1, '|', $3];
   }
   ;
 
@@ -391,9 +357,7 @@ logical_and_expression
   | logical_and_expression AND_OP inclusive_or_expression
   {
     parser.yy.R("logical_and_expression : logical_and_expression AND_OP inclusive_or_expression");
-    $$ = new playground.c.lib.Node("and", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($3);
+    $$ = [$1, '&&', $3];
   }
   ;
 
@@ -407,9 +371,7 @@ logical_or_expression
   {
     parser.yy.R("logical_or_expression : " +
       "logical_or_expression OR_OP logical_and_expression");
-    $$ = new playground.c.lib.Node("or", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($3);
+    $$ = [$1, '||', $3];
   }
   ;
 
@@ -423,10 +385,7 @@ conditional_expression
   {
     parser.yy.R("conditional_expression : " +
       "logical_or_expression '?' expression ':' conditional_expression");
-    $$ = new playground.c.lib.Node("trinary", yytext, yylineno);
-    $$.children.push($1);
-    $$.children.push($3);
-    $$.children.push($5);
+    $$ = [$1, '?', $3, ':', $5];
   }
   ;
 
@@ -440,9 +399,7 @@ assignment_expression
   {
     parser.yy.R("assignment_expression : " +
       "unary_expression assignment_operator assignment_expression");
-    $$ = $2;
-    $$.children.push($1);
-    $$.children.push($3);
+    $$ = [$1, $3, $3];
   }
   ;
 
@@ -450,57 +407,57 @@ assignment_operator
   : '='
   {
     parser.yy.R("assignment_operator : '='");
-    $$ = new playground.c.lib.Node("assign", yytext, yylineno);
+    $$ = '=';
   }
   | MUL_ASSIGN
   {
     parser.yy.R("assignment_operator : MUL_ASSIGN");
-    $$ = new playground.c.lib.Node("multiply-assign", yytext, yylineno);
+    $$ = '*=';
   }
   | DIV_ASSIGN
   {
     parser.yy.R("assignment_operator : DIV_ASSIGN");
-    $$ = new playground.c.lib.Node("divide-assign", yytext, yylineno);
+    $$ = '/=';
   }
   | MOD_ASSIGN
   {
     parser.yy.R("assignment_operator : MOD_ASSIGN");
-    $$ = new playground.c.lib.Node("mod-assign", yytext, yylineno);
+    $$ = '%=';
   }
   | ADD_ASSIGN
   {
     parser.yy.R("assignment_operator : ADD_ASSIGN");
-    $$ = new playground.c.lib.Node("add-assign", yytext, yylineno);
+    $$ = '+=';
   }
   | SUB_ASSIGN
   {
     parser.yy.R("assignment_operator : SUB_ASSIGN");
-    $$ = new playground.c.lib.Node("subtract-assign", yytext, yylineno);
+    $$ = '-=';
   }
   | LEFT_ASSIGN
   {
     parser.yy.R("assignment_operator : LEFT_ASSIGN");
-    $$ = new playground.c.lib.Node("left-shift-assign", yytext, yylineno);
+    $$ = '<<=';
   }
   | RIGHT_ASSIGN
   {
     parser.yy.R("assignment_operator : RIGHT_ASSIGN");
-    $$ = new playground.c.lib.Node("right-shift-assign", yytext, yylineno);
+    $$ = '>>=';
   }
   | AND_ASSIGN
   {
     parser.yy.R("assignment_operator : AND_ASSIGN");
-    $$ = new playground.c.lib.Node("bit-and-assign", yytext, yylineno);
+    $$ = '&=';
   }
   | XOR_ASSIGN
   {
     parser.yy.R("assignment_operator : XOR_ASSIGN");
-    $$ = new playground.c.lib.Node("xor-assign", yytext, yylineno);
+    $$ = '^=';
   }
   | OR_ASSIGN
   {
     parser.yy.R("assignment_operator : OR_ASSIGN");
-    $$ = new playground.c.lib.Node("bit-or-assign", yytext, yylineno);
+    $$ = '|=';
   }
   ;
 
@@ -508,14 +465,12 @@ expression
   : assignment_expression
   {
     parser.yy.R("expression : assignment_expression");
-    $$ = new playground.c.lib.Node("expression", yytext, yylineno);
-    $$.children.push($1);
+    $$ = $1;
   }
   | expression ',' assignment_expression
   {
     parser.yy.R("expression : expression ',' assignment_expression");
-    $$ = $1;
-    $$.children.push($3);
+    $$ = [$1, ',', $3];
   }
   ;
 
