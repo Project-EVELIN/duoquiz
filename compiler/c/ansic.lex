@@ -74,22 +74,22 @@ horizontal_white [ ]|{h_tab}
 "signed"		{ return(parser.symbols_.SIGNED); }
 "sizeof"		{ return(parser.symbols_.SIZEOF); }
 "static"		{ return(parser.symbols_.STATIC); }
-"struct"		{
+"struct"		{%
               parser.yy.bSawStruct = true;
               return(parser.symbols_.STRUCT);
-            }
+            %}
 "switch"		{ return(parser.symbols_.SWITCH); }
 "typedef"		{ return(parser.symbols_.TYPEDEF); }
-"union" 		{
+"union" 		{%
               parser.yy.bSawStruct = true;
               return(parser.symbols_.UNION);
-            }
+            %}
 "unsigned"	{ return(parser.symbols_.UNSIGNED); }
 "void"			{ return(parser.symbols_.VOID); }
 "volatile"	{ return(parser.symbols_.VOLATILE); }
 "while"			{ return(parser.symbols_.WHILE); }
 
-{identifier}	{
+{identifier}	{%
                 var isType;
 
                 isType = parser.yy.isType(yytext);
@@ -97,7 +97,7 @@ horizontal_white [ ]|{h_tab}
                         ! parser.yy.bSawStruct
                         ? parser.symbols_.TYPE_NAME
                         : parser.symbols_.IDENTIFIER);
-                        }
+                        %}
 
 {floating_constant}		        { return(parser.symbols_.CONSTANT_FLOAT); }
 {hex_constant}			          { return(parser.symbols_.CONSTANT_HEX); }
@@ -164,7 +164,7 @@ horizontal_white [ ]|{h_tab}
 "and"						{ return(parser.symbols_.AND_OP); }
 "bitor"					{ return('|'); }
 "or"						{ return(parser.symbols_.OR_OP); }
-"xor"						{ return('^');
+"xor"						{ return('^'); }
 "compl"					{ return('~'); }
 "bitand"				{ return('&'); }
 "and_eq"				{ return(parser.symbols_.AND_ASSIGN); }
@@ -174,41 +174,42 @@ horizontal_white [ ]|{h_tab}
 "not_eq"				{ return(parser.symbols_.NE_OP); }
 
 /* lex.preprocessor */
-<PREPR>{NL}												%{ this.begin("INITIAL"); return "PP_NEWLINE";%}
-<PREPR>\\													this.begin("WRAP_PREP")
+<PREPR>{NL}												{% this.begin("INITIAL"); return "PP_NEWLINE";%}
+<PREPR>\\													{this.begin("WRAP_PREP");}
 <PREPR>({horizontal_white})				{ }
-<PREPR>({horizontal_white})*"("		return "PP_LPAREN"
+<PREPR>({horizontal_white})*"("		{return "PP_LPAREN";}
 
-<PREPR>["]												return "PP_QUOTE"
-<PREPR>"include"									return "PP_INCLUDE"
-<PREPR>"undef"										return "PP_UNDEF"
-<PREPR>"line"											return "PP_LINE"
-<PREPR>"pragma"										return "PP_PRAGMA"
-<PREPR>"define"  									return "PP_DEFINE"
-<PREPR>"defined"									return "PP_DEFINED"
-<PREPR>"ifdef"										return "PP_IFDEF"
-<PREPR>"ifndef"										return "PP_IFNDEF"
-<PREPR>"if"												return "PP_IF"
-<PREPR>"else"											return "PP_ELSE"
-<PREPR>"endif"										return "PP_ENDIF"
-<PREPR>"elif"											return "PP_ELIF"
-<PREPR>"error"										return "PP_ERROR"
-<PREPR>{identifier}								return "IDENTIFIER"
-<PREPR>{decimal_constant}					return "DECIMAL_LITERAL"
-<PREPR>{octal_constant}						return "OCTAL_LITERAL"
-<PREPR>{hex_constant}							return "HEXADECIMAL_LITERAL"
-<PREPR>{floating_constant}				return "FLOATING_LITERAL"
-<PREPR>"L"?[']{c_char}+[']				return "CHARACTER_LITERAL"
-<PREPR>"L"?["]{s_char}*["]				return "STRING_LITERAL"
-<PREPR>["][^\n]*["]								return "PP_QCHARSEQUENCE"
-<PREPR>"<"[^\n]*">"								return "PP_HCHARSEQUENCE"
-<PREPR>.													return "PP_ANYCHAR"
+<PREPR>["]												{return "PP_QUOTE";}
+<PREPR>"include"									{return "PP_INCLUDE";}
+<PREPR>"undef"										{return "PP_UNDEF";}
+<PREPR>"line"											{return "PP_LINE";}
+<PREPR>"pragma"										{return "PP_PRAGMA";}
+<PREPR>"define"  									{return "PP_DEFINE";}
+<PREPR>"defined"									{return "PP_DEFINED";}
+<PREPR>"ifdef"										{return "PP_IFDEF";}
+<PREPR>"ifndef"										{return "PP_IFNDEF";}
+<PREPR>"if"												{return "PP_IF";}
+<PREPR>"else"											{return "PP_ELSE";}
+<PREPR>"endif"										{return "PP_ENDIF";}
+<PREPR>"elif"											{return "PP_ELIF";}
+<PREPR>"error"										{return "PP_ERROR";}
+<PREPR>{identifier}								{return "IDENTIFIER";}
+<PREPR>{decimal_constant}					{return "DECIMAL_LITERAL";}
+<PREPR>{octal_constant}						{return "OCTAL_LITERAL";}
+<PREPR>{hex_constant}							{return "HEXADECIMAL_LITERAL";}
+<PREPR>{floating_constant}				{return "FLOATING_LITERAL";}
+<PREPR>"L"?[']{c_char}+[']				{return "CHARACTER_LITERAL";}
+<PREPR>"L"?["]{s_char}*["]				{return "STRING_LITERAL";}
+<PREPR>["][^\n]*["]								{return "PP_QCHARSEQUENCE";}
+<PREPR>"<"[^\n]*">"								{return "PP_HCHARSEQUENCE";}
+<PREPR>.													{return "PP_ANYCHAR";}
 
-<WRAP_PREP>\n											this.begin("PREPR")
-<WRAP_PREP>{identifier}						return "IDENTIFIER"
-/* stripping out comments */
-<CPP_COMMENT>\n 									this.begin("INITIAL")
-<CPP_COMMENT>.										return("")
-<C_COMMENT>"*/"										this.begin("INITIAL")
-<C_COMMENT>.											return("")
+<WRAP_PREP>\n											{this.begin("PREPR");}
+<WRAP_PREP>{identifier}						{return "IDENTIFIER";}
+
+<CPP_COMMENT>\n 									{this.begin("INITIAL");}
+<CPP_COMMENT>.										{return("");}
+<C_COMMENT>"*/"										{this.begin("INITIAL");}
+<C_COMMENT>.											{return("");}
+
 %%

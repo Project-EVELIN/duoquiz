@@ -10,7 +10,7 @@ ANSIC			= ./ansic.js
 
 all:	ansic
 
-ansic:	cpp.jison cpp.lex
+ansic:	ansic.jison ansic.lex
 	node cli-wrapper.js -m commonjs -t true -o $(ANSIC) ansic.jison ansic.lex
 	@echo ""
 	@echo "------------------------------"
