@@ -11,7 +11,7 @@ ANSIC			= ./ansic.js
 all:	ansic
 
 ansic:	ansic.jison ansic.lex
-	node cli-wrapper.js -m commonjs -t true -o  $(ANSIC) ansic.jison ansic.lex
+	node cli-wrapper.js -m amd -t true -o  $(ANSIC) ansic.jison ansic.lex
 	@echo ""
 	@echo "------------------------------"
 	@echo "For testing, run 'nodejs ./ansic.js FILE.c'."

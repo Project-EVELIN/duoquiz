@@ -216,8 +216,8 @@ horizontal_white [ ]|{h_tab}
 <WRAP_PREP>{identifier}						{return "IDENTIFIER";}
 
 <CPP_COMMENT>\n 									{this.begin("INITIAL");}
-<CPP_COMMENT>.*									{return(parser.symbols_.CPP_COMMENT);}
+<CPP_COMMENT>.*									  {return(parser.symbols_.CPP_COMMENT);}
 <C_COMMENT>"*/"										{this.begin("INITIAL");}
-<C_COMMENT>.*										{return(parser.symbols_.C_COMMENT);}
+<C_COMMENT>.*										   {return(parser.symbols_.C_COMMENT);}
 
 %%

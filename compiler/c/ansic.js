@@ -1,5 +1,4 @@
-/* Jison generated parser */
-var ansic = (function(){
+define([], function(){
 var parser = {trace: function trace() {
         Jison.print.apply(null, arguments);
     },
@@ -1856,25 +1855,6 @@ parse: function parse(input) {
 
     return true;
 }};
-
-
-parser.yy.R = function(entry) {
-  console.log(entry);
-};
-
-
-parser.yy.bSawStruct = false;
-
-parser.yy.typedefMode = 0;
-parser.yy.types = {};
-
-parser.yy.isType = function(type) {
-  if(!type || !type.length || type.length === 0) {
-    return false;
-  }
-
-  return parser.yy.types.hasOwnProperty(type);
-};
 /* Jison generated lexer */
 var lexer = (function(){
 var lexer = ({EOF:1,
@@ -2366,25 +2346,5 @@ lexer.conditions = {"C_COMMENT":{"rules":[146,147],"inclusive":false},"CPP_COMME
 ;
 return lexer;})();
 parser.lexer = lexer;
-function Parser () { this.yy = {}; }Parser.prototype = parser;parser.Parser = Parser;
-return new Parser;
-})();
-if (typeof require !== 'undefined' && typeof exports !== 'undefined') {
-exports.parser = ansic;
-exports.Parser = ansic.Parser;
-exports.parse = function () { return ansic.parse.apply(ansic, arguments); };
-exports.main = function commonjsMain(args) {
-    if (!args[1])
-        throw new Error('Usage: '+args[0]+' FILE');
-    var source, cwd;
-    if (typeof process !== 'undefined') {
-        source = require('fs').readFileSync(require('path').resolve(args[1]), "utf8");
-    } else {
-        source = require("file").path(require("file").cwd()).join(args[1]).read({charset: "utf-8"});
-    }
-    return exports.parser.parse(source);
-};
-if (typeof module !== 'undefined' && require.main === module) {
-  exports.main(typeof process !== 'undefined' ? process.argv.slice(1) : require("system").args);
-}
-}
+return parser;
+});
