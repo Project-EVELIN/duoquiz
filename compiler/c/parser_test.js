@@ -11,17 +11,19 @@ document.body.onload = function () {
 
   var DEBUG_C = true;
 
+  /* all working */
   var input_definitions = [
   "int a;",
   "extern const int c = 1;",
   "int f(int x) { return x+a; }",
   "struct S { int a; int b; }; ",
-  "struct X {int x; const int y; x(0) { }};",
+  "struct X {int x; const int y;};",
   "enum { up, down };",
   "typedef short int small;",
-  '"char mesg[5] = "help!"',
+  'char mesg[5] = "help!";',
  ];
 
+  /* access to struct with pointer-> and simple statement not working */
   var structs = [
   "struct s { int i; const int ci; };",
   "struct datum\n { int tag;\char monat[10];\nint jahr; };",
@@ -30,26 +32,29 @@ document.body.onload = function () {
   "const struct s cs;",
   "volatile struct s vs;",
   "struct s t1 = { 0 };",
-  "t1->ndd = 4;",
+  "k = t1->n;",
   "b = 4;",
  ];
 
+  /* extern typedef definition not working */
   var input_declarations = [
   "extern int a;",
   "extern const int c;",
   "int f(int);",
   "struct S;",
   "typedef int Int;",
-  "extern X anotherX;",
  ];
 
+  var typedef =
+    "typedef struct tnode TNODE;\nstruct tnode {\nint count;\nTNODE *left, *right;\n};\nTNODE s, *sp;";
+
+  var input_for = 'int i;\nfor(i=0; i < 10;)\n{\nprintf("%d", i);\n}';
 
   var input_decl = "static char c = 's';";
   var input_prepmain = "#include <stdio.h>\nint main(){}";
-  var input_main = "int main(){return 0;}";
+  var input_main = ";int main(void){return 0;}";
   var input_prep = "#include <stdio.h>\n#define MAX 32\n";
   var input_empty_declaration = ";";
-  var input_extern_linkage_specification = "extern \"string-literal\" {}";
   var input = structs;
 
   if (DEBUG_C) {
@@ -77,19 +82,24 @@ document.body.onload = function () {
         parse_result = ansic.parse(input);
         console.log("\n\nParsing ansic.js result: ", flatten(parse_result));
       } catch (e) {
+        console.log(e.message);
         console.log(e);
       }
     } else {
       var i;
       for (i = 0; i < input.length; i++) {
         console.log(
-          "\n===========================Start==============================");
+          "\n========================Start==============================");
+        console.log("\n" + input[i]);
+        console.log(
+          "\n===========================================================");
         try {
           parse_result = ansic.parse(input[i]);
           console.log("Parsing ansic.js result: ", flatten(parse_result),
             "input: " +
             input[i]);
         } catch (e) {
+          console.log(e.message);
           console.log(e);
         }
         console.log(

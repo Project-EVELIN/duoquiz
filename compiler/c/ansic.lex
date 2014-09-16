@@ -90,7 +90,12 @@ horizontal_white [ ]|{h_tab}
 "unsigned"	{ return(parser.symbols_.UNSIGNED); }
 "void"			{ return(parser.symbols_.VOID); }
 "volatile"	{ return(parser.symbols_.VOLATILE); }
+"restrict"	{ return(parser.symbols_.RESTRICT); }
 "while"			{ return(parser.symbols_.WHILE); }
+"_Alignof"	{ return(parser.symbols_._ALIGNOF); }
+"_Alignas"	{ return(parser.symbols_._ALIGNAS); }
+"_Noreturn"	{ return(parser.symbols_._NORETURN); }
+"inline"	{ return(parser.symbols_.INLINE); }
 
 {identifier}	{
                 var isType;

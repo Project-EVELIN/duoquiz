@@ -8,15 +8,18 @@
  */
 
 %token CONSTANT_HEX CONSTANT_OCTAL CONSTANT_DECIMAL CONSTANT_CHAR CONSTANT_FLOAT
-%token IDENTIFIER STRING_LITERAL SIZEOF
+%token IDENTIFIER STRING_LITERAL SIZEOF _ALIGNOF
 %token PTR_OP INC_OP DEC_OP LEFT_OP RIGHT_OP LE_OP GE_OP EQ_OP NE_OP
 %token AND_OP OR_OP MUL_ASSIGN DIV_ASSIGN MOD_ASSIGN ADD_ASSIGN
 %token SUB_ASSIGN LEFT_ASSIGN RIGHT_ASSIGN AND_ASSIGN
 %token XOR_ASSIGN OR_ASSIGN TYPE_NAME
 
+%token INLINE _NORETURN
+%token _ALIGNAS
+
 %token TYPEDEF EXTERN STATIC AUTO REGISTER
 %token CHAR SHORT INT LONG SIGNED UNSIGNED FLOAT DOUBLE CONST VOLATILE VOID
-%token STRUCT UNION ENUM ELLIPSIS
+%token STRUCT UNION ENUM ELLIPSIS RESTRICT
 
 %token CASE DEFAULT IF ELSE SWITCH WHILE DO FOR GOTO CONTINUE BREAK RETURN
 
@@ -63,6 +66,7 @@ primary_expression
     }
   ;
 
+/* standard p.79 */
 postfix_expression
   : primary_expression
     {
@@ -104,6 +108,16 @@ postfix_expression
     {
       parser.yy.R("postfix_expression : postfix_expression DEC_OP");
       $$ = [$1, '--'];
+    }
+  | '(' type_name ')' lbrace initializer_list rbrace
+    {
+      parser.yy.R("postfix_expression : '(' type_name ')' lbrace initializer_list rbrace");
+      $$ = ['(', $2, ')', '{', $5, '}'];
+    }
+  | '(' type_name ')' lbrace initializer_list rbrace ','
+    {
+      parser.yy.R("postfix_expression : '(' type_name ')' lbrace initializer_list rbrace ','");
+      $$ = ['(', $2, ')', '{', $5, '}', ','];
     }
   ;
 
@@ -151,6 +165,11 @@ unary_expression
   {
     parser.yy.R("unary_expression : SIZEOF '(' type_name ')'");
     $$ = ['sizeof', '(', $3, ')'];
+  }
+  | _ALIGNOF '(' type_name ')'
+  {
+    parser.yy.R("unary_expression : _ALIGNOF '(' type_name ')'");
+    $$ = ['_Alignof', '(', $3, ')'];
   }
   ;
 
@@ -516,6 +535,7 @@ maybe_typedef_mode
   }
   ;
 
+/* standard p.108 */
 declaration_specifiers
   : storage_class_specifier
   {
@@ -547,6 +567,54 @@ declaration_specifiers
   {
     parser.yy.R("declaration_specifiers : type_qualifier declaration_specifiers");
     $$ = [$1, $2];
+  }
+  | function_specifier
+  {
+    parser.yy.R("declaration_specifiers : function_specifier");
+    $$ = $1;
+  }
+  | function_specifier declaration_specifiers
+  {
+    parser.yy.R("declaration_specifiers : function_specifier declaration_specifiers");
+    $$ = [$1, $2];
+  }
+  | alignment_specifier
+  {
+    parser.yy.R("declaration_specifiers : alignment_specifier");
+    $$ = $1;
+  }
+  | alignment_specifier declaration_specifiers
+  {
+    parser.yy.R("declaration_specifiers : alignment_specifier declaration_specifiers");
+    $$ = [$1, $2];
+  }
+  ;
+
+/* standard p. 125 */
+function_specifier
+  : INLINE
+  {
+    parser.yy.R("function_specifier : INLINE");
+    $$ = 'inline';
+  }
+  | _NORETURN
+  {
+    parser.yy.R("function_specifier : _NORETURN");
+    $$ = '_Noreturn';
+  }
+  ;
+
+/* standard p. 127 */
+alignment_specifier
+  : _ALIGNAS '(' type_name ')'
+  {
+    parser.yy.R("alignment_specifier : _ALIGNAS '(' type_name ')'");
+    $$ = ['_Alignas', '(', $3, ')'];
+  }
+  | _ALIGNAS '(' constant_expression ')'
+  {
+    parser.yy.R("alignment_specifier : _ALIGNAS '(' constant_expression ')'");
+    $$ = ['_Alignas', '(', $3, ')'];
   }
   ;
 
@@ -669,44 +737,30 @@ type_specifier
   ;
 
 struct_or_union_specifier
-  : struct_or_union ns_struct identifier ns_normal lbrace struct_declaration_list rbrace
+  : struct_or_union identifier lbrace struct_declaration_list rbrace
   {
     parser.yy.R("struct_or_union_specifier : " +
       "struct_or_union identifier lbrace struct_declaration_list rbrace");
-    $$ = [$1, $3, '{', $6, '}'];
+    $$ = [$1, $2, '{', $4, '}'];
 
     // Add a symbol table entry for this struct (a type)
-    parser.yy.types[$3.value] = $1.value;
+    parser.yy.types[$2.value] = $1.value;
+    parser.yy.bSawStruct = false;
   }
-  | struct_or_union ns_struct ns_normal lbrace struct_declaration_list rbrace
+  | struct_or_union lbrace struct_declaration_list rbrace
   {
     parser.yy.R("struct_or_union_specifier : " +
       "struct_or_union lbrace struct_declaration_list rbrace");
-    $$ = [$1, '{', $5, '}'];
+    $$ = [$1, '{', $3, '}'];
+    parser.yy.bSawStruct = false;
   }
-  | struct_or_union ns_struct identifier ns_normal
+  | struct_or_union identifier
   {
     parser.yy.R("struct_or_union_specifier : struct_or_union identifier");
-    $$ = [$1, $3];
+    $$ = [$1, $2];
 
     // Add a symbol table entry for this struct
-    parser.yy.types[$3.value] = $1.value;
-  }
-  ;
-
-ns_struct
-  :
-  {
-    //playground.c.lib.Node.namespace = "struct#";
-  }
-  ;
-
-ns_normal
-  :
-  {
-    //playground.c.lib.Node.namespace = "";
-
-    // set to true by lexer
+    parser.yy.types[$2.value] = $1.value;
     parser.yy.bSawStruct = false;
   }
   ;
@@ -737,12 +791,19 @@ struct_declaration_list
   }
   ;
 
+/* standard p.113 */
 struct_declaration
   : specifier_qualifier_list struct_declarator_list ';'
   {
     parser.yy.R("struct_declaration : " +
       "specifier_qualifier_list struct_declarator_list ';'");
     $$ = [$1, $2, ';'];
+  }
+  | specifier_qualifier_list ';'
+  {
+    parser.yy.R("struct_declaration : " +
+      "specifier_qualifier_list ';'");
+    $$ = [$1, ';'];
   }
   ;
 
@@ -801,26 +862,29 @@ struct_declarator
   ;
 
 enum_specifier
-  : ENUM ns_struct identifier ns_normal lbrace enumerator_list rbrace
+  : ENUM identifier lbrace enumerator_list rbrace
   {
     parser.yy.R("enum : ENUM identifier lbrace enumerator_list rbrace");
-    $$ = ['enum', $3, '{', $6,'}'];
+    $$ = ['enum', $2, '{', $4,'}'];
 
     // Add a symbol table entry for this enum (a type)
-    parser.yy.types[$3.value] = $1.value;
+    parser.yy.types[$2.value] = $1.value;
+    parser.yy.bSawStruct = false;
   }
-  | ENUM ns_struct ns_normal lbrace enumerator_list rbrace
+  | ENUM lbrace enumerator_list rbrace
   {
     parser.yy.R("enum : ENUM lbrace enumerator_list rbrace");
-    $$ = ['enum','{', $5,'}'];
+    $$ = ['enum','{', $3,'}'];
+    parser.yy.bSawStruct = false;
   }
-  | ENUM ns_struct identifier ns_normal
+  | ENUM identifier
   {
     parser.yy.R("enum : ENUM identifier");
-    $$ = ['enum', $3,];
+    $$ = ['enum', $2,];
 
     // Add a symbol table entry for this struct
-    parser.yy.types[$3.value] = $1.value;
+    parser.yy.types[$2.value] = $1.value;
+    parser.yy.bSawStruct = false;
   }
   ;
 
@@ -861,6 +925,11 @@ type_qualifier
     parser.yy.R("type_qualifier : VOLATILE");
     $$ = 'volatile';
   }
+  | RESTRICT
+  {
+    parser.yy.R("type_qualifier : RESTRICT");
+    $$ = 'restrict';
+  }
   ;
 
 declarator
@@ -887,9 +956,19 @@ direct_declarator
     parser.yy.R("direct_declarator : '(' declarator ')'");
     $$ = ['(', $2, ')'];
   }
-  | direct_declarator '[' constant_expression ']'
+  | direct_declarator '[' type_qualifier_list assignment_expression ']'
   {
-    parser.yy.R("direct_declarator : direct_declarator '[' constant_expression ']'");
+    parser.yy.R("direct_declarator : direct_declarator '[' type_qualifier_list assignment_expression ']'");
+    $$ = [$1, '[', $3, $4, ']'];
+  }
+  | direct_declarator '[' assignment_expression ']'
+  {
+    parser.yy.R("direct_declarator : direct_declarator '[' assignment_expression ']'");
+    $$ = [$1, '[', $3, ']'];
+  }
+  | direct_declarator '[' type_qualifier_list ']'
+  {
+    parser.yy.R("direct_declarator : direct_declarator '[' type_qualifier_list ']'");
     $$ = [$1, '[', $3, ']'];
   }
   | direct_declarator '[' ']'
@@ -897,26 +976,49 @@ direct_declarator
     parser.yy.R("direct_declarator : direct_declarator '[' ']'");
     $$ = [$1, '[', ']'];
   }
-  | direct_declarator function_scope '(' parameter_type_list ')'
+  | direct_declarator '[' STATIC type_qualifier_list assignment_expression ']'
+  {
+    parser.yy.R("direct_declarator : direct_declarator '[' STATIC type_qualifier_list assignment_expression ']'");
+    $$ = [$1, '[', 'static', $4, $5, ']'];
+  }
+  | direct_declarator '[' STATIC assignment_expression ']'
+  {
+    parser.yy.R("direct_declarator : direct_declarator '[' STATIC assignment_expression ']'");
+    $$ = [$1, '[', 'static', $4, ']'];
+  }
+  | direct_declarator '[' type_qualifier_list STATIC assignment_expression ']'
+  {
+    parser.yy.R("direct_declarator : direct_declarator '[' type_qualifier_list STATIC assignment_expression ']'");
+    $$ = [$1, '[', $3, 'STATIC', $5, ']'];
+  }
+  | direct_declarator '[' type_qualifier_list '*' ']'
+  {
+    parser.yy.R("direct_declarator : direct_declarator '[' type_qualifier_list '*' ']'");
+    $$ = [$1, '[', $3, '*', ']'];
+  }
+  | direct_declarator '[' '*' ']'
+  {
+    parser.yy.R("direct_declarator : direct_declarator '[' '*' ']'");
+    $$ = [$1, '[', '*', ']'];
+  }
+  | direct_declarator '(' parameter_type_list ')'
   {
     parser.yy.R("direct_declarator : " +
       "direct_declarator '(' parameter_type_list ')'");
     $$ = [$1, $2, '(', $4, ')'];
   }
-/* Don't support K&R-style declarations...
-  | direct_declarator function_scope '(' identifier_list ')'
+  | direct_declarator '(' identifier_list ')'
   {
     parser.yy.R("direct_declarator : " +
       "direct_declarator '(' identifier_list ')'");
-    $$ = [$1, $2, '(', $4, ')'];
+    $$ = [$1, '(', $3, ')'];
   }
-// ... and require 'void' for parameter list if no formal parameters
-  | direct_declarator function_scope '(' ')'
+  | direct_declarator '(' ')'
   {
-    parser.yy.R("direct_declarator : direct_declarator '(' ')'");
-    $$ = [$1, $2, '(', ')'];
+    parser.yy.R("direct_declarator : " +
+      "direct_declarator '(' identifier_list ')'");
+    $$ = [$1, '(', ')'];
   }
-*/
   ;
 
 pointer
@@ -1181,24 +1283,24 @@ labeled_statement
   ;
 
 compound_statement
-  : lbrace_scope rbrace_scope
+  : lbrace rbrace
   {
-    parser.yy.R("compound_statement : lbrace_scope rbrace_scope");
+    parser.yy.R("compound_statement : lbrace rbrace");
     $$ = [$1, $2];
   }
-  | lbrace_scope statement_list rbrace_scope
+  | lbrace statement_list rbrace
   {
-    parser.yy.R("compound_statement : lbrace_scope statement_list rbrace_scope");
+    parser.yy.R("compound_statement : lbrace statement_list rbrace");
     $$ = [$1, $2, $3];
   }
-  | lbrace_scope declaration_list rbrace_scope
+  | lbrace declaration_list rbrace
   {
-    parser.yy.R("compound_statement : lbrace_scope declaration_list rbrace_scope");
+    parser.yy.R("compound_statement : lbrace declaration_list rbrace");
     $$ = [$1, $2, $3];
   }
-  | lbrace_scope declaration_list statement_list rbrace_scope
+  | lbrace declaration_list statement_list rbrace
   {
-    parser.yy.R("compound_statement : lbrace_scope declaration_list statement_list rbrace_scope");
+    parser.yy.R("compound_statement : lbrace declaration_list statement_list rbrace");
     $$ = [$1, $2, $3, $4];
   }
   ;
@@ -1382,12 +1484,6 @@ function_definition
   }
   ;
 
-function_scope
-  :
-  {
-    $$ = $1;
-  }
-  ;
 
 identifier
   : IDENTIFIER
@@ -1457,22 +1553,6 @@ ellipsis
   {
     parser.yy.R("ellipsis : ELLIPSIS");
     $$ = '...';
-  }
-  ;
-
-lbrace_scope
-  : lbrace
-  {
-    parser.yy.R("lbrace_scope : lbrace");
-    $$ = $1;
-  }
-  ;
-
-rbrace_scope
-  : rbrace
-  {
-    parser.yy.R("rbrace_scope : rbrace");
-    $$ = $1;
   }
   ;
 
