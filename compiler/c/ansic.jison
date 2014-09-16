@@ -1979,18 +1979,16 @@ preprocessing_token
   }
   ;
 %%
-
 parser.yy.R = function(entry) {
   console.log(entry);
 };
-
 
 parser.yy.bSawStruct = false;
 
 parser.yy.typedefMode = 0;
 parser.yy.types = {};
 
-parser.yy.isType = function(type) {
+parser.yy.isType = function (type) {
   if(!type || !type.length || type.length === 0) {
     return false;
   }
