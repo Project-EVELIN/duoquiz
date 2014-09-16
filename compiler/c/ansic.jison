@@ -532,7 +532,7 @@ maybe_typedef_mode
     // If we'd seen 'typedef'...
     if (parser.yy.typedefMode === 1)
     {
-      // ... then identifiers seen now are types
+      // ... then identifier seen now are types
       ++parser.yy.typedefMode
     }
   }
@@ -1570,6 +1570,11 @@ external_declaration
     parser.yy.R("external_declaration : declaration");
     $$ = $1;
   }
+  | preprocessing_file
+  {
+    parser.yy.R("external_declaration : preprocessing_file");
+    $$ = $1;
+  }
   ;
 
 function_definition
@@ -1675,6 +1680,304 @@ rbrace
   }
   ;
 
+/* preprocessing p.473 */
+
+/* no empty preprocessing file allowed here in our impl. */
+preprocessing_file
+  : group
+  {
+    parser.yy.R("preprocessing_file : group");
+    $$ = $1;
+  }
+  ;
+
+group
+  : group_part
+  {
+    parser.yy.R("group : group_part");
+    $$ = $1;
+  }
+  | group group_part
+  {
+    parser.yy.R("group : group group_part");
+    $$ = [$1, $2];
+  }
+  ;
+
+group_part
+  : if_section
+  {
+    parser.yy.R("group_part : if_section");
+    $$ = $1;
+  }
+  | control_line
+  {
+    parser.yy.R("group_part : control_line");
+    $$ = $1;
+  }
+  | PP_NEWLINE
+  {
+    parser.yy.R("group_part : PP_NEWLINE");
+    $$ = $1;
+  }
+  | pp_tokens PP_NEWLINE
+  {
+    parser.yy.R("group_part : pp_tokens PP_NEWLINE");
+    $$ = $1;
+  }
+  | '#' pp_tokens PP_NEWLINE
+  {
+    parser.yy.R("group_part : '#' non_directive");
+    $$ = ['#', $1];
+  }
+  ;
+
+if_section
+  : if_group endif_line
+  {
+    parser.yy.R("if_section : if_group endif_line");
+    $$ = [$1, $2];
+  }
+  | if_group elif_groups endif_line
+  {
+    parser.yy.R("if_section : if_group elif_groups endif_line");
+    $$ = [$1, $2, $3];
+  }
+  | if_group else_group endif_line
+  {
+    parser.yy.R("if_section : if_group else_group endif_line");
+    $$ = [$1, $2, $3];
+  }
+  | if_group elif_groups else_group endif_line
+  {
+    parser.yy.R("if_section : if_group elif_groups else_group endif_line");
+    $$ = [$1, $2, $3, $4];
+  }
+  ;
+
+if_group
+  : '#' PP_IF constant_expression PP_NEWLINE
+  {
+    parser.yy.R("if_group : '#' PP_IF constant_expression PP_NEWLINE");
+    $$ = ['#if', $3];
+  }
+  | '#' PP_IF constant_expression PP_NEWLINE group
+  {
+    parser.yy.R("if_group : '#' PP_IF constant_expression PP_NEWLINE group");
+    $$ = ['#if', $3, $5];
+  }
+  | '#' PP_IFDEF identifier PP_NEWLINE
+  {
+    parser.yy.R("if_group : '#' PP_IFDEF identifier PP_NEWLINE");
+    $$ = ['#ifdef', $3];
+  }
+  | '#' PP_IFDEF identifier PP_NEWLINE group
+  {
+    parser.yy.R("if_group : '#' PP_IFDEF identifier PP_NEWLINE group");
+    $$ = ['#ifdef', $3, $5];
+  }
+  | '#' PP_IFNDEF identifier PP_NEWLINE
+  {
+    parser.yy.R("if_group : '#' PP_IFNDEF identifier PP_NEWLINE");
+    $$ = ['#ifndef', $3];
+  }
+  | '#' PP_IFNDEF identifier PP_NEWLINE group
+  {
+    parser.yy.R("if_group : '#' PP_IFNDEF identifier PP_NEWLINE group");
+    $$ = ['#ifndef', $3, $5];
+  }
+  ;
+
+elif_groups
+  : elif_group
+  {
+    parser.yy.R("elif_groups : elif_group");
+    $$ = $1;
+  }
+  | elif_groups elif_group
+  {
+    parser.yy.R("elif_groups : elif_groups elif_group");
+    $$ = [$1, $2];
+  }
+  ;
+
+elif_group
+  : '#' PP_ELIF constant_expression PP_NEWLINE
+  {
+    parser.yy.R("elif_group : '#' PP_ELIF constant_expression PP_NEWLINE");
+    $$ = ['#elif', $2];
+  }
+  | '#' PP_ELIF constant_expression PP_NEWLINE group
+  {
+    parser.yy.R("elif_group : '#' PP_ELIF constant_expression PP_NEWLINE group");
+    $$ = ['#elif', $2, $5];
+  }
+  ;
+
+else_group
+  : '#' PP_ELSE PP_NEWLINE
+  {
+    parser.yy.R("else_group : '#' PP_ELSE PP_NEWLINE");
+    $$ = ['#else', $2];
+  }
+  | '#' PP_ELSE PP_NEWLINE group
+  {
+    parser.yy.R("else_group : '#' PP_ELIF PP_NEWLINE group");
+    $$ = ['#else', $4];
+  }
+  ;
+
+endif_line
+  : '#' PP_ENDIF PP_NEWLINE
+  {
+    parser.yy.R("endif_line : '#' PP_ENDIF PP_NEWLINE");
+    $$ = '#endif';
+  }
+  ;
+
+control_line
+  : '#' PP_INCLUDE pp_tokens PP_NEWLINE
+  {
+    parser.yy.R("control_line : '#' PP_INCLUDE pp_tokens PP_NEWLINE");
+    $$ = ['#include', $3];
+  }
+  | '#' PP_DEFINE identifier pp_tokens PP_NEWLINE
+  {
+    parser.yy.R("control_line : '#' PP_DEFINE identifier pp_tokens PP_NEWLINE");
+    $$ = ['#define', $3, $4];
+  }
+  | '#' PP_DEFINE identifier PP_NEWLINE
+  {
+    parser.yy.R("control_line : '#' PP_DEFINE identifier PP_NEWLINE");
+    $$ = ['#define', $3];
+  }
+  | '#' PP_DEFINE identifier PP_LPAREN identifier_list ')' pp_tokens PP_NEWLINE
+  {
+    parser.yy.R("control_line : '#' PP_DEFINE identifier PP_LPAREN identifier_list ')' pp_tokens PP_NEWLINE");
+    $$ = ['#define', $3, '(', $5, ')', $7];
+  }
+  | '#' PP_DEFINE identifier PP_LPAREN identifier_list ')' PP_NEWLINE
+  {
+    parser.yy.R("control_line : '#' PP_DEFINE identifier PP_LPAREN identifier_list ')' PP_NEWLINE");
+    $$ = ['#define', $3, '(', $5, ')'];
+  }
+  | '#' PP_DEFINE identifier PP_LPAREN ')' pp_tokens PP_NEWLINE
+  {
+    parser.yy.R("control_line : '#' PP_DEFINE identifier PP_LPAREN ')' pp_tokens PP_NEWLINE");
+    $$ = ['#define', $3, '(', ')', $6];
+  }
+  | '#' PP_DEFINE identifier PP_LPAREN ')' PP_NEWLINE
+  {
+    parser.yy.R("control_line : '#' PP_DEFINE identifier PP_LPAREN ')' PP_NEWLINE");
+    $$ = ['#define', $3, '(', ')'];
+  }
+  | '#' PP_DEFINE identifier PP_LPAREN PP_ELLIPSIS ')' pp_tokens PP_NEWLINE
+  {
+    parser.yy.R("control_line : '#' PP_DEFINE identifier PP_LPAREN PP_ELLIPSIS ')' pp_tokens PP_NEWLINE");
+    $$ = ['#define', $3, '(', '...', ')', $7];
+  }
+  | '#' PP_DEFINE identifier PP_LPAREN PP_ELLIPSIS ')' PP_NEWLINE
+  {
+    parser.yy.R("control_line : '#' PP_DEFINE identifier PP_LPAREN PP_ELLIPSIS ')' PP_NEWLINE");
+    $$ = ['#define', $3, '(', '...', ')'];
+  }
+  | '#' PP_DEFINE identifier PP_LPAREN identifier_list ',' PP_ELLIPSIS ')' pp_tokens PP_NEWLINE
+  {
+    parser.yy.R("control_line : '#' PP_DEFINE identifier PP_LPAREN identifier_list ',' PP_ELLIPSIS ')' pp_tokens PP_NEWLINE");
+    $$ = ['#define', $3, '(', $5, ',', '...', ')', $9];
+  }
+  | '#' PP_DEFINE identifier PP_LPAREN identifier_list ',' PP_ELLIPSIS ')' PP_NEWLINE
+  {
+    parser.yy.R("control_line : '#' PP_DEFINE identifier PP_LPAREN identifier_list ',' PP_ELLIPSIS ')' PP_NEWLINE");
+    $$ = ['#define', $3, '(', $5, ',', '...', ')'];
+  }
+  | '#' PP_UNDEF identifier PP_NEWLINE
+  {
+    parser.yy.R("control_line : '#' PP_UNDEF identifier PP_NEWLINE");
+    $$ = ['#undef', $3];
+  }
+  | '#' PP_LINE pp_tokens PP_NEWLINE
+  {
+    parser.yy.R("control_line : '#' PP_LINE pp_tokens PP_NEWLINE");
+    $$ = ['#line', $3];
+  }
+  | '#' PP_ERROR pp_tokens PP_NEWLINE
+  {
+    parser.yy.R("control_line : '#' PP_ERROR pp_tokens PP_NEWLINE");
+    $$ = ['#error', $3];
+  }
+  | '#' PP_ERROR PP_NEWLINE
+  {
+    parser.yy.R("control_line : '#' PP_ERROR PP_NEWLINE");
+    $$ = ['#error'];
+  }
+  | '#' PP_PRAGMA pp_tokens PP_NEWLINE
+  {
+    parser.yy.R("control_line : '#' PP_PRAGMA pp_tokens PP_NEWLINE");
+    $$ = ['#pragma', $3];
+  }
+  | '#' PP_PRAGMA PP_NEWLINE
+  {
+    parser.yy.R("control_line : '#' PP_PRAGMA PP_NEWLINE");
+    $$ = ['#pragma'];
+  }
+  | '#' PP_NEWLINE
+  {
+    parser.yy.R("control_line : '#' PP_NEWLINE");
+    $$ = ['#'];
+  }
+  ;
+
+pp_tokens
+  : preprocessing_token
+  {
+    parser.yy.R("preprocessing_token : preprocessing_token");
+    $$ = $1;
+  }
+  | pp_tokens preprocessing_token
+  {
+    parser.yy.R("preprocessing_token : pp_tokens preprocessing_token");
+    $$ = [$1, $2];
+  }
+  ;
+
+preprocessing_token
+  : PP_QCHARSEQUENCE
+  {
+    parser.yy.R("preprocessing_token : PP_QCHARSEQUENCE");
+    $$ = $1;
+  }
+  | PP_HCHARSEQUENCE
+  {
+    parser.yy.R("preprocessing_token : PP_HCHARSEQUENCE");
+    $$ = $1;
+  }
+  | identifier
+  {
+    parser.yy.R("preprocessing_token : identifier");
+    $$ = $1;
+  }
+  | constant
+  {
+    parser.yy.R("preprocessing_token : constant");
+    $$ = $1;
+  }
+  | string_literal
+  {
+    parser.yy.R("preprocessing_token : string_literal");
+    $$ = $1;
+  }
+  /*| PP_PUNCTUATOR
+  {
+    parser.yy.R("preprocessing_token : PP_PUNCTUATOR");
+    $$ = $1;
+  }*/
+  | PP_ANYCHAR
+  {
+    parser.yy.R("preprocessing_token : PP_ANYCHAR");
+    $$ = $1;
+  }
+  ;
 %%
 
 parser.yy.R = function(entry) {

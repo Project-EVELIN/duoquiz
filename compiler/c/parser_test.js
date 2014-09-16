@@ -55,7 +55,7 @@ document.body.onload = function () {
   var input_main = "int main(void){return 0;}";
   var input_prep = "#include <stdio.h>\n#define MAX 32\n";
   var input_empty_declaration = ";";
-  var input = structs;
+  var input = input_prep;
 
   if (DEBUG_C) {
     var parse_result;

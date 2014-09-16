@@ -202,16 +202,16 @@ horizontal_white [ ]|{h_tab}
 <PREPR>"elif"											{return "PP_ELIF";}
 <PREPR>"error"										{return "PP_ERROR";}
 <PREPR>{identifier}								{return "IDENTIFIER";}
-<PREPR>{decimal_constant}					{return "DECIMAL_LITERAL";}
-<PREPR>{octal_constant}						{return "OCTAL_LITERAL";}
-<PREPR>{hex_constant}							{return "HEXADECIMAL_LITERAL";}
-<PREPR>{floating_constant}				{return "FLOATING_LITERAL";}
-<PREPR>"L"?[']{c_char}+[']				{return "CHARACTER_LITERAL";}
-<PREPR>"L"?["]{s_char}*["]				{return "STRING_LITERAL";}
+<PREPR>"..."			                {return "PP_ELLIPSIS"; }
+<PREPR>{decimal_constant}					{return(parser.symbols_.CONSTANT_DECIMAL);}
+<PREPR>{octal_constant}						{return(parser.symbols_.CONSTANT_OCTAL);}
+<PREPR>{hex_constant}							{return(parser.symbols_.CONSTANT_HEX);}
+<PREPR>{floating_constant}				{return(parser.symbols_.CONSTANT_FLOAT);;}
+<PREPR>"L"?[']{c_char}+[']				{return(parser.symbols_.CONSTANT_CHAR);}
+<PREPR>"L"?["]{s_char}*["]				{ return(parser.symbols_.STRING_LITERAL); ;}
 <PREPR>["][^\n]*["]								{return "PP_QCHARSEQUENCE";}
 <PREPR>"<"[^\n]*">"								{return "PP_HCHARSEQUENCE";}
 <PREPR>.													{return "PP_ANYCHAR";}
-
 <WRAP_PREP>\n											{this.begin("PREPR");}
 <WRAP_PREP>{identifier}						{return "IDENTIFIER";}
 
