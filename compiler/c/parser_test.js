@@ -32,8 +32,8 @@ document.body.onload = function () {
   "const struct s cs;",
   "volatile struct s vs;",
   "struct s t1 = { 0 };",
-  "k = t1->n;",
-  "b = 4;",
+  "int main(void){\nk = t1->n;\n}",
+  "int b = 4;\n",
  ];
 
   /* extern typedef definition not working */
@@ -52,7 +52,7 @@ document.body.onload = function () {
 
   var input_decl = "static char c = 's';";
   var input_prepmain = "#include <stdio.h>\nint main(){}";
-  var input_main = ";int main(void){return 0;}";
+  var input_main = "int main(void){return 0;}";
   var input_prep = "#include <stdio.h>\n#define MAX 32\n";
   var input_empty_declaration = ";";
   var input = structs;
@@ -80,7 +80,8 @@ document.body.onload = function () {
       // try parsing
       try {
         parse_result = ansic.parse(input);
-        console.log("\n\nParsing ansic.js result: ", flatten(parse_result));
+        console.log("\n\nParsing ansic.js result: ", flatten(parse_result),
+          parse_result);
       } catch (e) {
         console.log(e.message);
         console.log(e);
@@ -90,14 +91,13 @@ document.body.onload = function () {
       for (i = 0; i < input.length; i++) {
         console.log(
           "\n========================Start==============================");
-        console.log("\n" + input[i]);
+        console.log(input[i]);
         console.log(
-          "\n===========================================================");
+          "===========================================================");
         try {
           parse_result = ansic.parse(input[i]);
           console.log("Parsing ansic.js result: ", flatten(parse_result),
-            "input: " +
-            input[i]);
+            parse_result);
         } catch (e) {
           console.log(e.message);
           console.log(e);

@@ -29,6 +29,7 @@
 
 %nonassoc IF_WITHOUT_ELSE
 %nonassoc ELSE
+%nonassoc POSTFIX
 
 
 %start start_sym
@@ -109,15 +110,17 @@ postfix_expression
       parser.yy.R("postfix_expression : postfix_expression DEC_OP");
       $$ = [$1, '--'];
     }
-  | '(' type_name ')' lbrace initializer_list rbrace
-    {
-      parser.yy.R("postfix_expression : '(' type_name ')' lbrace initializer_list rbrace");
-      $$ = ['(', $2, ')', '{', $5, '}'];
-    }
+  /* disallow in order to solve SR-Conflict
   | '(' type_name ')' lbrace initializer_list rbrace ','
     {
       parser.yy.R("postfix_expression : '(' type_name ')' lbrace initializer_list rbrace ','");
       $$ = ['(', $2, ')', '{', $5, '}', ','];
+    }
+  */
+  | '(' type_name ')' lbrace initializer_list rbrace
+    {
+      parser.yy.R("postfix_expression : '(' type_name ')' lbrace initializer_list rbrace");
+      $$ = ['(', $2, ')', '{', $5, '}'];
     }
   ;
 
@@ -1005,7 +1008,7 @@ direct_declarator
   {
     parser.yy.R("direct_declarator : " +
       "direct_declarator '(' parameter_type_list ')'");
-    $$ = [$1, $2, '(', $4, ')'];
+    $$ = [$1, '(', $3, ')'];
   }
   | direct_declarator '(' identifier_list ')'
   {
@@ -1146,42 +1149,32 @@ abstract_declarator
   }
   ;
 
+/* standard p.136 */
 direct_abstract_declarator
   : '(' abstract_declarator ')'
   {
     parser.yy.R("direct_abstract_declarator : '(' abstract_declarator ')'");
     $$ = ['(', $2, ')'];
   }
-  | '[' ']'
+  | direct_abstract_declarator '[' type_qualifier_list assignment_expression ']'
   {
-    parser.yy.R("direct_abstract_declarator : '[' ']'");
-    $$ = ['[', ']'];
+    parser.yy.R("direct_abstract_declarator : direct_abstract_declarator '[' type_qualifier_list assignment_expression ']'");
+    $$ = [$1, '[', $3, $4, ']'];
   }
-  | '[' constant_expression ']'
+  | direct_abstract_declarator '[' type_qualifier_list ']'
   {
-    parser.yy.R("direct_abstract_declarator : '[' constant_expression ']'");
-    $$ = ['[', $2, ']'];
+    parser.yy.R("direct_abstract_declarator : direct_abstract_declarator '[' type_qualifier_list ']'");
+    $$ = [$1, '[', $3, ']'];
+  }
+  | direct_abstract_declarator '[' assignment_expression ']'
+  {
+    parser.yy.R("direct_abstract_declarator : direct_abstract_declarator '[' assignment_expression ']'");
+    $$ = [$1, '[', $3, ']'];
   }
   | direct_abstract_declarator '[' ']'
   {
     parser.yy.R("direct_abstract_declarator : direct_abstract_declarator '[' ']'");
     $$ = [$1, '[', ']'];
-  }
-  | direct_abstract_declarator '[' constant_expression ']'
-  {
-    parser.yy.R("direct_abstract_declarator : " +
-      "direct_abstract_declarator '[' constant_expression ']'");
-    $$ = [$1, '[', $3, ']'];
-  }
-  | '(' ')'
-  {
-    parser.yy.R("direct_abstract_declarator : '(' ')'");
-    $$ = ['(', ')'];
-  }
-  | '(' parameter_type_list ')'
-  {
-    parser.yy.R("direct_abstract_declarator : '(' parameter_type_list ')'");
-    $$ = ['(', $3, ')'];
   }
   | direct_abstract_declarator '(' ')'
   {
@@ -1193,6 +1186,77 @@ direct_abstract_declarator
     parser.yy.R("direct_abstract_declarator : " +
       "direct_abstract_declarator '(' parameter_type_list ')'");
     $$ = [$1, '(', $3, ')'];
+  }
+  | direct_abstract_declarator '[' STATIC type_qualifier_list assignment_expression ']'
+  {
+    parser.yy.R("direct_abstract_declarator : direct_abstract_declarator '[' STATIC type_qualifier_list assignment_expression ']'");
+    $$ = [$1, '[', 'static', $4, $5, ']'];
+  }
+  | direct_abstract_declarator '[' STATIC assignment_expression ']'
+  {
+    parser.yy.R("direct_abstract_declarator : direct_abstract_declarator '[' STATIC assignment_expression ']'");
+    $$ = [$1, '[', 'static', $4, ']'];
+  }
+  | direct_abstract_declarator '[' type_qualifier_list STATIC assignment_expression ']'
+  {
+    parser.yy.R("direct_abstract_declarator : direct_abstract_declarator '[' type_qualifier_list STATIC assignment_expression ']'");
+    $$ = [$1, '[', $3, 'static', $5, ']'];
+  }
+  | direct_abstract_declarator '[' '*' ']'
+  {
+    parser.yy.R("direct_abstract_declarator : direct_abstract_declarator '[' '*' ']'");
+    $$ = [$1, '[', '*', ']'];
+  }
+  | '[' type_qualifier_list assignment_expression ']'
+  {
+    parser.yy.R("direct_abstract_declarator : '[' type_qualifier_list assignment_expression ']'");
+    $$ = ['[', $2, $3, ']'];
+  }
+  | '[' type_qualifier_list ']'
+  {
+    parser.yy.R("direct_abstract_declarator : '[' type_qualifier_list ']'");
+    $$ = ['[', $2, ']'];
+  }
+  | '[' assignment_expression ']'
+  {
+    parser.yy.R("direct_abstract_declarator : '[' assignment_expression ']'");
+    $$ = ['[', $2,']'];
+  }
+  | '['  ']'
+  {
+    parser.yy.R("direct_abstract_declarator : '[' ']'");
+    $$ = ['[', ']'];
+  }
+  | '(' ')'
+  {
+    parser.yy.R("direct_abstract_declarator : '(' ')'");
+    $$ = ['(', ')'];
+  }
+  | '(' parameter_type_list ')'
+  {
+    parser.yy.R("direct_abstract_declarator : " +
+      "'(' parameter_type_list ')'");
+    $$ = ['(', $3, ')'];
+  }
+  | '[' STATIC type_qualifier_list assignment_expression ']'
+  {
+    parser.yy.R("direct_abstract_declarator : '[' STATIC type_qualifier_list assignment_expression ']'");
+    $$ = ['[', 'static', $3, $4, ']'];
+  }
+  | '[' STATIC assignment_expression ']'
+  {
+    parser.yy.R("direct_abstract_declarator : '[' STATIC assignment_expression ']'");
+    $$ = ['[', 'static', $3, ']'];
+  }
+  | '[' type_qualifier_list STATIC assignment_expression ']'
+  {
+    parser.yy.R("direct_abstract_declarator : '[' type_qualifier_list STATIC assignment_expression ']'");
+    $$ = ['[', $2, 'static', $4, ']'];
+  }
+  | '[' '*' ']'
+  {
+    parser.yy.R("direct_abstract_declarator : '[' '*' ']'");
+    $$ = ['[', '*', ']'];
   }
   ;
 
@@ -1215,7 +1279,12 @@ initializer
   ;
 
 initializer_list
-  : initializer
+  : designation initializer
+  {
+    parser.yy.R("initializer_list : designation initializer");
+    $$ = [$1, $2];
+  }
+  | initializer
   {
     parser.yy.R("initializer_list : initializer");
     $$ = $1;
@@ -1224,6 +1293,46 @@ initializer_list
   {
     parser.yy.R("initializer_list : initializer_list ',' initializer");
     $$ = [$1, ',', $3];
+  }
+  | initializer_list ',' designation initializer
+  {
+    parser.yy.R("initializer_list : initializer_list ',' designation initializer");
+    $$ = [$1, ',', $3, $4];
+  }
+  ;
+
+designation
+  : designator_list '='
+  {
+    parser.yy.R("designation : designator_list '='");
+    $$ = [$1, '='];
+  }
+  ;
+
+designator_list
+  : designator
+  {
+    parser.yy.R("designator_list : designator");
+    $$ = $1;
+  }
+  | designator_list designator
+  {
+    parser.yy.R("designator_list : designator_list designator");
+    $$ = [$1, $2];
+  }
+  ;
+
+/* standard p.157 */
+designator
+  : lbrace constant_expression rbrace
+  {
+    parser.yy.R("designator : lbrace constant_expression rbrace");
+    $$ = [$1, $2, $3];
+  }
+  | '.' identifier
+  {
+    parser.yy.R("designator : '.' identifier");
+    $$ = ['.', $2];
   }
   ;
 
@@ -1376,6 +1485,7 @@ selection_statement
   }
   ;
 
+/* standard p.150 */
 iteration_statement
   : WHILE '(' expression ')' statement
   {
@@ -1392,12 +1502,19 @@ iteration_statement
     parser.yy.R("iteration_statement : FOR '(' expression_statement expression_statement ')' statement");
     $$ = ['for', $3, $4, ')', $6];
   }
-  | FOR '(' expression_statement expression_statement expression ')' statement
+  | FOR '(' declaration expression_statement expression ')' statement
   {
     parser.yy.R("iteration_statement : " +
-      "FOR '(' expression_statement expression_statement expression ')' " +
+      "FOR '(' declaration expression_statement expression ')' " +
       "statement");
-    $$ = ['for', '(',  $3,  $5, $6, $7 ];
+    $$ = ['for', '(',  $3,  $4, $5, ')',$7 ];
+  }
+  | FOR '(' declaration expression_statement ')' statement
+  {
+    parser.yy.R("iteration_statement : " +
+      "FOR '(' declaration expression_statement ')' " +
+      "statement");
+    $$ = ['for', '(',  $3,  $4, ')',$6 ];
   }
   ;
 
@@ -1456,31 +1573,17 @@ external_declaration
   ;
 
 function_definition
-/* Don't support K&R-style declarations...
   : declaration_specifiers maybe_typedef_mode declarator declaration_list compound_statement
   {
     parser.yy.R("function_definition : " +
-      "declaration_specifiers declarator declaration_list compound_statement");
+      "declaration_specifiers maybe_typedef_mode declarator declaration_list compound_statement");
     $$ = [$1, $3, $4, $5];
   }
-*/
-  : declaration_specifiers maybe_typedef_mode declarator compound_statement
+  | declaration_specifiers maybe_typedef_mode declarator compound_statement
   {
     parser.yy.R("function_definition : " +
       "declaration_specifiers declarator compound_statement");
     $$ = [$1, $3, $4];
-  }
-/* Don't support K&R-style declarations...
-  | declarator declaration_list compound_statement
-  {
-    parser.yy.R("function_definition : declarator declaration_list compound_statement");
-    $$ = [$1, $2, $3];
-  }
-*/
-  | declarator compound_statement
-  {
-    parser.yy.R("function_definition : declarator compound_statement");
-    $$ = [$1, $2];
   }
   ;
 
