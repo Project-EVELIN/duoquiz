@@ -1,12 +1,13 @@
 document.body.onload = function () {
   'use strict';
-  Array.prototype.flatten = function () {
-    return this.reduce(function (prev, cur) {
+
+  function flatten(arr) {
+    return arr.reduce(function (prev, cur) {
       var more = [].concat(cur)
         .some(Array.isArray);
-      return prev.concat(more ? cur.flatten() : cur);
+      return prev.concat(more ? flatten(cur) : cur);
     }, []);
-  };
+  }
 
   var DEBUG_C = true;
 
@@ -49,7 +50,7 @@ document.body.onload = function () {
   var input_prep = "#include <stdio.h>\n#define MAX 32\n";
   var input_empty_declaration = ";";
   var input_extern_linkage_specification = "extern \"string-literal\" {}";
-  var input = "struct datum\n{ int tag;char monat[10];int jahr; };";
+  var input = structs;
 
   if (DEBUG_C) {
     var parse_result;
@@ -74,7 +75,7 @@ document.body.onload = function () {
       // try parsing
       try {
         parse_result = ansic.parse(input);
-        console.log("\n\nParsing ansic.js result: ", parse_result);
+        console.log("\n\nParsing ansic.js result: ", flatten(parse_result));
       } catch (e) {
         console.log(e);
       }
@@ -82,17 +83,17 @@ document.body.onload = function () {
       var i;
       for (i = 0; i < input.length; i++) {
         console.log(
-          "\n=========================================================");
+          "\n===========================Start==============================");
         try {
           parse_result = ansic.parse(input[i]);
-          console.log("Parsing ansic.js result: ", parse_result.flatten(),
+          console.log("Parsing ansic.js result: ", flatten(parse_result),
             "input: " +
             input[i]);
         } catch (e) {
           console.log(e);
         }
         console.log(
-          "=========================================================\n");
+          "=============================End============================\n");
       }
     }
   }
