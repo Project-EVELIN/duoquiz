@@ -39,8 +39,6 @@ c_return [\015]
 
 horizontal_white [ ]|{h_tab}
 
-%s typedef_mode
-%x inc
 %x PREPR
 %x WRAP_PREP
 %x CPP_COMMENT
@@ -53,6 +51,7 @@ horizontal_white [ ]|{h_tab}
 {horizontal_white}+ {}
 ({v_tab}|{c_return}|{form_feed})+ {}
 ({horizontal_white}|{v_tab}|{c_return}|{form_feed})*"\n" { }
+{NL}        { }
 
 "auto"			{ return(parser.symbols_.AUTO); }
 "break"			{ return(parser.symbols_.BREAK); }
@@ -212,8 +211,8 @@ horizontal_white [ ]|{h_tab}
 <WRAP_PREP>{identifier}						{return "IDENTIFIER";}
 
 <CPP_COMMENT>\n 									{this.begin("INITIAL");}
-<CPP_COMMENT>.										{return("");}
+<CPP_COMMENT>.*									{return(parser.symbols_.CPP_COMMENT);}
 <C_COMMENT>"*/"										{this.begin("INITIAL");}
-<C_COMMENT>.											{return("");}
+<C_COMMENT>.*										{return(parser.symbols_.C_COMMENT);}
 
 %%

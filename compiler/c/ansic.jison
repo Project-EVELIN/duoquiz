@@ -22,6 +22,8 @@
 
 %token LBRACE RBRACE
 
+%token C_COMMENT CPP_COMMENT
+
 %nonassoc IF_WITHOUT_ELSE
 %nonassoc ELSE
 
