@@ -333,7 +333,7 @@ break;
 case 63:
     parser.yy.R("assignment_expression : " +
       "unary_expression assignment_operator assignment_expression");
-    this.$ = [$$[$0-2], $$[$0], $$[$0]];
+    this.$ = [$$[$0-2], $$[$0-1], $$[$0]];
   
 break;
 case 64:

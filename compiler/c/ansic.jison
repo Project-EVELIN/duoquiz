@@ -423,7 +423,7 @@ assignment_expression
   {
     parser.yy.R("assignment_expression : " +
       "unary_expression assignment_operator assignment_expression");
-    $$ = [$1, $3, $3];
+    $$ = [$1, $2, $3];
   }
   ;
 
