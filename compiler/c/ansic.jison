@@ -1497,6 +1497,11 @@ iteration_statement
     parser.yy.R("iteration_statement : DO statement WHILE '(' expression ')' ';'");
     $$ = ['do', $2, 'while', '(', $5, ')', ';'];
   }
+  | FOR '(' expression_statement expression_statement expression')' statement
+  {
+    parser.yy.R("iteration_statement : FOR '(' expression_statement expression_statement expression')' statement");
+    $$ = ['for', $3, $4, $5, ')', $7];
+  }
   | FOR '(' expression_statement expression_statement ')' statement
   {
     parser.yy.R("iteration_statement : FOR '(' expression_statement expression_statement ')' statement");
