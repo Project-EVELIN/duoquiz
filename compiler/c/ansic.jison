@@ -1949,13 +1949,13 @@ pp_tokens
 preprocessing_token
   : PP_QCHARSEQUENCE
   {
-    parser.yy.R("preprocessing_token : PP_QCHARSEQUENCE");
-    $$ = $1;
+    parser.yy.R("preprocessing_token : PP_QCHARSEQUENCE("+ yytext +")");
+    $$ = yytext;
   }
   | PP_HCHARSEQUENCE
   {
-    parser.yy.R("preprocessing_token : PP_HCHARSEQUENCE");
-    $$ = $1;
+    parser.yy.R("preprocessing_token : PP_HCHARSEQUENCE("+ yytext +")");
+    $$ = yytext;
   }
   | identifier
   {
@@ -1975,12 +1975,12 @@ preprocessing_token
   /*| PP_PUNCTUATOR
   {
     parser.yy.R("preprocessing_token : PP_PUNCTUATOR");
-    $$ = $1;
+    $$ = yytext;
   }*/
   | PP_ANYCHAR
   {
     parser.yy.R("preprocessing_token : PP_ANYCHAR");
-    $$ = $1;
+    $$ = yytext;
   }
   ;
 %%

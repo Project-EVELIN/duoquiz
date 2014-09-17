@@ -164,22 +164,22 @@ horizontal_white [ ]|{h_tab}
 
 /* lex.digraph */
 /* is this realy necessary? */
-"<%"						{ return(parser.symbols_.LBRACE); }
-"%>"						{ return(parser.symbols_.RBRACE); }
-"<:"						{ return('['); }
-":>"						{ return(']'); }
+"<%"						{ return(parser.symbols_.LBRACE);}
+"%>"						{ return(parser.symbols_.RBRACE);}
+"<:"						{ return('[');}
+":>"						{ return(']');}
 "%:"						{ this.begin("PREPR"); return('#');}
-"and"						{ return(parser.symbols_.AND_OP); }
-"bitor"					{ return('|'); }
-"or"						{ return(parser.symbols_.OR_OP); }
-"xor"						{ return('^'); }
-"compl"					{ return('~'); }
-"bitand"				{ return('&'); }
-"and_eq"				{ return(parser.symbols_.AND_ASSIGN); }
-"or_eq"					{ return(parser.symbols_.OR_ASSIGN); }
-"xor_eq"				{ return(parser.symbols_.XOR_ASSIGN); }
+"and"						{ return(parser.symbols_.AND_OP);}
+"bitor"					{ return('|');}
+"or"						{ return(parser.symbols_.OR_OP);}
+"xor"						{ return('^');}
+"compl"					{ return('~');}
+"bitand"				{ return('&');}
+"and_eq"				{ return(parser.symbols_.AND_ASSIGN);}
+"or_eq"					{ return(parser.symbols_.OR_ASSIGN);}
+"xor_eq"				{ return(parser.symbols_.XOR_ASSIGN);}
 "not"						{ return('!'); }
-"not_eq"				{ return(parser.symbols_.NE_OP); }
+"not_eq"				{ return(parser.symbols_.NE_OP);}
 
 /* lex.preprocessor */
 <PREPR>{NL}												{this.begin("INITIAL"); return "PP_NEWLINE";}
@@ -187,7 +187,6 @@ horizontal_white [ ]|{h_tab}
 <PREPR>({horizontal_white})				{ }
 <PREPR>({horizontal_white})*"("		{return "PP_LPAREN";}
 
-<PREPR>["]												{return "PP_QUOTE";}
 <PREPR>"include"									{return "PP_INCLUDE";}
 <PREPR>"undef"										{return "PP_UNDEF";}
 <PREPR>"line"											{return "PP_LINE";}
@@ -201,19 +200,19 @@ horizontal_white [ ]|{h_tab}
 <PREPR>"endif"										{return "PP_ENDIF";}
 <PREPR>"elif"											{return "PP_ELIF";}
 <PREPR>"error"										{return "PP_ERROR";}
-<PREPR>{identifier}								{return "IDENTIFIER";}
-<PREPR>"..."			                {return "PP_ELLIPSIS"; }
+<PREPR>{identifier}								{return parser.symbols_.IDENTIFIER;}
+<PREPR>"..."			                {return "PP_ELLIPSIS";}
 <PREPR>{decimal_constant}					{return(parser.symbols_.CONSTANT_DECIMAL);}
 <PREPR>{octal_constant}						{return(parser.symbols_.CONSTANT_OCTAL);}
 <PREPR>{hex_constant}							{return(parser.symbols_.CONSTANT_HEX);}
-<PREPR>{floating_constant}				{return(parser.symbols_.CONSTANT_FLOAT);;}
+<PREPR>{floating_constant}				{return(parser.symbols_.CONSTANT_FLOAT);}
 <PREPR>"L"?[']{c_char}+[']				{return(parser.symbols_.CONSTANT_CHAR);}
-<PREPR>"L"?["]{s_char}*["]				{ return(parser.symbols_.STRING_LITERAL); ;}
+<PREPR>"L"?["]{s_char}*["]				{ return(parser.symbols_.STRING_LITERAL);}
 <PREPR>["][^\n]*["]								{return "PP_QCHARSEQUENCE";}
 <PREPR>"<"[^\n]*">"								{return "PP_HCHARSEQUENCE";}
 <PREPR>.													{return "PP_ANYCHAR";}
 <WRAP_PREP>\n											{this.begin("PREPR");}
-<WRAP_PREP>{identifier}						{return "IDENTIFIER";}
+<WRAP_PREP>{identifier}						{return parser.symbols_.IDENTIFIER;}
 
 <CPP_COMMENT>\n 									{this.begin("INITIAL");}
 <CPP_COMMENT>.*									  {return(parser.symbols_.CPP_COMMENT);}
