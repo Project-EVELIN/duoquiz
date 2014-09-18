@@ -58,7 +58,7 @@ primary_expression
   | string_literal
     {
       parser.yy.R("primary_expression : string_literal");
-      $$ = $1;
+      $$ = $1; // surround with quotation marks to support json
     }
   | '(' expression ')'
     {

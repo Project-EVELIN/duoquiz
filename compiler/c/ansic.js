@@ -27,7 +27,7 @@ case 3:
 break;
 case 4:
       parser.yy.R("primary_expression : string_literal");
-      this.$ = $$[$0];
+      this.$ = $$[$0]; // surround with quotation marks to support json
     
 break;
 case 5:
