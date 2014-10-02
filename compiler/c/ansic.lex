@@ -51,7 +51,7 @@ horizontal_white [ ]|{h_tab}
 {horizontal_white}+ {}
 ({v_tab}|{c_return}|{form_feed})+ {}
 ({horizontal_white}|{v_tab}|{c_return}|{form_feed})*"\n" { }
-{NL}        { }
+<INITIAL>{NL}        { }
 
 "auto"			{ return(parser.symbols_.AUTO); }
 "break"			{ return(parser.symbols_.BREAK); }
@@ -87,15 +87,15 @@ horizontal_white [ ]|{h_tab}
               parser.yy.bSawStruct = true;
               return(parser.symbols_.UNION);
             }
-"unsigned"	{ return(parser.symbols_.UNSIGNED); }
-"void"			{ return(parser.symbols_.VOID); }
-"volatile"	{ return(parser.symbols_.VOLATILE); }
-"restrict"	{ return(parser.symbols_.RESTRICT); }
-"while"			{ return(parser.symbols_.WHILE); }
-"_Alignof"	{ return(parser.symbols_._ALIGNOF); }
-"_Alignas"	{ return(parser.symbols_._ALIGNAS); }
-"_Noreturn"	{ return(parser.symbols_._NORETURN); }
-"inline"	{ return(parser.symbols_.INLINE); }
+"unsigned"	{ return(parser.symbols_.UNSIGNED);}
+"void"			{ return(parser.symbols_.VOID);}
+"volatile"	{ return(parser.symbols_.VOLATILE);}
+"restrict"	{ return(parser.symbols_.RESTRICT);}
+"while"			{ return(parser.symbols_.WHILE);}
+"_Alignof"	{ return(parser.symbols_._ALIGNOF);}
+"_Alignas"	{ return(parser.symbols_._ALIGNAS);}
+"_Noreturn"	{ return(parser.symbols_._NORETURN);}
+"inline"	{ return(parser.symbols_.INLINE);}
 
 {identifier}	{
                 var isType;
@@ -107,59 +107,59 @@ horizontal_white [ ]|{h_tab}
                         : parser.symbols_.IDENTIFIER);
               }
 
-{floating_constant}		        { return(parser.symbols_.CONSTANT_FLOAT); }
-{hex_constant}			          { return(parser.symbols_.CONSTANT_HEX); }
-{octal_constant}		          { return(parser.symbols_.CONSTANT_OCTAL); }
-{decimal_constant}		        { return(parser.symbols_.CONSTANT_DECIMAL); }
-{CP}?{SQ}(\\.|[^\\{SQ}])+{SQ}	{ return(parser.symbols_.CONSTANT_CHAR); }
-{SP}?\"(\\.|[^\\"])*\"	     	{ return(parser.symbols_.STRING_LITERAL); }
+{floating_constant}		        { return(parser.symbols_.CONSTANT_FLOAT);}
+{hex_constant}			          { return(parser.symbols_.CONSTANT_HEX);}
+{octal_constant}		          { return(parser.symbols_.CONSTANT_OCTAL);}
+{decimal_constant}		        { return(parser.symbols_.CONSTANT_DECIMAL);}
+{CP}?{SQ}(\\.|[^\\{SQ}])+{SQ}	{ return(parser.symbols_.CONSTANT_CHAR);}
+{SP}?\"(\\.|[^\\"])*\"	     	{ return(parser.symbols_.STRING_LITERAL);}
 
-"..."			{ return(parser.symbols_.ELLIPSIS); }
-">>="			{ return(parser.symbols_.RIGHT_ASSIGN); }
-"<<="			{ return(parser.symbols_.LEFT_ASSIGN); }
-"+="			{ return(parser.symbols_.ADD_ASSIGN); }
-"-="			{ return(parser.symbols_.SUB_ASSIGN); }
-"*="			{ return(parser.symbols_.MUL_ASSIGN); }
-"/="			{ return(parser.symbols_.DIV_ASSIGN); }
-"%="			{ return(parser.symbols_.MOD_ASSIGN); }
-"&="			{ return(parser.symbols_.AND_ASSIGN); }
-"^="			{ return(parser.symbols_.XOR_ASSIGN); }
-"|="			{ return(parser.symbols_.OR_ASSIGN); }
-">>"			{ return(parser.symbols_.RIGHT_OP); }
-"<<"			{ return(parser.symbols_.LEFT_OP); }
-"++"			{ return(parser.symbols_.INC_OP); }
-"--"			{ return(parser.symbols_.DEC_OP); }
-"->"			{ return(parser.symbols_.PTR_OP); }
-"&&"			{ return(parser.symbols_.AND_OP); }
-"||"			{ return(parser.symbols_.OR_OP); }
-"<="			{ return(parser.symbols_.LE_OP); }
-">="			{ return(parser.symbols_.GE_OP); }
-"=="			{ return(parser.symbols_.EQ_OP); }
-"!="			{ return(parser.symbols_.NE_OP); }
-";"			  { return(';'); }
-("{")   	{ return(parser.symbols_.LBRACE); }
-("}")     { return(parser.symbols_.RBRACE); }
-","			  { return(','); }
-":"			  { return(':'); }
-"="			  { return('='); }
-"("			  { return('('); }
-")"			  { return(')'); }
-("[")   	{ return('['); }
-("]")     { return(']'); }
-"."			  { return('.'); }
-"&"			  { return('&'); }
-"!"			  { return('!'); }
-"~"			  { return('~'); }
-"-"			  { return('-'); }
-"+"			  { return('+'); }
-"*"			  { return('*'); }
-"/"			  { return('/'); }
-"%"			  { return('%'); }
-"<"			  { return('<'); }
-">"			  { return('>'); }
-"^"			  { return('^'); }
-"|"			  { return('|'); }
-"?"			  { return('?'); }
+"..."			{ return(parser.symbols_.ELLIPSIS);}
+">>="			{ return(parser.symbols_.RIGHT_ASSIGN);}
+"<<="			{ return(parser.symbols_.LEFT_ASSIGN);}
+"+="			{ return(parser.symbols_.ADD_ASSIGN);}
+"-="			{ return(parser.symbols_.SUB_ASSIGN);}
+"*="			{ return(parser.symbols_.MUL_ASSIGN);}
+"/="			{ return(parser.symbols_.DIV_ASSIGN);}
+"%="			{ return(parser.symbols_.MOD_ASSIGN);}
+"&="			{ return(parser.symbols_.AND_ASSIGN);}
+"^="			{ return(parser.symbols_.XOR_ASSIGN);}
+"|="			{ return(parser.symbols_.OR_ASSIGN);}
+">>"			{ return(parser.symbols_.RIGHT_OP);}
+"<<"			{ return(parser.symbols_.LEFT_OP);}
+"++"			{ return(parser.symbols_.INC_OP);}
+"--"			{ return(parser.symbols_.DEC_OP);}
+"->"			{ return(parser.symbols_.PTR_OP);}
+"&&"			{ return(parser.symbols_.AND_OP);}
+"||"			{ return(parser.symbols_.OR_OP);}
+"<="			{ return(parser.symbols_.LE_OP);}
+">="			{ return(parser.symbols_.GE_OP);}
+"=="			{ return(parser.symbols_.EQ_OP);}
+"!="			{ return(parser.symbols_.NE_OP);}
+";"			  { return(';');}
+("{")   	{ return(parser.symbols_.LBRACE);}
+("}")     { return(parser.symbols_.RBRACE);}
+","			  { return(',');}
+":"			  { return(':');}
+"="			  { return('=');}
+"("			  { return('(');}
+")"			  { return(')');}
+("[")   	{ return('[');}
+("]")     { return(']');}
+"."			  { return('.');}
+"&"			  { return('&');}
+"!"			  { return('!');}
+"~"			  { return('~');}
+"-"			  { return('-');}
+"+"			  { return('+');}
+"*"			  { return('*');}
+"/"			  { return('/');}
+"%"			  { return('%');}
+"<"			  { return('<');}
+">"			  { return('>');}
+"^"			  { return('^');}
+"|"			  { return('|');}
+"?"			  { return('?');}
 "#"			  { this.begin("PREPR"); return('#');}
 
 /* lex.digraph */
@@ -178,7 +178,7 @@ horizontal_white [ ]|{h_tab}
 "and_eq"				{ return(parser.symbols_.AND_ASSIGN);}
 "or_eq"					{ return(parser.symbols_.OR_ASSIGN);}
 "xor_eq"				{ return(parser.symbols_.XOR_ASSIGN);}
-"not"						{ return('!'); }
+"not"						{ return('!');}
 "not_eq"				{ return(parser.symbols_.NE_OP);}
 
 /* lex.preprocessor */
@@ -200,16 +200,16 @@ horizontal_white [ ]|{h_tab}
 <PREPR>"endif"										{return "PP_ENDIF";}
 <PREPR>"elif"											{return "PP_ELIF";}
 <PREPR>"error"										{return "PP_ERROR";}
-<PREPR>{identifier}								{return parser.symbols_.IDENTIFIER;}
 <PREPR>"..."			                {return "PP_ELLIPSIS";}
-<PREPR>{decimal_constant}					{return(parser.symbols_.CONSTANT_DECIMAL);}
-<PREPR>{octal_constant}						{return(parser.symbols_.CONSTANT_OCTAL);}
-<PREPR>{hex_constant}							{return(parser.symbols_.CONSTANT_HEX);}
-<PREPR>{floating_constant}				{return(parser.symbols_.CONSTANT_FLOAT);}
-<PREPR>"L"?[']{c_char}+[']				{return(parser.symbols_.CONSTANT_CHAR);}
-<PREPR>"L"?["]{s_char}*["]				{ return(parser.symbols_.STRING_LITERAL);}
 <PREPR>["][^\n]*["]								{return "PP_QCHARSEQUENCE";}
 <PREPR>"<"[^\n]*">"								{return "PP_HCHARSEQUENCE";}
+<PREPR>{floating_constant}           { return(parser.symbols_.CONSTANT_FLOAT);}
+<PREPR>{hex_constant}                { return(parser.symbols_.CONSTANT_HEX);}
+<PREPR>{octal_constant}              { return(parser.symbols_.CONSTANT_OCTAL);}
+<PREPR>{decimal_constant}            { return(parser.symbols_.CONSTANT_DECIMAL);}
+<PREPR>{CP}?{SQ}(\\.|[^\\{SQ}])+{SQ} { return(parser.symbols_.CONSTANT_CHAR);}
+<PREPR>{SP}?\"(\\.|[^\\"])*\"        { return(parser.symbols_.STRING_LITERAL);}
+<PREPR>{identifier}           {return parser.symbols_.IDENTIFIER;}
 <PREPR>.													{return "PP_ANYCHAR";}
 <WRAP_PREP>\n											{this.begin("PREPR");}
 <WRAP_PREP>{identifier}						{return parser.symbols_.IDENTIFIER;}
@@ -217,6 +217,6 @@ horizontal_white [ ]|{h_tab}
 <CPP_COMMENT>\n 									{this.begin("INITIAL");}
 <CPP_COMMENT>.*									  {return(parser.symbols_.CPP_COMMENT);}
 <C_COMMENT>"*/"										{this.begin("INITIAL");}
-<C_COMMENT>.*										   {return(parser.symbols_.C_COMMENT);}
+<C_COMMENT>.*										  {return(parser.symbols_.C_COMMENT);}
 
 %%
