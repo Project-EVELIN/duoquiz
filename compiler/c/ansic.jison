@@ -1988,6 +1988,16 @@ parser.yy.R = function(entry) {
   console.log(entry);
 };
 
+parser.yy.identifiers = {};
+
+parser.yy.isIdentifier = function (name) {
+  if(!name || !name.length || name.length === 0) {
+    return false;
+  }
+
+  return parser.yy.identifiers.hasOwnProperty(name);
+};
+
 parser.yy.bSawStruct = false;
 
 parser.yy.typedefMode = 0;
