@@ -5,16 +5,23 @@
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>Duoquiz - Examples and Guide</title>
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/github-light.css">
-    <script src="javascripts/scale.fix.js"></script>
+    <!-- Bootstrap -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="vendor/codemirror/lib/codemirror.css" rel="stylesheet">
+    <link href="vendor/codemirror/addon/hint/show-hint.css" rel="stylesheet">
+    <link href="vendor/codemirror/addon/fold/foldgutter.css" rel="stylesheet">
+    <link href="vendor/katex/katex.min.css" rel="stylesheet">
+    <link href="css/quiz.css" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
   </head>
   <body>
-    <div class="wrapper">
+    <div class="container">
       <header>
         <h1 class="header">Duoquiz - Examples and Guide</h1>
         <p class="header">duoquiz - Embeddable C Quiz with Code Input questions and Parson&#39;s Problems</p>
@@ -28,14 +35,59 @@
         <p class="header">This project is maintained by <a class="header name" href="https://github.com/waywaaard">waywaaard</a></p>
 
       </header>
-      <section>
-        <h3><a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span class="octicon octicon-link"></span></a>The simple example</h3>
-      </section>
-      <footer>
-        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
-      </footer>
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+
+    <!-- Start main page container -->
+    <div class="container">
+        <div class="row" role="main">
+            <h1>Duoquiz - Example</h1>
+            <h3 id="quiz1" class="page-header">Quiz 1 <small>Declaration and Initialization</small></h3>
+            <div class="panel panel-duo" data-quiz="quiz1" data-question-block="duo-question-block" data-answer-block="duo-answer-block" data-check-button="duo-check-btn" data-progess-list="duo-progress">
+            <div class="panel-heading">
+              <h3 class="panel-title">
+                <ul class="pagination pagination-sm" id="duo-progress">
+                </ul>
+                <div class="life-box pull-right">
+                  <span class="glyphicon glyphicon-heart life"></span>
+                  <span class="glyphicon glyphicon-heart life"></span>
+                  <span class="glyphicon glyphicon-heart life"></span>
+                </div>
+              </h3>
+            </div>
+            <div class="panel-body duo-body">
+              <div class="panel-question center-block" id="duo-question-block">
+                <div class="spinner"></div>
+                <div class="center-block"><p class="spinner-text">Preparing the quiz...</p></div>
+              </div>
+              <div class="panel-answer center-block" id="duo-answer-block">
+              </div>
+            </div>
+            <div class="panel-footer" id="answer-result-div">
+              <div class="col-md-1">
+                <span class="glyphicon glyphicon-remove-circle answericon incorrect hidden"></span>
+                <span class="glyphicon glyphicon-ok-sign answericon correct hidden"></span>
+              </div>
+              <div class="col-md-5" id="answer-result">
+              </div>
+              <div class="col-md-6">
+                <button type="button" id="duo-check-btn" class="btn btn-duo pull-right">Check</button>
+              </div>
+            </div>
+            </div>
+            <p class="page-header">
+            <br />
+            </p>
+        </div>
+    </div>
+
+    <div class="container">
+      <p>Documentation coming soon</p>
+    </div>
+
+    <!-- KaTeX Script with pre-init -->
+    <script src="vendor/katex/katex.min.js"></script>
+    <script src="vendor/katex/katex.startup.js"></script>
+    <script data-main="js/example.js" src="vendor/require.js"></script>
 		
   </body>
 </html>
