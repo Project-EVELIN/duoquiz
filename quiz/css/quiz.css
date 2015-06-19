@@ -1,3 +1,24 @@
+/* 
+ * CodeMirror Editor overrides 
+ */
+.cm-s-default {
+	border: 1px solid #eee;
+}
+
+/* Avoids big input when only 1 line should be shown */
+.CodeMirror {
+	height: auto;
+}
+
+/* Shows scrollbar only when necessary */
+.CodeMirror-scroll {
+	overflow-y: hidden;
+	overflow-x: auto;
+}
+
+/*
+ * Styles for the lives
+ */
 .life {
 	color: #ff3030;
 	font-size: 1.6em;
@@ -11,26 +32,47 @@
 	margin-top: -2px;
 }
 
+/* Styles the surrounding panel */
 .panel-duo {
 	margin-top: 5px;
 	webkit-box-shadow: 0 0px 0px rgba(0, 0, 0, .05);
 	box-shadow: 0 0px 0px rgba(0, 0, 0, .05);
 }
 
-.incorrect p, .incorrect h4, .incorrect span {
+.panel-duo > .panel-heading {
+	color: #428bca;
+	background-color: #fff;
+	border-bottom: 1px solid #eee;
+	border-width: 80%;
+	padding-bottom: 25px;
+}
+.panel-duo > .panel-footer {
+	min-height: 80px;
+}
+.duo-body {
+	min-height: 156px;
+}
+
+/* Feedback area styles */
+.incorrect p, 
+.incorrect h4, 
+.incorrect span {
 	color: #dd381d;
 }
 
-.incorrect h4, .correct h4 {
+.incorrect h4, 
+.correct h4 {
 	font-weight: bold;
 }
 
-span.glyphicon.answericon, span.glyphicon.answericon {
+span.glyphicon.answericon, 
+span.glyphicon.answericon {
 	font-size: 3em;
 	padding-top: 5px;
 }
 
-.correct h4, .correct span {
+.correct h4, 
+.correct span {
 	color: #1abd12;
 }
 
@@ -39,7 +81,8 @@ span.answerresult-text {
 	font-family: monospace;
 }
 
-.finished, .gameover {
+.finished, 
+.gameover {
 	font-size: 1.5em;
 	text-align: center;
 }
@@ -51,6 +94,7 @@ span.answerresult-text {
 	animation-fill-mode: both;
 }
 
+/* Blue Button Style */
 .btn-duo {
 	border-color: #1caff6;
 	background-color: transparent;
@@ -62,6 +106,7 @@ span.answerresult-text {
 	color: #fff;
 }
 
+/* Specific Styles for the code fragment question type */
 .div-fragment-duo {
 	display: inline-block;
 	padding: 6px 12px;
@@ -85,6 +130,7 @@ ul.div-fragment-duo > li {
 	padding-right: 3px;
 	padding-left: 3px;
 }
+
 span.label.label-tag.chosen {
 	background-color: #ccc;
 	color: #ccc;
@@ -92,13 +138,15 @@ span.label.label-tag.chosen {
 	box-shadow: inset 0 2px 5px rgba(0, 0, 0, .125);
 }
 
-span.tag-close:hover, span.tag-close:focus {
+span.tag-close:hover, 
+span.tag-close:focus {
 	color: #000;
 	text-decoration: none;
 	cursor: pointer;
 	filter: alpha(opacity=50);
 	opacity: .5;
 }
+
 .label-tag {
 	background-color: #fff;
 	color: #333;
@@ -126,88 +174,33 @@ span.tag-close:hover, span.tag-close:focus {
 .duo-sortable-ghost {
 	opacity: .2;
 }
-.spinner-text {
-	text-align: center;
-	margin-top: 10px;
-}
-.spinner {
-	height: 60px;
-	width: 60px;
-	margin: 0px auto;
-	position: relative;
-	-webkit-animation: rotation .6s infinite linear;
-	-moz-animation: rotation .6s infinite linear;
-	-o-animation: rotation .6s infinite linear;
-	animation: rotation .6s infinite linear;
-	border-left: 6px solid rgba(0, 174, 239, .15);
-	border-right: 6px solid rgba(0, 174, 239, .15);
-	border-bottom: 6px solid rgba(0, 174, 239, .15);
-	border-top: 6px solid rgba(0, 174, 239, .8);
-	border-radius: 100%;
-}
-@-webkit-keyframes rotation {
-	from {
-		-webkit-transform: rotate(0deg);
-	}
-	to {
-		-webkit-transform: rotate(359deg);
-	}
-}
-@-moz-keyframes rotation {
-	from {
-		-moz-transform: rotate(0deg);
-	}
-	to {
-		-moz-transform: rotate(359deg);
-	}
-}
-@-o-keyframes rotation {
-	from {
-		-o-transform: rotate(0deg);
-	}
-	to {
-		-o-transform: rotate(359deg);
-	}
-}
-@keyframes rotation {
-	from {
-		transform: rotate(0deg);
-	}
-	to {
-		transform: rotate(359deg);
-	}
-}
-.panel-duo>.panel-heading {
-	color: #428bca;
-	background-color: #fff;
-	border-bottom: 1px solid #eee;
-	border-width: 80%;
-	padding-bottom: 25px;
-}
-.panel-duo>.panel-footer {
-	min-height: 80px;
-}
-.duo-body {
-	min-height: 156px;
-}
+
+/* 
+ * Progess bar styles
+ * Uses bootstrap pagination with a few overrides 
+ */
 .panel-title .pagination {
 	padding-left: 0px;
 	padding-top: 5px;
 	margin: 0px 0px;
 }
-.panel-title .pagination-sm>li:first-child>div, .panel-title .pagination-sm>li:first-child>span {
+.panel-title .pagination-sm>li:first-child>div, 
+.panel-title .pagination-sm>li:first-child>span {
 	border-top-left-radius: 7px;
 	border-bottom-left-radius: 7px;
 }
-.panel-title .pagination-sm>li:last-child>div, .panel-title .pagination-sm>li:last-child>span {
+.panel-title .pagination-sm>li:last-child>div, 
+.panel-title .pagination-sm>li:last-child>span {
 	border-top-right-radius: 7px;
 	border-bottom-right-radius: 7px;
 }
-.panel-title .pagination-sm>li>div, .panel-title .pagination-sm>li>span {
+.panel-title .pagination-sm>li>div, 
+.panel-title .pagination-sm>li>span {
 	padding: 5px 10px;
 	font-size: 5px;
 }
-.panel-title .pagination > li > div, .panel-title .pagination > li > span {
+.panel-title .pagination > li > div, 
+.panel-title .pagination > li > span {
 	background-color: #f0f0f0;
 	position: relative;
 	float: left;
@@ -223,7 +216,7 @@ span.tag-close:hover, span.tag-close:focus {
 	border-color: #1daf0d;
 }
 
-/* animations */
+/* All CSS animations used by the quiz */
 .animated {
 	-webkit-animation-duration: 2s;
 	animation-duration: 2s;
@@ -333,5 +326,58 @@ span.tag-close:hover, span.tag-close:focus {
 @-moz-document url-prefix() {
 	fieldset {
 		display: table-cell;
+	}
+}
+
+/* Loading spinner that is shown at the beginning */
+.spinner-text {
+	text-align: center;
+	margin-top: 10px;
+}
+.spinner {
+	height: 60px;
+	width: 60px;
+	margin: 0px auto;
+	position: relative;
+	-webkit-animation: rotation .6s infinite linear;
+	-moz-animation: rotation .6s infinite linear;
+	-o-animation: rotation .6s infinite linear;
+	animation: rotation .6s infinite linear;
+	border-left: 6px solid rgba(0, 174, 239, .15);
+	border-right: 6px solid rgba(0, 174, 239, .15);
+	border-bottom: 6px solid rgba(0, 174, 239, .15);
+	border-top: 6px solid rgba(0, 174, 239, .8);
+	border-radius: 100%;
+}
+@-webkit-keyframes rotation {
+	from {
+		-webkit-transform: rotate(0deg);
+	}
+	to {
+		-webkit-transform: rotate(359deg);
+	}
+}
+@-moz-keyframes rotation {
+	from {
+		-moz-transform: rotate(0deg);
+	}
+	to {
+		-moz-transform: rotate(359deg);
+	}
+}
+@-o-keyframes rotation {
+	from {
+		-o-transform: rotate(0deg);
+	}
+	to {
+		-o-transform: rotate(359deg);
+	}
+}
+@keyframes rotation {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(359deg);
 	}
 }

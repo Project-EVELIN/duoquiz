@@ -1,4 +1,4 @@
-define(['jquery', 'app/duo_quiz', 'util'], function($, duoquiz, util) {
+define(['jquery', 'app/duo_quiz', 'app/util'], function($, duoquiz, util) {
   var mod = {};
 
   mod.getQuestions = function(set) {
@@ -165,6 +165,8 @@ define(['jquery', 'app/duo_quiz', 'util'], function($, duoquiz, util) {
     var q7_question = "Schreiben Sie eine Anweisung (eine Zeile), die eine Integervariable im Oktal-Format von der Konsole einliest und in einer Variablen speichert (ip_input.h).";
     var q7_solutions = [];
     q7_solutions.push(["int",".","=","GetInt","(","\'o\'",")",";"]);
+
+    /* Example usage of a Reference, we use the name of the Variable of the first line on after the type. */
     q7_solutions.push(["int",".",";",new duoquiz.Reference(1, "eingabe"),"=","GetInt","(","\'o\'",")",";"]);
 
     var q7_passtext = "Super, immer daran denken, <code>GetInt</code> die Basis mitzugeben.";

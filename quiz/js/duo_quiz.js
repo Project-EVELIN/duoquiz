@@ -3,7 +3,7 @@ define(function(require) {
   var $ = require('jquery');
   var ansic = require('app/ansic');
   var CodeMirror = require('cm/lib/codemirror');
-  var util = require('util');
+  var util = require('app/util');
   var sortable = require('sortable');
   require('cm/mode/clike/clike');
   require('cm/addon/hint/show-hint');
@@ -270,7 +270,7 @@ define(function(require) {
     var questionText = question.generated.question;
     var solutions = question.generated.solution;
 
-    this.logAnswer(questionText, question.getValue(), solutions, true);
+    duoquiz.Game.logAnswer(this, questionText, question.getValue(), solutions, true);
 
     // bind action to next
     this.changestate(duoquiz.Game.CORRECT);
@@ -283,40 +283,21 @@ define(function(require) {
    * adds the required CSRF token to the request, data is sent as JSON
    *
    */
-  duoquiz.Game.prototype.logAnswer = function(question, answer, solution, isCorrect) {
+  duoquiz.Game.logAnswer = function(game, question, answer, solution, isCorrect) {
     if (!answer || answer === "" || answer.length < duoquiz.minAnswerLength) {
       // fail silently
       return;
     }
 
-    // post try to the server
-    var csrftoken = util.getCookie('csrftoken');
     var logObject = {
       "quiz": this.name || "unnamed quiz",
       "question": question,
       "answer": answer,
       "isCorrect": isCorrect,
-      "questionName": this.questions[this.currentQuestion].name || "none",
+      "questionName": game.questions[game.currentQuestion].name || "none",
     };
 
-    // add csrf token for django
-    $.ajaxSetup({
-      beforeSend: function(xhr, settings) {
-        if (!util.csrfSafeMethod(settings.type) && !this.crossDomain) {
-          xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        }
-      }
-    });
-
-    // POST data to duoquiz
-    $.ajax({
-      url: '/ip1/duoquiz/',
-      type: 'POST',
-      contentType: 'application/json; charset=utf-8',
-      data: JSON.stringify(logObject),
-      dataType: 'text',
-      success: function(result) {}
-    });
+    console.log(logObject);
   };
 
   duoquiz.Game.prototype.incorrect = function(msg, lostlife) {
@@ -335,7 +316,7 @@ define(function(require) {
       var questionText = question.generated.question;
       var solutions = question.generated.solution;
 
-      this.logAnswer(questionText, question.getValue(), solutions, false);
+      duoquiz.Game.logAnswer(this, questionText, question.getValue(), solutions, false);
     }
 
     $('#answer-result-div')

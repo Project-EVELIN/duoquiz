@@ -96,27 +96,6 @@ define([], function() {
     }
   };
 
-  util.getCookie = function(name) {
-    var cookieValue = null;
-    if (document.cookie && document.cookie != '') {
-      var cookies = document.cookie.split(';');
-      for (var i = 0; i < cookies.length; i++) {
-        var cookie = cookies[i].trim();
-        // Does this cookie string begin with the name we want?
-        if (cookie.substring(0, name.length + 1) == (name + '=')) {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
-        }
-      }
-    }
-    return cookieValue;
-  };
-
-  util.csrfSafeMethod = function(method) {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-  };
-
   /**
    * Returns a random number between min (inclusive) and max (exclusive)
    */
@@ -136,22 +115,12 @@ define([], function() {
     return !!(object && object.constructor && object.call && object.apply);
   };
 
-  util.logout = function(callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', '/elearnmanage/logout/');
-    xhr.onload = function(e) {
-      //var data = JSON.parse(this.response);
-      //callback.call(data);
-      document.location.reload();
-    };
-    xhr.send();
-  };
 
   util.padLeft = function(nr, n, str) {
     return Array(n - String(nr).length + 1).join(str || '0') + nr;
   };
 
-  util.isInteger = function isInteger (nVal) {
+  util.isInteger = function isInteger(nVal) {
     return typeof nVal === "number" && isFinite(nVal) && nVal > -9007199254740992 && nVal < 9007199254740992 && Math.floor(nVal) === nVal;
   };
 
