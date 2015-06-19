@@ -1,0 +1,65 @@
+var gulp = require('gulp');
+var sourcemaps = require('gulp-sourcemaps');
+var to5 = require('gulp-babel');
+var concat = require('gulp-concat');
+var source = require('vinyl-source-stream');
+var buffer = require('vinyl-buffer');
+var browserify = require('browserify');
+var watchify = require('watchify');
+var babel = require('babelify');
+
+// should be renamed to task epy
+/*
+gulp.task('default', function () {
+    return gulp.src('./duopy/js/epy_quiz/*.js')
+        .pipe(sourcemaps.init())
+        .pipe(to5({blacklist:['es6.modules'], modules: 'amd'}))
+        .pipe(concat('duopy_all.js'))
+        .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest('./duopy/js/'));
+});
+*/
+
+gulp.task('browserify', function () {
+  var browserified = transform(function(filename) {
+    var b = browserify(filename);
+    return b.bundle();
+  });
+  
+  return gulp.src(['./src/*.js'])
+    .pipe(browserified)
+    .pipe(uglify())
+    .pipe(gulp.dest('./dist'));
+});
+
+function compile(watch) {
+  var bundler = watchify(browserify('./modules/app.js', { debug: true }).transform(babel));
+ 
+  function rebundle() {
+    bundler.bundle()
+      .on('error', function(err) { console.error(err); this.emit('end'); })
+      .pipe(source('duopy.js'))
+      .pipe(buffer())
+      .pipe(sourcemaps.init({ loadMaps: true }))
+      .pipe(sourcemaps.write('./'))
+      .pipe(gulp.dest('./dist'));
+  }
+ 
+  if (watch) {
+    bundler.on('update', function() {
+      console.log('-> bundling...');
+      rebundle();
+    });
+  }
+ 
+  rebundle();
+}
+ 
+function watch() {
+  return compile(true);
+}
+ 
+gulp.task('build', function() { return compile(); });
+gulp.task('watch', function() { return watch(); });
+ 
+gulp.task('default', ['watch']);
