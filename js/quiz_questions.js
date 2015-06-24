@@ -2,12 +2,12 @@ define(['jquery', 'app/duo_quiz', 'app/util'], function($, duoquiz, util) {
   var mod = {};
 
   mod.getQuestions = function(set) {
-    var q1 = new duoquiz.SimpledefinitionQuestion('Declare a %desc% and initialize it with the following value <code>%value%</code> in a single line.',
+    var q1 = new duoquiz.SimpledefinitionQuestion('Declare a %desc% and initialize it using the following value <code>%value%</code> in a single line.',
       '[["int"],[".","=", "%value%"],";"]', 'Next one!', function(result) {
         // generate random values here
         var dataDescribtion = [
           'signed integer variable',
-          'charackter variable',
+          'character variable',
           'floating point variable',
         ];
         var dataSolutions = [
@@ -88,7 +88,7 @@ define(['jquery', 'app/duo_quiz', 'app/util'], function($, duoquiz, util) {
 
     var q3 = new duoquiz.SingleChoiceQuestion('Is the following code snippet correct? <code>int[] b = {1,2,89,4};</code>',
       'No', ['Yes', 'No'],
-      'Remember, to put the size in brackets <code>b</code>.'
+      'Remember, to put the array size behind the variable name.'
     );
     q3.setName("quiz1_q3");
 
@@ -103,10 +103,10 @@ define(['jquery', 'app/duo_quiz', 'app/util'], function($, duoquiz, util) {
     /*
      * Array-Deklaration unterschiedlicher Typen und Größe.
      */
-    var q5_question = 'Baue aus den Code-Fragmenten eine valide Zeile Code, die ein Array der Größe %size% deklariert.';
+    var q5_question = 'Use the fragments to create a valid statement, that declares an array for %size% elements.';
     var q5_solution = '["%type%","arr", "[", "%size%", "]",";"]';
     var q5_fragments = [']', ';', '%type% ', '%size%', '[', '(', 'arr ', ' = '];
-    var q5_passtext = 'Perfekt, du hast auf alles geachtet.';
+    var q5_passtext = 'You got it.';
     var q5_generator = function(result) {
       var types = ["short", "int", "char"];
       var type = types[Math.floor(Math.random() * types.length)];
@@ -135,8 +135,8 @@ define(['jquery', 'app/duo_quiz', 'app/util'], function($, duoquiz, util) {
     /*
      * Ausgabe mit printf
      */
-    var q6 = new duoquiz.SimpledefinitionQuestion('Geben Sie die Ganzzahlvariable <code>%variable_name%</code> auf der Konsole aus. (printf)', ['["printf","(","\\"%d\\"",",","%variable_name%",")",";"]', '["printf","(","\\"%i\\"",",","%variable_name%",")",";"]'],
-      'So funktioniert es.',
+    var q6 = new duoquiz.SimpledefinitionQuestion('Print the integer variable <code>%variable_name%</code> on the console. (printf)', ['["printf","(","\\"%d\\"",",","%variable_name%",")",";"]', '["printf","(","\\"%i\\"",",","%variable_name%",")",";"]'],
+      'Yeah, easy one.',
       function(result) {
         // generate random values here
         var variable_names = ['computed_result', 'index', 'sum', 'i'];
@@ -162,18 +162,18 @@ define(['jquery', 'app/duo_quiz', 'app/util'], function($, duoquiz, util) {
     /*
      * GetInt-Question, randomizes the basis to read in.
      */
-    var q7_question = "Schreiben Sie eine Anweisung (eine Zeile), die eine Integervariable im Oktal-Format von der Konsole einliest und in einer Variablen speichert (ip_input.h).";
+    var q7_question = "Write a a single line statement, that reads in an integer number in octal format and assign it to a variable. (use <code>ip_input.h</code>).";
     var q7_solutions = [];
     q7_solutions.push(["int",".","=","GetInt","(","\'o\'",")",";"]);
 
     /* Example usage of a Reference, we use the name of the Variable of the first line on after the type. */
     q7_solutions.push(["int",".",";",new duoquiz.Reference(1, "eingabe"),"=","GetInt","(","\'o\'",")",";"]);
 
-    var q7_passtext = "Super, immer daran denken, <code>GetInt</code> die Basis mitzugeben.";
+    var q7_passtext = "Super, don't forget to, <code>GetInt</code> pass the basis.";
     var q7_generator = function(result) {
       // generate random values here
       var formats = ['Dezimal', 'Oktal', 'Hexadezimal'];
-      var format_specifiers = ['d', 'o', 'h'];
+      var format_specifiers = ['d', 'o', 'x'];
       var randomIndex = Math.floor(Math.random() * formats.length);
       var format = formats[randomIndex];
       var format_specifier = format_specifiers[randomIndex];
@@ -195,7 +195,7 @@ define(['jquery', 'app/duo_quiz', 'app/util'], function($, duoquiz, util) {
     q7.setRequiresMain(true);
     q7.setName("quiz1_q7");
 
-    var q8_question = 'Schreibe Anweisungen, die den Benutzer eine Zahl Integerzahl im Dezimalformat erst einlesen und dann auf der Konsole oktal ausgeben lassen.';
+    var q8_question = 'Write two statements, that read in a decimal value from the console and print it in octal format.';
     var q8_solutions = [
       ["int", ".", "=", "GetInt", "(", "\'d\'", ")", ";", "printf", "(", "\"%o\"", ",", new duoquiz.Reference(2, "eingabe"), ")", ";"]
     ];
@@ -207,11 +207,11 @@ define(['jquery', 'app/duo_quiz', 'app/util'], function($, duoquiz, util) {
     q8.setMinimumLines(2);
     q8.setName("quiz1_q8");
 
-    var q9_question = 'Schreiben Sie eine Präprozessoranweisung, die ein Symbol namens <code>SIZE</code> mit dem Wert <em>%value%</em> definiert.';
+    var q9_question = 'Write a preprocessor statment, that declares the symbol <code>SIZE</code> with following value: <em>%value%</em>.';
     var q9_solutions = [
       ["#define", "SIZE", "%value%"]
     ];
-    var q9_passtext = 'So ist es richtig - ohne abschließendes Semikolon!';
+    var q9_passtext = 'Preprocessor directives have no trailing semicolons.';
     var q9_generator = function(result) {
       var value = Math.floor(Math.random() * 20);
       var solutions = [];
@@ -232,7 +232,7 @@ define(['jquery', 'app/duo_quiz', 'app/util'], function($, duoquiz, util) {
     q9.setName("quiz2_q9");
 
     /* cast question */
-    var q10_question = 'Folgende Berechnung leidet unter der Ganzzahldivision: <code>double amp = 1 / (n * %value%);</code> (n vom Typ <em>int</em>).<br>Ändern Sie die Anweisung mittels Typecast so ab, dass dieses Problem nicht mehr auftritt.';
+    var q10_question = 'Following calculation is flawed due to a floor division: <code>double amp = 1 / (n * %value%);</code> (n vom Typ <em>int</em>).<br>Fix the problem using a type caste.';
     var q10_solutions = [
       ["double", "amp", "=", "1", "/", "(", "(", "double", ")", "n", "*", "%value%", ")", ";"],
       ["double", "amp", "=", "1", "/", "(", "(", "float", ")", "n", "*", "%value%", ")", ";"],
@@ -241,7 +241,7 @@ define(['jquery', 'app/duo_quiz', 'app/util'], function($, duoquiz, util) {
       ["double", "amp", "=", "1", "/", "(", "float", ")", "n", "/", "%value%", ";"],
       ["double", "amp", "=", "1", "/", "(", "double", ")", "n", "/", "%value%", ";"],
     ];
-    var q10_passtext = 'Pew, pew! Mit <code>(double)</code> geht das!<br><small>Ok <em>float<em> würde auch gehen.<small>';
+    var q10_passtext = 'Pew, pew! You can use either <code>(double)</code> or <br><small>Ok <em>float<em>.<small>';
     var q10_generator = function(result) {
       var value = util.getRandomInt(2, 15);
       var solutions = [];
@@ -262,11 +262,11 @@ define(['jquery', 'app/duo_quiz', 'app/util'], function($, duoquiz, util) {
     q10.setName("quiz2_q10");
 
     /* math func question */
-    var q11_question = 'Schreibe eine Anweisung, welche den %func% von %value% berechnet und in einer <code>double</code> Variable speichert.';
+    var q11_question = 'Write a single statement that calculates the %func% of %value% and assigns it to a <code>double</code> type variable.';
     var q11_solutions = [
       ["double", ".", "=", "%func%", "(", "%value%", ")", ";"],
     ];
-    var q11_passtext = 'Einfach oder?';
+    var q11_passtext = 'Yawn ..';
     var q11_generator = function(result) {
       var funcs = ["sin", "cos", "tan", "acos", "atan"];
       var funcIndex = util.getRandomInt(0, funcs.length - 1);
@@ -291,7 +291,7 @@ define(['jquery', 'app/duo_quiz', 'app/util'], function($, duoquiz, util) {
     /*
      * Simplest calculation with precedence
      */
-  var q12_question = 'Baue aus den Fragmenten die kürzeste mögliche Berechnung der folgenden Formel: <span class="tex" data-expr="\\displaystyle \\frac{2}{ln(4*k+(n*m))}"></span><br>Sie müssen keine Typcasts oder andere Veränderungen vornehmen. <br><br><small>Vergessen Sie nicht das Ergebnis einer Variablen zu zuweisen.</small>';
+  var q12_question = 'Use the fragments for the shortest calucation of the following formula: <span class="tex" data-expr="\\displaystyle \\frac{2}{ln(4*k+(n*m))}"></span><br>You must not use type casts or rearrange the formula<br><br><small>Do not forget to assign the result to a variable.</small>';
     var q12_solution = [["double","result","=","2","/","log","(","4","*","k","+","n","*","m",")",";"]];
     var q12_fragments = ["double"," result","=","2","/","log","(","4","*","k","+","m","*","n",")",";", "(", ")", "(", ")"];
     var q12_passtext = 'Die Funktion klammert schon alles!. War ja nicht so schwer.';
@@ -307,27 +307,27 @@ define(['jquery', 'app/duo_quiz', 'app/util'], function($, duoquiz, util) {
     /* end quiz 2 */
 
     /* quiz3 questions */
-    var q13_question = 'Sie sollen eine numerische Benutzereingabe auf ihre Gültigkeit überprüfen. Schreiben Sie eine Anweisung <small>(eine Zeile)</small>, welche die Variable <code>zahl</code> auf folgenden Bereich überprüft: <em>W = [0, 180)</em>' +
+    var q13_question = 'You need to check some user input. Write a statement <small>(eine Zeile)</small>, that check that the variable <code>input</code> is within following range: <em>W = [0, 180)</em>' +
     '<br>Speichern Sie das Ergebnis in einer Ganzzahlvariable (int) ab.';
     var q13_solutions = [
-      ["int",".","=","zahl",">=","0","&&","zahl","<","180",";"],
-      ["int",".","=","!","(","zahl","<","0","||","zahl",">=","180",")",";"],
-      ["int",".","=","!","(","zahl","<","0",")","&&","!","(","zahl",">=","180",")",";"],
+      ["int",".","=","input",">=","0","&&","input","<","180",";"],
+      ["int",".","=","!","(","input","<","0","||","input",">=","180",")",";"],
+      ["int",".","=","!","(","input","<","0",")","&&","!","(","input",">=","180",")",";"],
     ];
 
-    var q13_passtext = 'Es gibt mehrere Möglichkeiten - das war eine davon!';
+    var q13_passtext = 'There is more than one possible solution!';
 
     var q13 = new duoquiz.SimpledefinitionQuestion(q13_question, q13_solutions, q13_passtext, null);
     q13.setName("quiz3_q13");
 
-    var q14_question = 'Schreiben Sie eine <code>for</code> Schleife, welche die Zahlen von <em>1 - 9</em> ausgibt. <br><small>(Nutzen Sie die Zählvariable <code>i</code> (bereits deklariert) für die Ausgabe [<code>%d</code>])</small>';
+    var q14_question = 'Write a <code>for</code> loop, which prints the numbers from <em>1 - 9</em>. <br><small>(Use <code>i</code> as the counter (already declared) and [<code>%d</code>] for the output)</small>';
     var q14_solutions = [
       ["for","i","=","1",";","i","<","10",";","i","++",")","{","printf","(","\"%d\"",",","i",")",";","}"],
       ["for","i","=","1",";","i","<=","9",";","i","++",")","{","printf","(","\"%d\"",",","i",")",";","}"],
       ["for","i","=","1",";","i","<","10",";","i","++",")","printf","(","\"%d\"",",","i",")",";"],
       ["for","i","=","1",";","i","<=","9",";","i","++",")","printf","(","\"%d\"",",","i",")",";"],
     ];
-    var q14_passtext = 'Ausgezeichnet - wir fangen diesmal bei 1 an und laufen bis 9 (inkl.) oder 10 (exkl.)';
+    var q14_passtext = 'Excellent - we start with 1 and loop until we reach 9 (incl.) or 10 (excl.)';
     var q14 = new duoquiz.SimpledefinitionQuestion(q14_question, q14_solutions, q14_passtext, null);
     q14.setName('quiz3_q14');
     q14.setMinimumLines(3);
@@ -341,6 +341,8 @@ define(['jquery', 'app/duo_quiz', 'app/util'], function($, duoquiz, util) {
         return [q11, q12, q10, q9];
       case "quiz3":
         return [q13, q14];
+      case "parson_example":
+        return [q12];
       default:
         throw new Error("No question set available for this particular quiz: " + set);
     }

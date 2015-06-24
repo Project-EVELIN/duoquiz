@@ -1,0 +1,19 @@
+div.panel-duo {
+	font-size: 14px;
+	line-height: 1;
+	text-align: left;
+}
+div.panel-duo p {
+	margin: 0 0 10px;
+	line-height: 1;
+	font-size: 1.2em;
+}
+
+div.panel-duo small {
+	font-size: 14.2799987792969px;
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+h2.duo {
+	font-size: 1.2em;
+}

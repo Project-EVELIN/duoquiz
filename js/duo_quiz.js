@@ -51,6 +51,7 @@ define(function(require) {
   };
 
   duoquiz.uniqueID = 111; // start for unique ids for the quiz items
+  duoquiz.animations = true;
 
   /*
     Constructor for a duo quiz. Takes an array with questions.
@@ -373,8 +374,13 @@ define(function(require) {
   duoquiz.Game.prototype.gameover = function() {
     this.lastAnswers = [];
     var p = $(
-      '<p class="gameover fadeInUp"><strong>GAME OVER</strong> <small>' +
+      '<p class="gameover"><strong>GAME OVER</strong> <small>' +
       duoquiz.lang.str('gameover') + '</small></p>');
+
+    if (duoquiz.animations === true) {
+      p.addClass("fadeInUp");
+    }
+
     this.questionblock.empty();
     this.questionblock.append(p);
     this.answerblock.empty();
@@ -390,9 +396,14 @@ define(function(require) {
   duoquiz.Game.prototype.finished = function() {
     // add button to restart game
     var p = $(
-      '<p class="finished animated flipInX"><strong>Super</strong> <small>' +
+      '<p class="finished"><strong>Super</strong> <small>' +
       duoquiz.lang.str('finished')
       .replace(/%errors%/g, this.lives - this.userLives) + '</small></p>');
+
+    if (duoquiz.animations === true) {
+      p.addClass("animated").addClass("flipInX");
+    }
+
     this.questionblock.empty();
     this.answerblock.empty();
     this.questionblock.append(p);
