@@ -18,11 +18,7 @@ var _react2 = _interopRequireDefault(_react);
 // The only thing that should be in a DOMReady
 (0, _vendorJquery2["default"])(function () {
     console.log("yeah it works!!!");
-    _react2["default"].render(_react2["default"].createElement(
-        "h1",
-        null,
-        "Muuuuh"
-    ), document.body);
+    //React.render(<h1>Muuuuh</h1>, document.body);
     //var quizzes = $('div[data-quiz]');
 });
 
