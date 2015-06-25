@@ -5,7 +5,7 @@
 - Cite the ITiCSe working group about ICSeBooks
 - Context: Improving our introductory course
 - Focus on language proficiency in this particular talk
-- Noticed that syntax errors and tool-chain distracts students
+- Noticed that syntax errors and tool-chain distract students
 - Explicit train vocabulary and related concepts like vocabulary in natural languages
 - Connection between natual language learning with new technology like duolingo or babbel and programming languages
 
