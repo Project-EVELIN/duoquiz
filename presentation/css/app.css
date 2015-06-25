@@ -17,3 +17,91 @@ div.panel-duo small {
 h2.duo {
 	font-size: 1.2em;
 }
+
+/* Fix some bootstrap styles */
+.reveal {
+	font-family: Helvetica, sans-serif;
+}
+
+.reveal .progress {
+	margin-bottom: 0px;
+}
+
+.reveal .slide-number {
+	font-size: 0.75em;
+	color: #d14;
+}
+.reveal .controls div.navigate-left, 
+.reveal .controls div.navigate-left.enabled {
+	border-right-color: #d14;
+}
+
+.reveal .controls div.navigate-right, 
+.reveal .controls div.navigate-right.enabled {
+	border-left-color: #d14;
+}
+
+.reveal h2 {
+	font-size: 1.2em;
+	line-height: 1;
+}
+
+.reveal h3 {
+	font-size: 1em;
+	text-transform: capitalize;
+	line-height: 0.7;
+}
+
+/* Custom Reveal Additions */
+.reveal .header{
+	position: absolute;
+	top: 1em;
+	right: 1em;
+	z-index: 31;
+	font-size: 0.5em;
+}
+.reveal .footer{
+	position: absolute;
+	bottom: 0.1em;
+	left: 0px;
+	font-size: 0.5em;
+	z-index: 31;
+	color: #d14;
+	opacity: 0.75;
+	width: 100%;
+	text-align: center;
+}
+/* Better white code boxes */
+pre {
+	display: block;
+	padding: 0px;
+	margin: 0 0 10px;
+	font-size: 13px;
+	line-height: 1.42857143;
+	color: #333;
+	word-break: normal;
+	word-wrap: break-word;
+	border: none;
+}
+
+.reveal pre {
+	display: block;
+	position: relative;
+	width: 100%;
+	margin: 0 0 10px;
+	text-align: left;
+	font-size: 0.40em;
+	font-family: monospace;
+	line-height: 1.2em;
+	word-wrap: normal;
+	box-shadow: none;
+}
+
+.reveal pre code {
+	display: block;
+	background: white;
+	padding: 0.5em;
+	color: #333333;
+	overflow-x: auto;
+	-webkit-text-size-adjust: none;
+}
