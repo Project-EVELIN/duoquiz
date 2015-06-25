@@ -342,7 +342,7 @@ define(['jquery', 'app/duo_quiz', 'app/util'], function($, duoquiz, util) {
       case "quiz3":
         return [q13, q14];
       case "parson_example":
-        return [q12];
+        return [q5];
       default:
         throw new Error("No question set available for this particular quiz: " + set);
     }

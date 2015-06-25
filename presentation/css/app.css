@@ -18,6 +18,11 @@ h2.duo {
 	font-size: 1.2em;
 }
 
+/* Emphasize Color */
+.reveal em {
+	color: #d14;
+}
+
 /* Fix some bootstrap styles */
 .reveal {
 	font-family: Helvetica, sans-serif;
@@ -31,6 +36,7 @@ h2.duo {
 	font-size: 0.75em;
 	color: #d14;
 }
+
 .reveal .controls div.navigate-left, 
 .reveal .controls div.navigate-left.enabled {
 	border-right-color: #d14;
