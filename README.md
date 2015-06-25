@@ -9,10 +9,10 @@ The goal of the quiz is to provide a simple tool for fostering the programming l
 
 See http://waywaaard.github.io/duoquiz/ for a demo.
 
-The quiz uses a C Lexer and Parser that is generated with #zaach/jison. You can find all Lexer and Parser specific file under ```compiler/c```
+The quiz uses a C Lexer and Parser that is generated with [zaach/jison](https://github.com/zaach/jison/). You can find all Lexer and Parser specific file under ```compiler/c```
 
 ## Quiz
-The current demo uses the implementation found under ```/quiz```. It uses ```require.js```, #Khan/KaTeX and #twbs/bootstrap.
+The current demo uses the implementation found under ```/quiz```. It uses ```require.js```, [Khan/KaTeX](https://github.com/Khan/KaTeX/) and [twbs/bootstrap](https://github.com/twbs/bootstrap/).
 
 A completely new implementation that is intended to support the Python language can be found under ```duopy/```. However, it is work in progress and cannot be used at the moment. The reimplementation uses ES6 features like classes, ```babel.js``` for transpiling, ```browserify``` and ```gulp``` for building.
 
