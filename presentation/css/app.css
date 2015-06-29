@@ -18,6 +18,10 @@ h2.duo {
 	font-size: 1.2em;
 }
 
+.panel-duo > .panel-footer {
+  background-color: transparent;
+}
+
 /* Emphasize Color */
 .reveal em {
 	color: #d14;
@@ -37,12 +41,12 @@ h2.duo {
 	color: #d14;
 }
 
-.reveal .controls div.navigate-left, 
+.reveal .controls div.navigate-left,
 .reveal .controls div.navigate-left.enabled {
 	border-right-color: #d14;
 }
 
-.reveal .controls div.navigate-right, 
+.reveal .controls div.navigate-right,
 .reveal .controls div.navigate-right.enabled {
 	border-left-color: #d14;
 }
@@ -56,6 +60,15 @@ h2.duo {
 	font-size: 1em;
 	text-transform: capitalize;
 	line-height: 0.7;
+}
+
+.reveal blockquote {
+	width: 100%;
+	font-size: 0.7em;
+}
+
+.reveal blockquote > footer {
+	font-size: 0.7em;
 }
 
 /* Custom Reveal Additions */
@@ -101,6 +114,24 @@ pre {
 	line-height: 1.2em;
 	word-wrap: normal;
 	box-shadow: none;
+}
+
+.reveal .CodeMirror pre {
+  -moz-border-radius: 0;
+  -webkit-border-radius: 0;
+  border-radius: 0;
+  border-width: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: inherit;
+  margin: 0;
+  white-space: pre;
+  word-wrap: normal;
+  line-height: inherit;
+  color: inherit;
+  z-index: 2;
+  position: relative;
+  overflow: visible;
 }
 
 .reveal pre code {

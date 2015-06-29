@@ -41,7 +41,7 @@
         <script src="lib/js/html5shiv.js"></script>
         <![endif]-->
     </head>
-    
+
     <body>
         <div class="reveal">
             <!-- Show footer on every slide -->
@@ -87,17 +87,6 @@
                 </section>
 
                 <!-- Questions -->
-                <section>
-                    <h2>From ICSeBooks and Duolingo</h2>
-                    <h3>The Connection</h3>
-                    <p><em>Fostering Language Proficiency</em></p>
-                    <ol data-transition="none">
-                        <li>Writing</li>
-                        <li>Reading</li>
-                        <li>Speaking</li>
-                        <li>Listening</li>
-                    </ol>
-                </section>
                 <section data-transition="none">
                     <h2>From ICSeBooks and Duolingo</h2>
                     <h3>The Connection</h3>
@@ -109,14 +98,54 @@
                         <li><del>Listening</del></li>
                     </ol>
                 </section>
+                <section data-transition="none">
+                    <h2>From ICSeBooks and Duolingo</h2>
+                    <h3>The Connection</h3>
+                    <blockquote>
+                        <p>
+                            “Automatically assessed self-quiz exercise, interspersing frequent practice with meaningful feedback so that learners can gauge their own knowledge”
+                        </p>
+                        <footer>Korhonen et al. <cite title="Requirements and Design Strategies for Open Source Interactive Computer Science eBooks.">Requirements and Design Strategies for Open Source Interactive Computer Science eBooks.</cite></footer>
+                    </blockquote>
+                    <ol>
+                        <li>Which question types may serve our requirements for syntax assessment?</li>
+                        <li>How are they evaluated?</li>
+                        <li>How can we provide meaningful feedback?</li>
+                        <li>How can data collection be best assembled?</li>
+                        <li>How should the quiz be developed and deployed in class?</li>
+                    </ol>
+                </section>
                 <!-- Example of nested vertical slides -->
                 <section>
-                <h2>Related Work</h2>
+                    <h2>Related Work</h2>
+                    <ol>
+                        <li>MOOCs use quizzes for assessment</li>
+                        <li>js-parsons</li>
+                        <li>tryruby.org</li>
+                        <li>Turings-Craft</li>
+                        <li>moodle</li>
+                        <li>socrative, quizlet, ...</li>
+                    </ol>
                 </section>
 
                 <section>
                     <h2>Analysis and Requirements</h2>
-                    <p></p>
+                    <p>
+                        <em>Course Overview &amp; Problems</em>
+                    </p>
+                    <ul>
+                        <li>Electrical Engengineering, Automation and Robotics, Renewable Energies</li>
+                        <li>Fundamental programming concepts</li>
+                        <li>Preparation for consecutive courses (C language)</li>
+                    </ul>
+                </section>
+                <section>
+                    <img src="images/aDm0zxx_700b.jpg" alt="" />
+                    <hr>
+                    <!--<ul>
+                        <li>High Drop Out Rate</li>
+                        <li>Students struggle with the syntax</li>
+                    </ul>-->
                 </section>
 
                 <section>
@@ -126,46 +155,22 @@
 
                 <section>
                     <h2 class="duo">Parson's Problems for C-Syntax</h2>
-                    <div class="panel panel-duo" data-quiz="parson_example" data-question-block="duo-question-block" data-answer-block="duo-answer-block" data-check-button="duo-check-btn" data-progess-list="duo-progress">
-                    <div class="panel-heading">
-                      <h3 class="panel-title">
-                        <ul class="pagination pagination-sm" id="duo-progress">
-                        </ul>
-                        <div class="life-box pull-right">
-                          <span class="glyphicon glyphicon-heart life"></span>
-                          <span class="glyphicon glyphicon-heart life"></span>
-                          <span class="glyphicon glyphicon-heart life"></span>
-                        </div>
-                      </h3>
-                    </div>
-                    <div class="panel-body duo-body">
-                      <div class="panel-question center-block" id="duo-question-block">
+                    <div class="panel panel-duo" data-quiz="parson_example">
                         <div class="spinner"></div>
                         <div class="center-block"><p class="spinner-text">Preparing the quiz...</p></div>
-                      </div>
-                      <div class="panel-answer center-block" id="duo-answer-block">
-                      </div>
                     </div>
-                    <div class="panel-footer" id="answer-result-div">
-                      <div class="col-md-1">
-                        <span class="glyphicon glyphicon-remove-circle answericon incorrect hidden"></span>
-                        <span class="glyphicon glyphicon-ok-sign answericon correct hidden"></span>
-                      </div>
-                      <div class="col-md-5" id="answer-result">
-                      </div>
-                      <div class="col-md-6">
-                        <button type="button" id="duo-check-btn" class="btn btn-duo pull-right">Check</button>
-                      </div>
-                    </div>
-                    </div>
-                    <p class="page-header">
-                    <br />
-                    </p>
+                </section>
+
+                <section>
+                    <h2 class="duo">Code Fragment Questions</h2>
+                    <div class="panel panel-duo" data-quiz="input_example">
+                    <div class="spinner"></div>
+                    <div class="center-block"><p class="spinner-text">Preparing the quiz...</p></div>
                 </section>
 
                 <section>
                     <h2>Question Format</h2>
-                    <pre><code data-trim contenteditable>
+                    <pre><code data-trim contenteditable spellcheck="false">
 var q8_question = 'Write two statements, that read in a decimal value from the console and print it in octal format.';
 var q8_solutions = [
   ["int", ".", "=", "GetInt", "(", "\'d\'", ")", ";", "printf", "(", "\"%o\"", ",", new duoquiz.Reference(2, "eingabe"), ")", ";"]

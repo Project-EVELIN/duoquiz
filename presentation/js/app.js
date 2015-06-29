@@ -1,68 +1,52 @@
 requirejs.config({
   //By default load any module IDs from js/lib
-  baseUrl: '../vendor',
+  baseUrl: "../vendor",
   //except, if the module ID starts with "app",
   //load it from the js/app directory. paths
   //config is relative to the baseUrl, and
   //never includes a ".js" extension since
   //the paths config could be for a directory.
   paths: {
-    cm: './codemirror',
-    app: '../js',
-    bootstrap: './bootstrap/js/bootstrap',
+    cm: "./codemirror",
+    app: "../js",
+    bootstrap: "./bootstrap/js/bootstrap"
   },
   shim: {
     "bootstrap": {
       deps: ["jquery"]
     },
     "duo_quiz": {
-      deps: ['app/util', 'sortable', 'app/ansic']
+      deps: ["app/util", "sortable", "app/ansic"]
     },
     "quiz_questions": {
-      deps: ['duo_quiz', 'app/util', 'jquery']
-    },
+      deps: ["duo_quiz", "app/util", "jquery"]
+    }
   }
 });
 
 // Start the main app logic.
-requirejs([ 'jquery', 'domready', 'bootstrap', 'app/util', 'sortable'],
+requirejs([ "jquery", "domready", "bootstrap", "app/util", "sortable"],
   function($, domReady, bootstrap, util, sortable, FastClick, offcanvas, ripple) {
     // get all elements with the 'data-quiz' attribute and create a quiz at the desired position
     // for each quiz get data-question-block and data-answer-block, data-questions ids
     // set language
-    var quizzes = $('div[data-quiz]');
+    var quizzes = $("div[data-quiz]");
     var i;
-    var question_block;
-    var answer_block;
-    var progesslist;
-    var check_button;
-    var quiz_map_id;
+    var quizMapID;
 
     // support async loading of deps
     if (quizzes.length > 0) {
-      require(['app/duo_quiz', 'app/quiz_questions'], function(duoquiz, quizQuestions) {
+      require(["../dist/duo_quiz", "app/quiz_questions"], function(duoquiz, quizQuestions) {
         // some duoquiz init for the presentation
         duoquiz.animations = false;
 
         for (i = 0; i < quizzes.length; i++) {
-          question_block = $(quizzes[i]).attr("data-question-block");
-          answer_block = $(quizzes[i]).attr("data-answer-block");
-          progesslist = $(quizzes[i]).attr("data-progess-list");
-          check_button = $(quizzes[i]).attr("data-check-button");
-          quiz_map_id = $(quizzes[i]).attr("data-quiz");
+          quizMapID = $(quizzes[i]).attr("data-quiz");
 
           // create new game instance from data attributes
-          var game = new duoquiz.Game(
-            quizQuestions.getQuestions(quiz_map_id),
-            3,
-            'en',
-            $('#' + question_block),
-            $('#' + answer_block),
-            $('#' + check_button),
-            $('#' + progesslist)
-          );
+          var game = new duoquiz.Game(quizQuestions.getQuestions(quizMapID), $(quizzes[i]), {lang: "en", lives: 3});
           // set name of the game version, required for correct logging, we are using the quizid
-          game.setName(quiz_map_id);
+          game.setName(quizMapID);
         }
       });
     }
