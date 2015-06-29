@@ -46,42 +46,104 @@ define(function(require) {
 
   duoquiz.minAnswerLength = 4;
 
-  duoquiz.lang.str = function(key) {
-    return duoquiz.lang[duoquiz.lang.lang][key];
+  duoquiz.lang.str = function(lang, key) {
+    return duoquiz.lang[lang][key];
+  };
+
+  duoquiz.defaults = {
+      lives: 3,
+      lang: "de"
   };
 
   duoquiz.uniqueID = 111; // start for unique ids for the quiz items
+  duoquiz.animations = true;
 
   /*
     Constructor for a duo quiz. Takes an array with questions.
   */
-  duoquiz.Game = function(questions, lives, lang, questionblock, answerblock,
-    checkbtn, progesslist) {
+  duoquiz.Game = function(questions, parent, options) {
     if (!questions /*|| questions.length < 2*/) {
-      throw new Error('Cannot init duoquiz with no questions or only one.');
+      throw new Error("Cannot init duoquiz with no questions or only one.");
     }
 
-    duoquiz.lang.lang = lang || 'de'; // default
-
-    // blocks
-    this.questionblock = questionblock || $('#duo-question-block');
-    this.answerblock = answerblock || $('#duo-answer-block');
-    this.gamebutton = checkbtn || $('#btn-duo-check');
-    this.progesslist = progesslist || $('#duoquiz-progress');
+    this.options = $.extend({}, duoquiz.defaults, options);
+    this.parent = parent;
     this.uniqueID = ++duoquiz.uniqueID; // get unique id
+
+    // init values that are required for creating the ui
+    this.currentQuestion = 0;
+    this.lives = this.options.lives;
+    this.userLives = this.lives;
+    this.lastAnswers = []; // save last answers to compare
+
+    // creates the quiz ui
+    this.create();
+
+    // get handles for the blocks
+    this.$questionblock = $('#duo-question-block' + this.uniqueID);
+    this.$answerblock = $('#duo-answer-block' + this.uniqueID);
+    this.$gamebutton = $('#duo-check-btn' + this.uniqueID);
+    this.$progesslist = $('#duo-progress' + this.uniqueID);
+    this.$answerResultDiv = $('#duo-answer-result-div' + this.uniqueID);
+    this.$answerResult = $('#duo-answer-result' + this.uniqueID);
+
 
     // generator questions for this quiz
     this.questions = questions;
     this.count = this.questions.length;
     this.generateQuestions();
 
-    this.currentQuestion = 0;
-    this.lives = lives || 3; // default
-    this.userLives = lives;
-    this.lastAnswers = []; // save last answers to compare
-
     this.initProgress(); // progressbar
     this.changestate(duoquiz.Game.NEXT); // start with first question
+  };
+
+  duoquiz.Game.prototype.create = function() {
+    var livesTemplate = "";
+    var i;
+
+    for (i = 0; i < this.lives; i++) {
+        livesTemplate += '<span class="glyphicon glyphicon-heart life"></span>';
+    }
+
+    /* Quiz-Template */
+    var template = `
+        <div class="panel panel-duo duo-quiz-${this.uniqueID}">
+        <div class="panel-heading">
+          <h3 class="panel-title">
+            <ul class="pagination pagination-sm" id="duo-progress${this.uniqueID}">
+            </ul>
+            <div class="life-box pull-right">
+                ${livesTemplate}
+            </div>
+          </h3>
+        </div>
+        <div class="panel-body duo-body">
+          <div class="panel-question center-block" id="duo-question-block${this.uniqueID}">
+            <div class="spinner"></div>
+            <div class="center-block"><p class="spinner-text">Preparing the quiz...</p></div>
+          </div>
+          <div class="panel-answer center-block" id="duo-answer-block${this.uniqueID}">
+          </div>
+        </div>
+        <div class="panel-footer" id="duo-answer-result-div${this.uniqueID}">
+          <div class="col-md-1">
+            <span class="glyphicon glyphicon-remove-circle answericon incorrect hidden"></span>
+            <span class="glyphicon glyphicon-ok-sign answericon correct hidden"></span>
+          </div>
+          <div class="col-md-5" id="duo-answer-result${this.uniqueID}"></div>
+          <div class="col-md-6">
+            <button type="button" id="duo-check-btn${this.uniqueID}" class="btn btn-duo pull-right">Check</button>
+          </div>
+        </div>
+        </div>
+        <p class="page-header">
+            <br />
+        </p>
+    `
+
+    var $quizDom = $(template);
+    $(this.parent).empty();
+    this.parent.append($quizDom);
   };
 
   duoquiz.Game.prototype.setName = function(str) {
@@ -110,7 +172,7 @@ define(function(require) {
    */
   duoquiz.Game.prototype.initBindings = function(text, callback) {
     var that = this;
-    this.gamebutton.text(text)
+    this.$gamebutton.text(text)
       .off('click')
       .on('click', callback);
 
@@ -118,7 +180,7 @@ define(function(require) {
       .off('keypress')
       .on('keypress', function(event) {
         if ((event.keyCode == 10 || event.keyCode == 13) && event.ctrlKey) {
-          that.gamebutton.click(); // trigger click event
+          that.$gamebutton.click(); // trigger click event
         }
       });
   };
@@ -147,13 +209,13 @@ define(function(require) {
         break;
       case duoquiz.Game.FINISHED:
         this.finished();
-        this.initBindings(duoquiz.lang.str('restart'), function() {
+        this.initBindings(duoquiz.lang.str(this.options.lang, "restart"), function() {
           that.changestate(duoquiz.Game.RESET);
         });
         break;
       case duoquiz.Game.GAMEOVER:
         this.gameover();
-        this.initBindings(duoquiz.lang.str('restart'), function() {
+        this.initBindings(duoquiz.lang.str(this.options.lang, "restart"), function() {
           that.changestate(duoquiz.Game.RESET);
         });
         break;
@@ -161,7 +223,7 @@ define(function(require) {
         this.reset();
         break;
       case duoquiz.Game.CORRECT:
-        this.initBindings(duoquiz.lang.str('next'), function() {
+        this.initBindings(duoquiz.lang.str(this.options.lang, "next"), function() {
           that.currentQuestion++; // to next
           that.changestate(duoquiz.Game.NEXT);
         });
@@ -171,12 +233,12 @@ define(function(require) {
         break;
       case duoquiz.Game.INITQUESTION:
         this.initquestion();
-        this.initBindings(duoquiz.lang.str('check'), function() {
+        this.initBindings(duoquiz.lang.str(this.options.lang, 'check'), function() {
           that.check();
         });
         break;
       default:
-        throw new Error('unknown state in changestate()');
+        throw new Error("unknown state in changestate()");
     }
   };
 
@@ -186,11 +248,11 @@ define(function(require) {
    */
   duoquiz.Game.prototype.initProgress = function() {
     var i;
-    this.progesslist.empty();
+    this.$progesslist.empty();
 
     // append list items for each questions
     for (i = 0; i < this.count; i++) {
-      this.progesslist.append($('<li id="progessitem_' + this.uniqueID + '_' + i +
+      this.$progesslist.append($('<li id="progessitem_' + this.uniqueID + '_' + i +
         '"><div class="inner"></div></li>'));
     }
   };
@@ -225,9 +287,10 @@ define(function(require) {
    */
   duoquiz.Game.prototype.initquestion = function() {
     // dipose old question dom
-    this.questionblock.empty();
-    this.answerblock.empty();
-    this.questions[this.currentQuestion].create(this.questionblock, this.answerblock);
+    this.$questionblock.empty();
+    this.$answerblock.empty();
+    this.questions[this.currentQuestion].options = this.options;
+    this.questions[this.currentQuestion].create(this.$questionblock, this.$answerblock);
   };
 
   /*
@@ -244,7 +307,7 @@ define(function(require) {
     this.lastAnswers.push(answer);
 
     if (!answer || answer.length === 0) {
-      this.incorrect(duoquiz.lang.str('emptyanswer'), false);
+      this.incorrect(duoquiz.lang.str(this.options.lang, 'emptyanswer'), false);
     } else {
       var result = question.check(answer);
       if (result.check) {
@@ -257,10 +320,9 @@ define(function(require) {
 
   duoquiz.Game.prototype.correct = function(msg) {
     this.lastAnswers = [];
-    $('#answer-result-div')
-      .addClass('correct');
-    this.answerresult(msg, duoquiz.lang.str('correct'));
-    $('.answericon.correct')
+    this.$answerResult.addClass('correct');
+    this.answerresult(msg, duoquiz.lang.str(this.options.lang, 'correct'));
+    $('.duo-quiz-' + this.uniqueID + ' .answericon.correct')
       .removeClass('hidden');
 
     this.updateProgess();
@@ -319,10 +381,9 @@ define(function(require) {
       duoquiz.Game.logAnswer(this, questionText, question.getValue(), solutions, false);
     }
 
-    $('#answer-result-div')
-      .addClass('incorrect');
-    this.answerresult(msg, duoquiz.lang.str('notcorrect'));
-    $('span.glyphicon.answericon.incorrect')
+    this.$answerResultDiv.addClass('incorrect');
+    this.answerresult(msg, duoquiz.lang.str(this.options.lang, 'notcorrect'));
+    $('.duo-quiz-'+this.uniqueID + ' span.glyphicon.answericon.incorrect')
       .removeClass('hidden');
 
     // distinguish between real mistakes or none
@@ -336,13 +397,12 @@ define(function(require) {
    *
    */
   duoquiz.Game.prototype.answerresult = function(msg, title) {
-    var resultdiv = $('#answer-result');
     var p = $('<p></p>');
     var h4 = $('<h4>' + title + '</h4>');
     var span = $('<span class="answerresult-text">' + msg + '</span>');
     p.append(h4);
     p.append(span);
-    resultdiv.append(p);
+    this.$answerResult.append(p);
   };
 
   /*
@@ -354,7 +414,7 @@ define(function(require) {
    */
   duoquiz.Game.prototype.reducelives = function() {
     this.userLives--;
-    $('.life:not(.lostlife)')
+    $('.duo-quiz-'+this.uniqueID + ' .life:not(.lostlife)')
       .last()
       .addClass('lostlife');
 
@@ -373,11 +433,16 @@ define(function(require) {
   duoquiz.Game.prototype.gameover = function() {
     this.lastAnswers = [];
     var p = $(
-      '<p class="gameover fadeInUp"><strong>GAME OVER</strong> <small>' +
-      duoquiz.lang.str('gameover') + '</small></p>');
-    this.questionblock.empty();
-    this.questionblock.append(p);
-    this.answerblock.empty();
+      '<p class="gameover"><strong>GAME OVER</strong> <small>' +
+      duoquiz.lang.str(this.options.lang, 'gameover') + '</small></p>');
+
+    if (duoquiz.animations === true) {
+      p.addClass("fadeInUp");
+    }
+
+    this.$questionblock.empty();
+    this.$questionblock.append(p);
+    this.$answerblock.empty();
   };
 
   /*
@@ -390,12 +455,17 @@ define(function(require) {
   duoquiz.Game.prototype.finished = function() {
     // add button to restart game
     var p = $(
-      '<p class="finished animated flipInX"><strong>Super</strong> <small>' +
-      duoquiz.lang.str('finished')
+      '<p class="finished"><strong>Super</strong> <small>' +
+      duoquiz.lang.str(this.options.lang, 'finished')
       .replace(/%errors%/g, this.lives - this.userLives) + '</small></p>');
-    this.questionblock.empty();
-    this.answerblock.empty();
-    this.questionblock.append(p);
+
+    if (duoquiz.animations === true) {
+      p.addClass("animated").addClass("flipInX");
+    }
+
+    this.$questionblock.empty();
+    this.$answerblock.empty();
+    this.$questionblock.append(p);
     this.clearanswerresult();
   };
 
@@ -403,10 +473,8 @@ define(function(require) {
    * Clears the passtext or error text fields. Hides the icons.
    */
   duoquiz.Game.prototype.clearanswerresult = function() {
-    $('#answer-result-div')
-      .removeClass('correct incorrect');
-    $('#answer-result')
-      .empty();
+    this.$answerResultDiv.removeClass('correct incorrect');
+    this.$answerResult.empty();
     $('.answericon')
       .addClass('hidden');
   };
@@ -427,8 +495,8 @@ define(function(require) {
     $('.life').removeClass('lostlife');
     this.currentQuestion = 0;
     this.initProgress();
-    this.questionblock.empty();
-    this.answerblock.empty();
+    this.$questionblock.empty();
+    this.$answerblock.empty();
     this.generateQuestions();
     this.changestate(duoquiz.Game.NEXT);
   };
@@ -451,7 +519,7 @@ define(function(require) {
     end: ["}"],
     strStart: "int main(void) { ",
     strEnd: "}",
-    offset: 6,
+    offset: 6
   };
 
   /*
@@ -557,7 +625,7 @@ define(function(require) {
       if (str.indexOf('int main(') !== -1) {
         return {
           'check': false,
-          'text': duoquiz.lang.str('noneedformain'),
+          'text': duoquiz.lang.str(this.options.lang, 'noneedformain'),
         };
       }
       str = [duoquiz.surroundMain.strStart, str, duoquiz.surroundMain.strEnd].join("");
@@ -631,16 +699,16 @@ define(function(require) {
               if (compareValue != actual[i]) {
                 result.correct = false;
                 result.errorcount++;
-                result.msg[result.errorcount] = duoquiz.lang.str('expected') +
+                result.msg[result.errorcount] = duoquiz.lang.str(this.options.lang, 'expected') +
                   ': ' + compareValue +
-                  ' ' + duoquiz.lang.str('actual') + ': ' + actual[i];
+                  ' ' + duoquiz.lang.str(this.options.lang, 'actual') + ': ' + actual[i];
               }
             } else if (expected[i] != actual[i]) {
               result.correct = false;
               result.errorcount++;
-              result.msg[result.errorcount] = duoquiz.lang.str('expected') +
+              result.msg[result.errorcount] = duoquiz.lang.str(this.options.lang, 'expected') +
                 ': ' + expected[i] +
-                ' ' + duoquiz.lang.str('actual') + ': ' + actual[i];
+                ' ' + duoquiz.lang.str(this.options.lang, 'actual') + ': ' + actual[i];
             }
           }
         }
@@ -845,7 +913,7 @@ define(function(require) {
     var check = str == this.generated.solution;
     return {
       'check': check,
-      'text': check ? this.generated.passtext : duoquiz.lang.str(
+      'text': check ? this.generated.passtext : duoquiz.lang.str(this.options.lang,
         'notcorrecttext'),
     };
   };
@@ -896,7 +964,7 @@ define(function(require) {
     var pQuestion = $('<p class="pull-left">' + this.generated.question +
       '</p>');
     var helpspan = $('<span data-toggle="popover" data-content="' + duoquiz.lang
-      .str("orderquestionhelp") +
+      .str(this.options.lang, "orderquestionhelp") +
       '" class="popover-dismiss glyphicon glyphicon-question-sign pull-right"></span>'
     );
     questionblock.append(pQuestion);
@@ -1116,7 +1184,7 @@ define(function(require) {
 
     return {
       'check': check,
-      'text': check ? this.generated.passtext : duoquiz.lang.str(
+      'text': check ? this.generated.passtext : duoquiz.lang.str(this.options.lang,
         'notcorrecttext'),
     };
   };
