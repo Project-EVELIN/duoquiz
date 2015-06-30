@@ -668,6 +668,7 @@ define(function(require) {
 
     var results = []; // stores the results (for multiple iterations)
     var iscorrect;
+    var _lang = this.options.lang;
 
     function compareRecursive(expected, actual, result) {
       var i;
@@ -699,16 +700,16 @@ define(function(require) {
               if (compareValue != actual[i]) {
                 result.correct = false;
                 result.errorcount++;
-                result.msg[result.errorcount] = duoquiz.lang.str(this.options.lang, 'expected') +
+                result.msg[result.errorcount] = duoquiz.lang.str(_lang, 'expected') +
                   ': ' + compareValue +
-                  ' ' + duoquiz.lang.str(this.options.lang, 'actual') + ': ' + actual[i];
+                  ' ' + duoquiz.lang.str(_lang, 'actual') + ': ' + actual[i];
               }
             } else if (expected[i] != actual[i]) {
               result.correct = false;
               result.errorcount++;
-              result.msg[result.errorcount] = duoquiz.lang.str(this.options.lang, 'expected') +
+              result.msg[result.errorcount] = duoquiz.lang.str(_lang, 'expected') +
                 ': ' + expected[i] +
-                ' ' + duoquiz.lang.str(this.options.lang, 'actual') + ': ' + actual[i];
+                ' ' + duoquiz.lang.str(_lang, 'actual') + ': ' + actual[i];
             }
           }
         }
